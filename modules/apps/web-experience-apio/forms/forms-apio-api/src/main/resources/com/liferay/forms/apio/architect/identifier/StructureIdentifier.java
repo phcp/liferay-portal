@@ -19,5 +19,5 @@ import com.liferay.apio.architect.identifier.Identifier;
 /**
  * @author Paulo Cruz
  */
-public interface DDMStructureIdentifier extends Identifier<Long> {
+public interface StructureIdentifier extends Identifier<Long> {
 }

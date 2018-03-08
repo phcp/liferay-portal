@@ -22,7 +22,7 @@ import com.liferay.apio.architect.routes.CollectionRoutes;
 import com.liferay.apio.architect.routes.ItemRoutes;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMStructureService;
-import com.liferay.forms.apio.architect.identifier.DDMStructureIdentifier;
+import com.liferay.forms.apio.architect.identifier.StructureIdentifier;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Company;
 import org.osgi.service.component.annotations.Component;
@@ -37,7 +37,7 @@ import javax.ws.rs.ServerErrorException;
  */
 @Component(immediate = true)
 public class StructureCollectionResource implements
-	CollectionResource<DDMStructure, Long, DDMStructureIdentifier> {
+	CollectionResource<DDMStructure, Long, StructureIdentifier> {
 
 	@Override
 	public CollectionRoutes<DDMStructure> collectionRoutes(
