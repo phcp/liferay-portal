@@ -53,6 +53,10 @@ public class DDMFormInstanceServiceUtil {
 			descriptionMap, settingsDDMFormValues, serviceContext);
 	}
 
+	public static int countByGroupId(long[] groupIds) {
+		return getService().countByGroupId(groupIds);
+	}
+
 	public static void deleteFormInstance(long ddmFormInstanceId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		getService().deleteFormInstance(ddmFormInstanceId);
@@ -73,6 +77,11 @@ public class DDMFormInstanceServiceUtil {
 	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMFormInstance> getFormInstances(
 		long[] groupIds) {
 		return getService().getFormInstances(groupIds);
+	}
+
+	public static java.util.List<com.liferay.dynamic.data.mapping.model.DDMFormInstance> getFormInstances(
+		long[] groupIds, int start, int end) {
+		return getService().getFormInstances(groupIds, start, end);
 	}
 
 	/**
