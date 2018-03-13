@@ -17,7 +17,10 @@ package com.liferay.forms.apio.architect.identifier;
 import com.liferay.apio.architect.identifier.Identifier;
 
 /**
+ * Holds information about a {@code DDMStructure} identifier.
+ *
  * @author Paulo Cruz
+ * @review
  */
-public interface DDMStructureIdentifier extends Identifier<Long> {
+public interface StructureIdentifier extends Identifier<Long> {
 }

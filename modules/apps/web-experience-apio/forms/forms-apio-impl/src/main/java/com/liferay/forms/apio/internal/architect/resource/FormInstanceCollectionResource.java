@@ -23,15 +23,18 @@ import com.liferay.apio.architect.resource.CollectionResource;
 import com.liferay.apio.architect.routes.CollectionRoutes;
 import com.liferay.apio.architect.routes.ItemRoutes;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
-import com.liferay.dynamic.data.mapping.model.DDMFormInstanceModel;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceService;
+import com.liferay.forms.apio.architect.identifier.StructureIdentifier;
 import com.liferay.forms.apio.architect.identifier.FormInstanceId;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.GroupConstants;
+import com.liferay.portal.kernel.service.GroupService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import java.util.List;
-
-import jdk.nashorn.internal.ir.annotations.Reference;
 
 import javax.ws.rs.ServerErrorException;
 
@@ -41,6 +44,7 @@ import javax.ws.rs.ServerErrorException;
  * DDMFormInstance}.
  * @author Victor Oliveira
  */
+@Component(immediate = true)
 public class FormInstanceCollectionResource
 	implements CollectionResource<DDMFormInstance, Long, FormInstanceId> {
 
@@ -55,7 +59,7 @@ public class FormInstanceCollectionResource
 
 	@Override
 	public String getName() {
-		return "form-instance";
+		return "form-instances";
 	}
 
 	@Override
@@ -63,7 +67,7 @@ public class FormInstanceCollectionResource
 		ItemRoutes.Builder<DDMFormInstance, Long> builder) {
 
 		return builder.addGetter(
-			this::_getDDMFormInstance
+			this::_getFormInstance
 		).build();
 	}
 
@@ -81,15 +85,30 @@ public class FormInstanceCollectionResource
 				language.getPreferredLocale())
 		).addNumber(
 			"companyId", DDMFormInstance::getCompanyId
+		).addLinkedModel(
+			"structure",
+			StructureIdentifier.class,
+			DDMFormInstance::getStructureId
 		).build();
+	}
+
+	private DDMFormInstance _getFormInstance(Long formInstanceId) {
+		try {
+			return _ddmFormInstanceService.getFormInstance(formInstanceId);
+		} catch (PortalException pe) {
+			throw new ServerErrorException(500, pe);
+		}
 	}
 
 	private PageItems<DDMFormInstance> _getPageItems(
 		Pagination pagination, Company company) {
 
 		try {
+			List<Group> groups = _groupService.getGroups(company.getCompanyId(),
+				GroupConstants.ANY_PARENT_GROUP_ID, false);
 
-			long[] groupIds = {company.getGroupId()};
+			long[] groupIds =
+				groups.stream().mapToLong(Group::getGroupId).toArray();
 
 			List<DDMFormInstance> ddmFormInstances =
 				_ddmFormInstanceService.getFormInstances(
@@ -99,16 +118,8 @@ public class FormInstanceCollectionResource
 			int count = _ddmFormInstanceService.countByGroupId(groupIds);
 
 			return new PageItems<>(ddmFormInstances, count);
-
-		} catch (PortalException pe) {
-			throw new ServerErrorException(500, pe);
 		}
-	}
-
-	private DDMFormInstance _getDDMFormInstance(Long formInstanceId) {
-		try {
-			return _ddmFormInstanceService.getFormInstance(formInstanceId);
-		} catch (PortalException pe) {
+		catch (PortalException pe) {
 			throw new ServerErrorException(500, pe);
 		}
 	}
@@ -116,4 +127,6 @@ public class FormInstanceCollectionResource
 	@Reference
 	private DDMFormInstanceService _ddmFormInstanceService;
 
+	@Reference
+	private GroupService _groupService;
 }

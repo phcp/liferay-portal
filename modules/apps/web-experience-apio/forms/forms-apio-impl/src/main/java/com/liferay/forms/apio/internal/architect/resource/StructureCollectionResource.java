@@ -20,11 +20,16 @@ import com.liferay.apio.architect.representor.Representor;
 import com.liferay.apio.architect.resource.CollectionResource;
 import com.liferay.apio.architect.routes.CollectionRoutes;
 import com.liferay.apio.architect.routes.ItemRoutes;
+import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
-import com.liferay.dynamic.data.mapping.service.DDMStructureService;
-import com.liferay.forms.apio.architect.identifier.DDMStructureIdentifier;
+import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.forms.apio.architect.identifier.StructureIdentifier;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.GroupConstants;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
+import com.liferay.portal.kernel.service.GroupService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -33,18 +38,22 @@ import java.util.List;
 import javax.ws.rs.ServerErrorException;
 
 /**
+ * Provides the information necessary to expose Structure resources through
+ * a web API. The resources are mapped from the internal model {@code
+ * DDMStructure}.
  * @author Paulo Cruz
+ * @review
  */
 @Component(immediate = true)
 public class StructureCollectionResource implements
-	CollectionResource<DDMStructure, Long, DDMStructureIdentifier> {
+	CollectionResource<DDMStructure, Long, StructureIdentifier> {
 
 	@Override
 	public CollectionRoutes<DDMStructure> collectionRoutes(
 		CollectionRoutes.Builder<DDMStructure> builder) {
 
 		return builder.addGetter(
-			this::_getStructureItems, Company.class
+			this::_getPageItems, Company.class
 		).build();
 	}
 
@@ -85,24 +94,47 @@ public class StructureCollectionResource implements
 
 	private DDMStructure _getStructure(Long structureId) {
 		try {
-			return _ddmStructureService.getStructure(structureId);
+			return _ddmStructureLocalService.getStructure(structureId);
 		}
 		catch(PortalException pe) {
 			throw new ServerErrorException(500, pe);
 		}
 	}
 
-	private PageItems<DDMStructure> _getStructureItems(
+	private PageItems<DDMStructure> _getPageItems(
 		Pagination pagination, Company company) {
 
-		List<DDMStructure> ddmStructures = _ddmStructureService.getStructures(
-			company.getCompanyId(), null, 0, 0,
-			pagination.getStartPosition(), pagination.getEndPosition(), null);
+		try {
+			List<Group> groups = _groupService.getGroups(company.getCompanyId(),
+				GroupConstants.ANY_PARENT_GROUP_ID, false);
 
-		// TODO expose getStructuresCount method on DDMStructureService interface
-		return new PageItems<>(ddmStructures, ddmStructures.size());
+			long[] groupIds =
+				groups.stream().mapToLong(Group::getGroupId).toArray();
+
+			long classNameId =
+				_classNameLocalService.getClassNameId(DDMFormInstance.class);
+
+			List<DDMStructure> ddmStructures =
+				_ddmStructureLocalService.getStructures(
+					groupIds, classNameId, pagination.getStartPosition(),
+					pagination.getEndPosition());
+
+			int count = _ddmStructureLocalService.getStructuresCount(
+				company.getGroupId());
+
+			return new PageItems<>(ddmStructures, count);
+		}
+		catch(PortalException pe) {
+			throw new ServerErrorException(500, pe);
+		}
 	}
 
 	@Reference
-	DDMStructureService _ddmStructureService;
+	private ClassNameLocalService _classNameLocalService;
+
+	@Reference
+	private DDMStructureLocalService _ddmStructureLocalService;
+
+	@Reference
+	private GroupService _groupService;
 }
