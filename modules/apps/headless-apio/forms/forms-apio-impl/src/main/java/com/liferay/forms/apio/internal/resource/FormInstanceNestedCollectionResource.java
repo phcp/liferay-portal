@@ -75,7 +75,7 @@ public class FormInstanceNestedCollectionResource
 
 	@Override
 	public String getName() {
-		return "form-instance";
+		return "form-instances";
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class FormInstanceNestedCollectionResource
 		).identifier(
 			DDMFormInstance::getFormInstanceId
 		).addBidirectionalModel(
-			"interactionService", "form-instance", WebSiteIdentifier.class,
+			"interactionService", "formInstances", WebSiteIdentifier.class,
 			DDMFormInstance::getGroupId
 		).addDate(
 			"dateCreated", DDMFormInstance::getCreateDate
