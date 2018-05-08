@@ -46,9 +46,12 @@ import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.site.apio.identifier.WebSiteIdentifier;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -157,6 +160,10 @@ public class FormInstanceNestedCollectionResource
 			"description", DDMFormInstance::getDescription
 		).addLocalizedStringByLocale(
 			"name", DDMFormInstance::getName
+		).addString(
+			"defaultLanguage", DDMFormInstance::getDefaultLanguageId
+		).addStringList(
+			"availableLanguages", this::_getAvailableLanguages
 		).build();
 	}
 
@@ -199,6 +206,15 @@ public class FormInstanceNestedCollectionResource
 		}
 
 		return ddmFormInstance;
+	}
+
+	private List<String> _getAvailableLanguages(
+		DDMFormInstance ddmFormInstance) {
+
+		Stream<String> availableLanguagesStream = Arrays.stream(
+			ddmFormInstance.getAvailableLanguageIds());
+
+		return availableLanguagesStream.collect(Collectors.toList());
 	}
 
 	private PageItems<DDMFormInstance> _getPageItems(
