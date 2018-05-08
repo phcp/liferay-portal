@@ -25,6 +25,7 @@ import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderingContext;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormTemplateContextFactory;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
+import com.liferay.dynamic.data.mapping.model.DDMFormInstanceSettings;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceVersion;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
@@ -113,6 +114,36 @@ public class FormInstanceNestedCollectionResource
 			"structure", StructureIdentifier.class,
 			DDMFormInstance::getStructureId
 		).addNested(
+			"settings", this::_getSettings,
+			nestedBuilder -> nestedBuilder.nestedTypes(
+				"FormInstanceSettings"
+			).addString(
+				"emailFromAddress", DDMFormInstanceSettings::emailFromAddress
+			).addString(
+				"emailFromName", DDMFormInstanceSettings::emailFromName
+			).addString(
+				"emailSubject", DDMFormInstanceSettings::emailSubject
+			).addString(
+				"emailToAddress", DDMFormInstanceSettings::emailToAddress
+			).addBoolean(
+				"published", DDMFormInstanceSettings::published
+			).addString(
+				"redirectURL", DDMFormInstanceSettings::redirectURL
+			).addBoolean(
+				"requireAuthentication",
+				DDMFormInstanceSettings::requireAuthentication
+			).addBoolean(
+				"requireCaptcha", DDMFormInstanceSettings::requireCaptcha
+			).addBoolean(
+				"sendEmailNotification",
+				DDMFormInstanceSettings::sendEmailNotification
+			).addString(
+				"storageType", DDMFormInstanceSettings::storageType
+			).addString(
+				"workflowDefinition",
+				DDMFormInstanceSettings::workflowDefinition
+			).build()
+		).addNested(
 			"version", this::_getVersion,
 			nestedBuilder -> nestedBuilder.nestedTypes(
 				"FormInstanceVersion"
@@ -126,8 +157,6 @@ public class FormInstanceNestedCollectionResource
 			"description", DDMFormInstance::getDescription
 		).addLocalizedStringByLocale(
 			"name", DDMFormInstance::getName
-		).addString(
-			"settings", DDMFormInstance::getSettings
 		).build();
 	}
 
@@ -184,6 +213,16 @@ public class FormInstanceNestedCollectionResource
 			company.getCompanyId(), groupId);
 
 		return new PageItems<>(ddmFormInstances, count);
+	}
+
+	private DDMFormInstanceSettings _getSettings(
+		DDMFormInstance ddmFormInstance) {
+
+		return Try.fromFallible(
+			ddmFormInstance::getSettingsModel
+		).orElse(
+			null
+		);
 	}
 
 	private DDMFormInstanceVersion _getVersion(
