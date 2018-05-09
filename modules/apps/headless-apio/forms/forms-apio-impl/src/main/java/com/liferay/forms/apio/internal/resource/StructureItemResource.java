@@ -22,9 +22,12 @@ import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormSuccessPageSettings;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
+import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.forms.apio.architect.identifier.StructureIdentifier;
 import com.liferay.person.apio.identifier.PersonIdentifier;
+
+import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -81,12 +84,12 @@ public class StructureItemResource
 				"isEnabled", DDMFormSuccessPageSettings::isEnabled
 			).addLocalizedStringByLocale(
 				"headline",
-				(ddmFormSuccessPageSettings, locale) ->
-					ddmFormSuccessPageSettings.getTitle().getString(locale)
+				(settings, locale) ->
+					_getLocalizedString(settings.getTitle(), locale)
 			).addLocalizedStringByLocale(
 				"text",
-				(ddmFormSuccessPageSettings, locale) ->
-					ddmFormSuccessPageSettings.getBody().getString(locale)
+				(settings, locale) ->
+					_getLocalizedString(settings.getBody(), locale)
 			).build()
 		).addNested(
 			"version", this::_getVersion,
@@ -110,6 +113,12 @@ public class StructureItemResource
 		).addString(
 			"structureKey", DDMStructure::getStructureKey
 		).build();
+	}
+
+	private String _getLocalizedString(
+		LocalizedValue localizedValue, Locale locale) {
+
+		return localizedValue.getString(locale);
 	}
 
 	private DDMFormSuccessPageSettings _getSuccessPage(
