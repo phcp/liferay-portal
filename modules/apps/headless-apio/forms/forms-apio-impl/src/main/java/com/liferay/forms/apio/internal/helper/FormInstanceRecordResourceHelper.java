@@ -20,21 +20,20 @@ import com.google.gson.reflect.TypeToken;
 import com.liferay.apio.architect.functional.Try;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
+import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecordVersion;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.forms.apio.internal.FormFieldValue;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.forms.apio.internal.FormInstanceRecordServiceContext;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.lang.reflect.Type;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * @author Paulo Cruz
@@ -74,50 +73,36 @@ public class FormInstanceRecordResourceHelper {
 		return ddmFormValues;
 	}
 
-	public static String getFieldValuesJSON(
-		DDMFormInstanceRecord ddmFormInstanceRecord, Locale locale) {
-
-		Gson gson = new Gson();
+	public static DDMFormInstanceRecordVersion getVersion(
+		DDMFormInstanceRecord ddmFormInstanceRecord) {
 
 		return Try.fromFallible(
-			ddmFormInstanceRecord::getDDMFormValues
+			ddmFormInstanceRecord::getVersion
 		).map(
-			DDMFormValues::getDDMFormFieldValues
-		).map(
-			List::stream
-		).map(
-			stream -> stream.map(_toFormFieldValue(locale))
-		).map(
-			stream -> stream.collect(Collectors.toList())
-		).map(
-			gson::toJson
-		).fold(
-			e -> {
-				_log.error(e, e);
-
-				return null;
-			},
-			json -> json
+			ddmFormInstanceRecord::getFormInstanceRecordVersion
+		).orElse(
+			null
 		);
 	}
 
-	private static Function<DDMFormFieldValue, FormFieldValue>
-		_toFormFieldValue(Locale locale) {
+	public static void setServiceContextAttributes(
+		FormInstanceRecordServiceContext formInstanceRecordServiceContext,
+		boolean draft) {
 
-		return ddmFormFieldValue -> {
-			String instanceId = ddmFormFieldValue.getInstanceId();
-			String name = ddmFormFieldValue.getName();
+		ServiceContext serviceContext =
+			formInstanceRecordServiceContext.getServiceContext();
 
-			Value value = ddmFormFieldValue.getValue();
-
-			String valueString = value.getString(locale);
-
-			return new FormFieldValue(instanceId, name, valueString);
-		};
+		if (draft) {
+			serviceContext.setAttribute(
+				"status", WorkflowConstants.STATUS_DRAFT);
+			serviceContext.setAttribute("validateDDMFormValues", Boolean.FALSE);
+			serviceContext.setWorkflowAction(
+				WorkflowConstants.ACTION_SAVE_DRAFT);
+		}
+		else {
+			serviceContext.setWorkflowAction(WorkflowConstants.ACTION_PUBLISH);
+		}
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		FormInstanceRecordResourceHelper.class);
 
 	private static class FormFieldValueListToken
 		extends TypeToken<ArrayList<FormFieldValue>> {
