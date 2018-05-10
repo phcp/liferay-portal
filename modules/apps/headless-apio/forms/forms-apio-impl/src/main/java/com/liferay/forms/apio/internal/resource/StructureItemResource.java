@@ -14,20 +14,22 @@
 
 package com.liferay.forms.apio.internal.resource;
 
-import com.liferay.apio.architect.functional.Try;
 import com.liferay.apio.architect.representor.Representor;
 import com.liferay.apio.architect.resource.ItemResource;
 import com.liferay.apio.architect.routes.ItemRoutes;
-import com.liferay.dynamic.data.mapping.model.DDMForm;
+import com.liferay.dynamic.data.mapping.model.DDMFormField;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidation;
 import com.liferay.dynamic.data.mapping.model.DDMFormSuccessPageSettings;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
-import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.forms.apio.architect.identifier.StructureIdentifier;
+import com.liferay.forms.apio.internal.FormLayoutPage;
+import com.liferay.forms.apio.internal.helper.LocalizedValueHelper;
+import com.liferay.forms.apio.internal.helper.StructureResourceHelper;
 import com.liferay.person.apio.identifier.PersonIdentifier;
 
-import java.util.Locale;
+import java.util.Map;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -73,26 +75,27 @@ public class StructureItemResource
 			"datePublished", DDMStructure::getLastPublishDate
 		).addLinkedModel(
 			"author", PersonIdentifier.class, DDMStructure::getUserId
-		).addLinkedModel(
-			"structure", StructureIdentifier.class,
-			DDMStructure::getParentStructureId
+		).addLocalizedStringByLocale(
+			"description", DDMStructure::getDescription
+		).addLocalizedStringByLocale(
+			"name", DDMStructure::getName
 		).addNested(
-			"successPage", this::_getSuccessPage,
+			"successPage", StructureResourceHelper::getSuccessPage,
 			nestedBuilder -> nestedBuilder.types(
 				"FormSuccessPageSettings"
 			).addBoolean(
 				"isEnabled", DDMFormSuccessPageSettings::isEnabled
 			).addLocalizedStringByLocale(
 				"headline",
-				(settings, locale) ->
-					_getLocalizedString(settings.getTitle(), locale)
+				(settings, locale) -> LocalizedValueHelper.getLocalizedString(
+					settings.getTitle(), locale)
 			).addLocalizedStringByLocale(
 				"text",
-				(settings, locale) ->
-					_getLocalizedString(settings.getBody(), locale)
+				(settings, locale) -> LocalizedValueHelper.getLocalizedString(
+					settings.getBody(), locale)
 			).build()
 		).addNested(
-			"version", this::_getVersion,
+			"version", StructureResourceHelper::getVersion,
 			nestedBuilder -> nestedBuilder.types(
 				"StructureVersion"
 			).addLinkedModel(
@@ -100,41 +103,151 @@ public class StructureItemResource
 			).addString(
 				"name", DDMStructureVersion::getVersion
 			).build()
-		).addLocalizedStringByLocale(
-			"description", DDMStructure::getDescription
-		).addLocalizedStringByLocale(
-			"name", DDMStructure::getName
+		).addNestedList(
+			"pages", StructureResourceHelper::getPages,
+			pagesBuilder -> pagesBuilder.types(
+				"FormLayoutPage"
+			).addLocalizedStringByLocale(
+				"headline", FormLayoutPage::getTitle
+			).addLocalizedStringByLocale(
+				"text", FormLayoutPage::getDescription
+			).addNestedList(
+				"fields", FormLayoutPage::getFields,
+				fieldsBuilder -> fieldsBuilder.types(
+					"FormField"
+				).addBoolean(
+					"isAutocomplete", DDMFormField::isLocalizable
+				).addBoolean(
+					"isInline",
+					ddmFormField -> StructureResourceHelper.getFieldProperty(
+						Boolean::getBoolean, ddmFormField.getProperty("inline"))
+				).addBoolean(
+					"isLocalizable", DDMFormField::isLocalizable
+				).addBoolean(
+					"isMultiple", DDMFormField::isMultiple
+				).addBoolean(
+					"isReadOnly", DDMFormField::isReadOnly
+				).addBoolean(
+					"isRepeatable", DDMFormField::isRepeatable
+				).addBoolean(
+					"isRequired", DDMFormField::isRequired
+				).addBoolean(
+					"isShowAsSwitcher",
+					ddmFormField -> StructureResourceHelper.getFieldProperty(
+						Boolean::getBoolean,
+						ddmFormField.getProperty("showAsSwitcher"))
+				).addBoolean(
+					"isShowLabel", DDMFormField::isShowLabel
+				).addBoolean(
+					"isTransient", DDMFormField::isTransient
+				).addLocalizedStringByLocale(
+					"label",
+					(ddmFormField, locale) ->
+						LocalizedValueHelper.getLocalizedString(
+							ddmFormField.getLabel(), locale)
+				).addLocalizedStringByLocale(
+					"predefinedValue",
+					(ddmFormField, locale) ->
+						LocalizedValueHelper.getLocalizedString(
+							ddmFormField.getPredefinedValue(), locale)
+				).addLocalizedStringByLocale(
+					"style",
+					(ddmFormField, locale) ->
+						LocalizedValueHelper.getLocalizedString(
+							ddmFormField.getStyle(), locale)
+				).addLocalizedStringByLocale(
+					"tip",
+					(ddmFormField, locale) ->
+						LocalizedValueHelper.getLocalizedString(
+							ddmFormField.getTip(), locale)
+				).addNested(
+					"grid", DDMFormField::getProperties,
+					gridBuilder -> gridBuilder.types(
+						"FormFieldProperties"
+					).addNestedList(
+						"columns",
+						properties -> StructureResourceHelper.getFieldOptions(
+							properties, "columns"),
+						optionsBuilder -> optionsBuilder.types(
+							"FormFieldOptions"
+						).addLocalizedStringByLocale(
+							"label",
+							(options, locale) ->
+								LocalizedValueHelper.getLocalizedString(
+									options.getValue(), locale)
+						).addString(
+							"value", Map.Entry::getKey
+						).build()
+					).addNestedList(
+						"rows",
+						properties -> StructureResourceHelper.getFieldOptions(
+							properties, "rows"),
+						optionsBuilder -> optionsBuilder.types(
+							"FormFieldOptions"
+						).addLocalizedStringByLocale(
+							"label",
+							(options, locale) ->
+								LocalizedValueHelper.getLocalizedString(
+									options.getValue(), locale)
+						).addString(
+							"value", Map.Entry::getKey
+						).build()
+					).build()
+				).addNested(
+					"validation", StructureResourceHelper::getFieldValidation,
+					mapBuilder -> mapBuilder.types(
+						"FormFieldProperties"
+					).addString(
+						"error", DDMFormFieldValidation::getErrorMessage
+					).addString(
+						"expression", DDMFormFieldValidation::getExpression
+					).build()
+				).addNestedList(
+					"options", StructureResourceHelper::getFieldOptions,
+					optionsBuilder -> optionsBuilder.types(
+						"FormFieldOptions"
+					).addLocalizedStringByLocale(
+						"label",
+						(options, locale) ->
+							LocalizedValueHelper.getLocalizedString(
+								options.getValue(), locale)
+					).addString(
+						"value", Map.Entry::getKey
+					).build()
+				).addString(
+					"additionalType", DDMFormField::getType
+				).addString(
+					"dataSourceType",
+					ddmFormField -> StructureResourceHelper.getFieldProperty(
+						Object::toString,
+						ddmFormField.getProperty("dataSourceType"))
+				).addString(
+					"dataType", DDMFormField::getDataType
+				).addString(
+					"displayStyle",
+					ddmFormField -> StructureResourceHelper.getFieldProperty(
+						Object::toString,
+						ddmFormField.getProperty("displayStyle"))
+				).addString(
+					"indexType", DDMFormField::getIndexType
+				).addString(
+					"name", DDMFormField::getName
+				).addString(
+					"placeholder",
+					ddmFormField -> StructureResourceHelper.getFieldProperty(
+						Object::toString,
+						ddmFormField.getProperty("placeholder"))
+				).addString(
+					"text",
+					ddmFormField -> StructureResourceHelper.getFieldProperty(
+						Object::toString, ddmFormField.getProperty("text"))
+				).build()
+			).build()
 		).addNumber(
 			"additionalType", DDMStructure::getType
 		).addString(
 			"definition", DDMStructure::getDefinition
-		).addString(
-			"storageType", DDMStructure::getStorageType
-		).addString(
-			"structureKey", DDMStructure::getStructureKey
 		).build();
-	}
-
-	private String _getLocalizedString(
-		LocalizedValue localizedValue, Locale locale) {
-
-		return localizedValue.getString(locale);
-	}
-
-	private DDMFormSuccessPageSettings _getSuccessPage(
-		DDMStructure ddmStructure) {
-
-		DDMForm ddmForm = ddmStructure.getDDMForm();
-
-		return ddmForm.getDDMFormSuccessPageSettings();
-	}
-
-	private DDMStructureVersion _getVersion(DDMStructure ddmStructure) {
-		return Try.fromFallible(
-			ddmStructure::getStructureVersion
-		).orElse(
-			null
-		);
 	}
 
 	@Reference
