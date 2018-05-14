@@ -35,7 +35,7 @@ import com.liferay.forms.apio.architect.identifier.FormInstanceIdentifier;
 import com.liferay.forms.apio.architect.identifier.FormInstanceRecordIdentifier;
 import com.liferay.forms.apio.internal.FormInstanceRecordServiceContext;
 import com.liferay.forms.apio.internal.architect.form.FormInstanceRecordForm;
-import com.liferay.forms.apio.internal.helper.FormInstanceRecordResourceHelper;
+import com.liferay.forms.apio.internal.util.FormInstanceRecordResourceUtil;
 import com.liferay.forms.apio.internal.util.LocalizedValueUtil;
 import com.liferay.person.apio.architect.identifier.PersonIdentifier;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -112,7 +112,7 @@ public class FormInstanceRecordNestedCollectionResource
 		).addLinkedModel(
 			"author", PersonIdentifier.class, DDMFormInstanceRecord::getUserId
 		).addNested(
-			"version", FormInstanceRecordResourceHelper::getVersion,
+			"version", FormInstanceRecordResourceUtil::getVersion,
 			nestedBuilder -> nestedBuilder.types(
 				"FormInstanceRecordVersion"
 			).addLinkedModel(
@@ -149,11 +149,11 @@ public class FormInstanceRecordNestedCollectionResource
 		DDMStructure ddmStructure = ddmFormInstance.getStructure();
 
 		DDMFormValues ddmFormValues =
-			FormInstanceRecordResourceHelper.getDDMFormValues(
+			FormInstanceRecordResourceUtil.getDDMFormValues(
 				formInstanceRecordForm.getFieldValues(),
 				ddmStructure.getDDMForm(), language.getPreferredLocale());
 
-		FormInstanceRecordResourceHelper.setServiceContextAttributes(
+		FormInstanceRecordResourceUtil.setServiceContextAttributes(
 			formInstanceRecordServiceContext, formInstanceRecordForm.isDraft());
 
 		return _ddmFormInstanceRecordService.addFormInstanceRecord(
@@ -209,14 +209,14 @@ public class FormInstanceRecordNestedCollectionResource
 		DDMStructure ddmStructure = ddmFormInstance.getStructure();
 
 		DDMFormValues ddmFormValues =
-			FormInstanceRecordResourceHelper.getDDMFormValues(
+			FormInstanceRecordResourceUtil.getDDMFormValues(
 				formInstanceRecordForm.getFieldValues(),
 				ddmStructure.getDDMForm(), language.getPreferredLocale());
 
 		ServiceContext serviceContext =
 			formInstanceRecordServiceContext.getServiceContext();
 
-		FormInstanceRecordResourceHelper.setServiceContextAttributes(
+		FormInstanceRecordResourceUtil.setServiceContextAttributes(
 			formInstanceRecordServiceContext, formInstanceRecordForm.isDraft());
 
 		return _ddmFormInstanceRecordService.updateFormInstanceRecord(

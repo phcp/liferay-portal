@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.forms.apio.internal.helper;
+package com.liferay.forms.apio.internal.util;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -38,7 +38,7 @@ import java.util.Locale;
 /**
  * @author Paulo Cruz
  */
-public class FormInstanceRecordResourceHelper {
+public class FormInstanceRecordResourceUtil {
 
 	public static DDMFormValues getDDMFormValues(
 		String fieldValues, DDMForm ddmForm, Locale locale) {
