@@ -66,12 +66,12 @@ public final class StructureRepresentorUtil {
 	}
 
 	public static <T> Function<DDMFormField, T> getFieldProperty(
-		Class<T> type, String key) {
+		Function<Object, T> parseFunction, String key) {
 
 		return ddmFormField -> Try.fromFallible(
 			() -> ddmFormField.getProperty(key)
 		).map(
-			type::cast
+			parseFunction::apply
 		).orElse(
 			null
 		);
