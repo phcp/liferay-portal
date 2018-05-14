@@ -15,7 +15,6 @@
 package com.liferay.forms.apio.internal.util;
 
 import com.liferay.apio.architect.functional.Try;
-import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.model.Value;
 
 import java.util.Locale;
@@ -38,4 +37,5 @@ public final class LocalizedValueUtil {
 			null
 		);
 	}
+
 }

@@ -125,8 +125,8 @@ public class FormInstanceRecordNestedCollectionResource
 				"FormFieldValue"
 			).addLocalizedStringByLocale(
 				"value",
-				LocalizedValueUtil
-					.getLocalizedValue(DDMFormFieldValue::getValue)
+				LocalizedValueUtil.getLocalizedValue(
+					DDMFormFieldValue::getValue)
 			).addString(
 				"identifier", DDMFormFieldValue::getInstanceId
 			).addString(
