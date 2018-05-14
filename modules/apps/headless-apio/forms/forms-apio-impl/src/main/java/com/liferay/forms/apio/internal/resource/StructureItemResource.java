@@ -194,8 +194,8 @@ public class StructureItemResource
 						).build()
 					).build()
 				).addNested(
-					"validation", StructureResourceHelper::getFieldValidation,
-					mapBuilder -> mapBuilder.types(
+					"validation", DDMFormField::getDDMFormFieldValidation,
+					validationBuilder -> validationBuilder.types(
 						"FormFieldProperties"
 					).addString(
 						"error", DDMFormFieldValidation::getErrorMessage
@@ -232,21 +232,17 @@ public class StructureItemResource
 					"indexType", DDMFormField::getIndexType
 				).addString(
 					"name", DDMFormField::getName
-				).addString(
+				).addLocalizedStringByLocale(
 					"placeholder",
-					ddmFormField -> StructureResourceHelper.getFieldProperty(
-						Object::toString,
-						ddmFormField.getProperty("placeholder"))
+					(ddmFormField, locale) ->
+						StructureResourceHelper.getLocalizedFieldProperty(
+							ddmFormField.getProperty("placeholder"), locale)
 				).addString(
 					"text",
 					ddmFormField -> StructureResourceHelper.getFieldProperty(
 						Object::toString, ddmFormField.getProperty("text"))
 				).build()
 			).build()
-		).addNumber(
-			"additionalType", DDMStructure::getType
-		).addString(
-			"definition", DDMStructure::getDefinition
 		).build();
 	}
 
