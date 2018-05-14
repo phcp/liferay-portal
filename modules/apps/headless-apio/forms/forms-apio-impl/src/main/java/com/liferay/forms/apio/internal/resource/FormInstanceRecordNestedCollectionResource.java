@@ -36,7 +36,7 @@ import com.liferay.forms.apio.architect.identifier.FormInstanceRecordIdentifier;
 import com.liferay.forms.apio.internal.FormInstanceRecordServiceContext;
 import com.liferay.forms.apio.internal.form.FormInstanceRecordForm;
 import com.liferay.forms.apio.internal.helper.FormInstanceRecordResourceHelper;
-import com.liferay.forms.apio.internal.helper.LocalizedValueHelper;
+import com.liferay.forms.apio.internal.util.LocalizedValueUtil;
 import com.liferay.person.apio.identifier.PersonIdentifier;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -125,9 +125,8 @@ public class FormInstanceRecordNestedCollectionResource
 				"FormFieldValue"
 			).addLocalizedStringByLocale(
 				"value",
-				(ddmFormFieldValue, locale) ->
-					LocalizedValueHelper.getLocalizedString(
-						ddmFormFieldValue.getValue(), locale)
+				LocalizedValueUtil
+					.getLocalizedValue(DDMFormFieldValue::getValue)
 			).addString(
 				"identifier", DDMFormFieldValue::getInstanceId
 			).addString(
