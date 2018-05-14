@@ -42,14 +42,6 @@ import java.util.stream.Stream;
 public final class StructureRepresentorUtil {
 
 	public static Function<DDMFormField,
-		List<Map.Entry<String, LocalizedValue>>> getFieldOptions(String key) {
-
-		return getFieldOptions(
-			ddmFormField -> (DDMFormFieldOptions) ddmFormField.getProperty(key)
-		);
-	}
-
-	public static Function<DDMFormField,
 		List<Map.Entry<String, LocalizedValue>>> getFieldOptions(
 			Function<DDMFormField, DDMFormFieldOptions> function) {
 
@@ -64,6 +56,13 @@ public final class StructureRepresentorUtil {
 		).orElse(
 			null
 		);
+	}
+
+	public static Function<DDMFormField,
+		List<Map.Entry<String, LocalizedValue>>> getFieldOptions(String key) {
+
+		return getFieldOptions(
+			ddmFormField -> (DDMFormFieldOptions)ddmFormField.getProperty(key));
 	}
 
 	public static <T> Function<DDMFormField, T> getFieldProperty(
@@ -82,8 +81,7 @@ public final class StructureRepresentorUtil {
 		String key) {
 
 		return LocalizedValueUtil.getLocalizedValue(
-			ddmFormField -> (LocalizedValue) ddmFormField.getProperty(key)
-		);
+			ddmFormField -> (LocalizedValue)ddmFormField.getProperty(key));
 	}
 
 	public static List<FormLayoutPage> getPages(DDMStructure ddmStructure) {
