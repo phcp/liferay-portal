@@ -18,7 +18,6 @@ import com.liferay.apio.architect.functional.Try;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
-import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidation;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayoutPage;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayoutRow;
@@ -30,6 +29,7 @@ import com.liferay.forms.apio.internal.FormLayoutPage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -61,17 +61,25 @@ public class StructureResourceHelper {
 	public static <T> T getFieldProperty(
 		Function<String, T> converterFunction, Object property) {
 
+		if (property == null) {
+			return null;
+		}
+
 		String propertyString = property.toString();
 
 		return converterFunction.apply(propertyString);
 	}
 
-	public static DDMFormFieldValidation getFieldValidation(
-		DDMFormField ddmFormField) {
+	public static String getLocalizedFieldProperty(
+		Object property, Locale locale) {
 
-		Map<String, Object> properties = ddmFormField.getProperties();
+		if (property instanceof LocalizedValue) {
+			LocalizedValue localizedValue = (LocalizedValue)property;
 
-		return (DDMFormFieldValidation)properties.get("validation");
+			return localizedValue.getString(locale);
+		}
+
+		return null;
 	}
 
 	public static List<FormLayoutPage> getPages(DDMStructure ddmStructure) {
@@ -154,6 +162,10 @@ public class StructureResourceHelper {
 
 	private static List<Map.Entry<String, LocalizedValue>> _getFieldOptionsList(
 		DDMFormFieldOptions ddmFormFieldOptions) {
+
+		if (ddmFormFieldOptions == null) {
+			return null;
+		}
 
 		Map<String, LocalizedValue> options = ddmFormFieldOptions.getOptions();
 
