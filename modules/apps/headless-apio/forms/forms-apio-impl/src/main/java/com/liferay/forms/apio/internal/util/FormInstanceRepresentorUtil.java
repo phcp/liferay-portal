@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.forms.apio.internal.helper;
+package com.liferay.forms.apio.internal.util;
 
 import com.liferay.apio.architect.functional.Try;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 /**
  * @author Paulo Cruz
  */
-public class FormInstanceResourceHelper {
+public class FormInstanceRepresentorUtil {
 
 	public static List<String> getAvailableLanguages(
 		DDMFormInstance ddmFormInstance) {

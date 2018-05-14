@@ -34,8 +34,8 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.forms.apio.architect.identifier.FormInstanceIdentifier;
 import com.liferay.forms.apio.architect.identifier.StructureIdentifier;
 import com.liferay.forms.apio.internal.form.FormContextForm;
-import com.liferay.forms.apio.internal.helper.FormInstanceRecordResourceHelper;
-import com.liferay.forms.apio.internal.helper.FormInstanceResourceHelper;
+import com.liferay.forms.apio.internal.util.FormInstanceRecordResourceUtil;
+import com.liferay.forms.apio.internal.util.FormInstanceRepresentorUtil;
 import com.liferay.person.apio.identifier.PersonIdentifier;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactory;
@@ -115,10 +115,10 @@ public class FormInstanceNestedCollectionResource
 			"structure", StructureIdentifier.class,
 			DDMFormInstance::getStructureId
 		).addNested(
-			"settings", FormInstanceResourceHelper::getSettings,
+			"settings", FormInstanceRepresentorUtil::getSettings,
 			FormInstanceNestedCollectionResource::_buildSettings
 		).addNested(
-			"version", FormInstanceResourceHelper::getVersion,
+			"version", FormInstanceRepresentorUtil::getVersion,
 			nestedBuilder -> nestedBuilder.types(
 				"FormInstanceVersion"
 			).addLinkedModel(
@@ -135,7 +135,7 @@ public class FormInstanceNestedCollectionResource
 			"defaultLanguage", DDMFormInstance::getDefaultLanguageId
 		).addStringList(
 			"availableLanguages",
-			FormInstanceResourceHelper::getAvailableLanguages
+			FormInstanceRepresentorUtil::getAvailableLanguages
 		).build();
 	}
 
@@ -181,8 +181,7 @@ public class FormInstanceNestedCollectionResource
 		).addString(
 			"storageType", DDMFormInstanceSettings::storageType
 		).addString(
-			"workflowDefinition",
-			DDMFormInstanceSettings::workflowDefinition
+			"workflowDefinition", DDMFormInstanceSettings::workflowDefinition
 		).build();
 	}
 
@@ -208,7 +207,7 @@ public class FormInstanceNestedCollectionResource
 			DDMFormLayout ddmFormLayout = ddmStructure.getDDMFormLayout();
 
 			DDMFormValues ddmFormValues =
-				FormInstanceRecordResourceHelper.getDDMFormValues(
+				FormInstanceRecordResourceUtil.getDDMFormValues(
 					formContextForm.getFieldValues(), ddmForm, locale);
 
 			ddmFormRenderingContext.setDDMFormValues(ddmFormValues);
