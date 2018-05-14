@@ -14,22 +14,34 @@
 
 package com.liferay.forms.apio.internal.resource;
 
+import com.liferay.apio.architect.functional.Try;
+import com.liferay.apio.architect.representor.NestedRepresentor;
+import com.liferay.apio.architect.representor.NestedRepresentor.Builder;
 import com.liferay.apio.architect.representor.Representor;
 import com.liferay.apio.architect.resource.ItemResource;
 import com.liferay.apio.architect.routes.ItemRoutes;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldValidation;
 import com.liferay.dynamic.data.mapping.model.DDMFormSuccessPageSettings;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
+import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.forms.apio.architect.identifier.StructureIdentifier;
 import com.liferay.forms.apio.internal.FormLayoutPage;
-import com.liferay.forms.apio.internal.helper.LocalizedValueHelper;
-import com.liferay.forms.apio.internal.helper.StructureResourceHelper;
+import com.liferay.forms.apio.internal.util.LocalizedValueUtil;
+import com.liferay.forms.apio.internal.util.StructureRepresentorUtil;
 import com.liferay.person.apio.identifier.PersonIdentifier;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -80,22 +92,22 @@ public class StructureItemResource
 		).addLocalizedStringByLocale(
 			"name", DDMStructure::getName
 		).addNested(
-			"successPage", StructureResourceHelper::getSuccessPage,
+			"successPage", StructureRepresentorUtil::getSuccessPage,
 			nestedBuilder -> nestedBuilder.types(
 				"FormSuccessPageSettings"
 			).addBoolean(
 				"isEnabled", DDMFormSuccessPageSettings::isEnabled
 			).addLocalizedStringByLocale(
 				"headline",
-				(settings, locale) -> LocalizedValueHelper.getLocalizedString(
-					settings.getTitle(), locale)
+				LocalizedValueUtil
+					.getLocalizedValue(DDMFormSuccessPageSettings::getTitle)
 			).addLocalizedStringByLocale(
 				"text",
-				(settings, locale) -> LocalizedValueHelper.getLocalizedString(
-					settings.getBody(), locale)
+				LocalizedValueUtil
+					.getLocalizedValue(DDMFormSuccessPageSettings::getBody)
 			).build()
 		).addNested(
-			"version", StructureResourceHelper::getVersion,
+			"version", StructureRepresentorUtil::getVersion,
 			nestedBuilder -> nestedBuilder.types(
 				"StructureVersion"
 			).addLinkedModel(
@@ -104,7 +116,7 @@ public class StructureItemResource
 				"name", DDMStructureVersion::getVersion
 			).build()
 		).addNestedList(
-			"pages", StructureResourceHelper::getPages,
+			"pages", StructureRepresentorUtil::getPages,
 			pagesBuilder -> pagesBuilder.types(
 				"FormLayoutPage"
 			).addLocalizedStringByLocale(
@@ -119,8 +131,8 @@ public class StructureItemResource
 					"isAutocomplete", DDMFormField::isLocalizable
 				).addBoolean(
 					"isInline",
-					ddmFormField -> StructureResourceHelper.getFieldProperty(
-						Boolean::getBoolean, ddmFormField.getProperty("inline"))
+					StructureRepresentorUtil
+						.getFieldProperty(Boolean.class, "inline")
 				).addBoolean(
 					"isLocalizable", DDMFormField::isLocalizable
 				).addBoolean(
@@ -133,65 +145,40 @@ public class StructureItemResource
 					"isRequired", DDMFormField::isRequired
 				).addBoolean(
 					"isShowAsSwitcher",
-					ddmFormField -> StructureResourceHelper.getFieldProperty(
-						Boolean::getBoolean,
-						ddmFormField.getProperty("showAsSwitcher"))
+					StructureRepresentorUtil
+						.getFieldProperty(Boolean.class, "showAsSwitcher")
 				).addBoolean(
 					"isShowLabel", DDMFormField::isShowLabel
 				).addBoolean(
 					"isTransient", DDMFormField::isTransient
 				).addLocalizedStringByLocale(
 					"label",
-					(ddmFormField, locale) ->
-						LocalizedValueHelper.getLocalizedString(
-							ddmFormField.getLabel(), locale)
+					LocalizedValueUtil
+						.getLocalizedValue(DDMFormField::getLabel)
 				).addLocalizedStringByLocale(
 					"predefinedValue",
-					(ddmFormField, locale) ->
-						LocalizedValueHelper.getLocalizedString(
-							ddmFormField.getPredefinedValue(), locale)
+					LocalizedValueUtil
+						.getLocalizedValue(DDMFormField::getPredefinedValue)
 				).addLocalizedStringByLocale(
 					"style",
-					(ddmFormField, locale) ->
-						LocalizedValueHelper.getLocalizedString(
-							ddmFormField.getStyle(), locale)
+					LocalizedValueUtil
+						.getLocalizedValue(DDMFormField::getStyle)
 				).addLocalizedStringByLocale(
 					"tip",
-					(ddmFormField, locale) ->
-						LocalizedValueHelper.getLocalizedString(
-							ddmFormField.getTip(), locale)
+					LocalizedValueUtil
+						.getLocalizedValue(DDMFormField::getTip)
 				).addNested(
-					"grid", DDMFormField::getProperties,
+					"grid", ddmFormField -> ddmFormField,
 					gridBuilder -> gridBuilder.types(
 						"FormFieldProperties"
 					).addNestedList(
 						"columns",
-						properties -> StructureResourceHelper.getFieldOptions(
-							properties, "columns"),
-						optionsBuilder -> optionsBuilder.types(
-							"FormFieldOptions"
-						).addLocalizedStringByLocale(
-							"label",
-							(options, locale) ->
-								LocalizedValueHelper.getLocalizedString(
-									options.getValue(), locale)
-						).addString(
-							"value", Map.Entry::getKey
-						).build()
+						StructureRepresentorUtil.getFieldOptions("columns"),
+						StructureItemResource::_buildFieldOptions
 					).addNestedList(
 						"rows",
-						properties -> StructureResourceHelper.getFieldOptions(
-							properties, "rows"),
-						optionsBuilder -> optionsBuilder.types(
-							"FormFieldOptions"
-						).addLocalizedStringByLocale(
-							"label",
-							(options, locale) ->
-								LocalizedValueHelper.getLocalizedString(
-									options.getValue(), locale)
-						).addString(
-							"value", Map.Entry::getKey
-						).build()
+						StructureRepresentorUtil.getFieldOptions("rows"),
+						StructureItemResource::_buildFieldOptions
 					).build()
 				).addNested(
 					"validation", DDMFormField::getDDMFormFieldValidation,
@@ -203,46 +190,47 @@ public class StructureItemResource
 						"expression", DDMFormFieldValidation::getExpression
 					).build()
 				).addNestedList(
-					"options", StructureResourceHelper::getFieldOptions,
-					optionsBuilder -> optionsBuilder.types(
-						"FormFieldOptions"
-					).addLocalizedStringByLocale(
-						"label",
-						(options, locale) ->
-							LocalizedValueHelper.getLocalizedString(
-								options.getValue(), locale)
-					).addString(
-						"value", Map.Entry::getKey
-					).build()
+					"options",
+					StructureRepresentorUtil
+						.getFieldOptions(DDMFormField::getDDMFormFieldOptions),
+					StructureItemResource::_buildFieldOptions
 				).addString(
 					"additionalType", DDMFormField::getType
 				).addString(
 					"dataSourceType",
-					ddmFormField -> StructureResourceHelper.getFieldProperty(
-						Object::toString,
-						ddmFormField.getProperty("dataSourceType"))
+					StructureRepresentorUtil
+						.getFieldProperty(String.class, "dataSourceType")
 				).addString(
 					"dataType", DDMFormField::getDataType
 				).addString(
 					"displayStyle",
-					ddmFormField -> StructureResourceHelper.getFieldProperty(
-						Object::toString,
-						ddmFormField.getProperty("displayStyle"))
+					StructureRepresentorUtil
+						.getFieldProperty(String.class, "displayStyle")
 				).addString(
 					"indexType", DDMFormField::getIndexType
 				).addString(
 					"name", DDMFormField::getName
 				).addLocalizedStringByLocale(
 					"placeholder",
-					(ddmFormField, locale) ->
-						StructureResourceHelper.getLocalizedFieldProperty(
-							ddmFormField.getProperty("placeholder"), locale)
-				).addString(
+					StructureRepresentorUtil.getLocalizedValue("placeholder")
+				).addLocalizedStringByLocale(
 					"text",
-					ddmFormField -> StructureResourceHelper.getFieldProperty(
-						Object::toString, ddmFormField.getProperty("text"))
+					StructureRepresentorUtil.getLocalizedValue("text")
 				).build()
 			).build()
+		).build();
+	}
+
+	private static NestedRepresentor<Entry<String, LocalizedValue>>
+		_buildFieldOptions(
+			Builder<Entry<String, LocalizedValue>> builder) {
+
+		return builder.types(
+			"FormFieldOptions"
+		).addLocalizedStringByLocale(
+			"label", LocalizedValueUtil.getLocalizedValue(Entry::getValue)
+		).addString(
+			"value", Entry::getKey
 		).build();
 	}
 

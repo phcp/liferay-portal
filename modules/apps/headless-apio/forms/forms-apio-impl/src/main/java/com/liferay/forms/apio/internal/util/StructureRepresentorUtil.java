@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.forms.apio.internal.helper;
+package com.liferay.forms.apio.internal.util;
 
 import com.liferay.apio.architect.functional.Try;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,48 +39,51 @@ import java.util.stream.Stream;
 /**
  * @author Paulo Cruz
  */
-public class StructureResourceHelper {
+public final class StructureRepresentorUtil {
 
-	public static List<Map.Entry<String, LocalizedValue>> getFieldOptions(
-		DDMFormField ddmFormField) {
+	public static Function<DDMFormField,
+		List<Map.Entry<String, LocalizedValue>>> getFieldOptions(String key) {
 
-		DDMFormFieldOptions ddmFormFieldOptions =
-			ddmFormField.getDDMFormFieldOptions();
-
-		return _getFieldOptionsList(ddmFormFieldOptions);
+		return getFieldOptions(
+			ddmFormField -> (DDMFormFieldOptions) ddmFormField.getProperty(key)
+		);
 	}
 
-	public static List<Map.Entry<String, LocalizedValue>> getFieldOptions(
-		Map<String, Object> properties, String propertyKey) {
+	public static Function<DDMFormField,
+		List<Map.Entry<String, LocalizedValue>>> getFieldOptions(
+			Function<DDMFormField, DDMFormFieldOptions> function) {
 
-		DDMFormFieldOptions ddmFormFieldOptions =
-			(DDMFormFieldOptions)properties.get(propertyKey);
-
-		return _getFieldOptionsList(ddmFormFieldOptions);
+		return ddmFormField -> Try.fromFallible(
+			() -> function.apply(ddmFormField)
+		).map(
+			DDMFormFieldOptions::getOptions
+		).map(
+			Map::entrySet
+		).map(
+			ArrayList::new
+		).orElse(
+			null
+		);
 	}
 
-	public static <T> T getFieldProperty(
-		Function<String, T> converterFunction, Object property) {
+	public static <T> Function<DDMFormField, T> getFieldProperty(
+		Class<T> type, String key) {
 
-		if (property == null) {
-			return null;
-		}
-
-		String propertyString = property.toString();
-
-		return converterFunction.apply(propertyString);
+		return ddmFormField -> Try.fromFallible(
+			() -> ddmFormField.getProperty(key)
+		).map(
+			type::cast
+		).orElse(
+			null
+		);
 	}
 
-	public static String getLocalizedFieldProperty(
-		Object property, Locale locale) {
+	public static BiFunction<DDMFormField, Locale, String> getLocalizedValue(
+		String key) {
 
-		if (property instanceof LocalizedValue) {
-			LocalizedValue localizedValue = (LocalizedValue)property;
-
-			return localizedValue.getString(locale);
-		}
-
-		return null;
+		return LocalizedValueUtil.getLocalizedValue(
+			ddmFormField -> (LocalizedValue) ddmFormField.getProperty(key)
+		);
 	}
 
 	public static List<FormLayoutPage> getPages(DDMStructure ddmStructure) {
@@ -158,18 +162,6 @@ public class StructureResourceHelper {
 		).collect(
 			Collectors.toList()
 		);
-	}
-
-	private static List<Map.Entry<String, LocalizedValue>> _getFieldOptionsList(
-		DDMFormFieldOptions ddmFormFieldOptions) {
-
-		if (ddmFormFieldOptions == null) {
-			return null;
-		}
-
-		Map<String, LocalizedValue> options = ddmFormFieldOptions.getOptions();
-
-		return new ArrayList<>(options.entrySet());
 	}
 
 }
