@@ -130,8 +130,6 @@ public class MediaObjectNestedCollectionResource
 		ServiceContext serviceContext = new ServiceContext();
 		BinaryFile binaryFile = mediaObjectCreatorForm.getBinaryFile();
 
-		long repositoryId = mediaObjectCreatorForm.getRepositoryId();
-
 		String sourceFileName = mediaObjectCreatorForm.getSourceFileName();
 
 		String title = mediaObjectCreatorForm.getTitle();
@@ -145,6 +143,10 @@ public class MediaObjectNestedCollectionResource
 		InputStream inputStream = binaryFile.getInputStream();
 
 		long size = binaryFile.getSize();
+
+		Folder folder = _dlAppService.getFolder(folderId);
+
+		long repositoryId = folder.getRepositoryId();
 
 		return _dlAppService.addFileEntry(
 			repositoryId, folderId, sourceFileName, mimeType, title,
