@@ -14,6 +14,11 @@
 
 package com.liferay.forms.apio.internal.resource;
 
+import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedValue;
+import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getFieldOptions;
+import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getFieldProperty;
+import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getLocalizedValue;
+
 import com.liferay.apio.architect.representor.NestedRepresentor;
 import com.liferay.apio.architect.representor.NestedRepresentor.Builder;
 import com.liferay.apio.architect.representor.Representor;
@@ -25,10 +30,9 @@ import com.liferay.dynamic.data.mapping.model.DDMFormSuccessPageSettings;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
+import com.liferay.dynamic.data.mapping.service.DDMStructureService;
 import com.liferay.forms.apio.architect.identifier.StructureIdentifier;
 import com.liferay.forms.apio.internal.FormLayoutPage;
-import com.liferay.forms.apio.internal.util.LocalizedValueUtil;
 import com.liferay.forms.apio.internal.util.StructureRepresentorUtil;
 import com.liferay.person.apio.identifier.PersonIdentifier;
 
@@ -58,7 +62,7 @@ public class StructureItemResource
 		ItemRoutes.Builder<DDMStructure, Long> builder) {
 
 		return builder.addGetter(
-			_ddmStructureLocalService::getStructure
+			_ddmStructureService::getStructure
 		).build();
 	}
 
@@ -100,7 +104,7 @@ public class StructureItemResource
 		return builder.types(
 			"FormFieldOptions"
 		).addLocalizedStringByLocale(
-			"label", LocalizedValueUtil.getLocalizedValue(Entry::getValue)
+			"label", getLocalizedValue(Entry::getValue)
 		).addString(
 			"value", Entry::getKey
 		).build();
@@ -114,9 +118,7 @@ public class StructureItemResource
 		).addBoolean(
 			"isAutocomplete", DDMFormField::isLocalizable
 		).addBoolean(
-			"isInline",
-			StructureRepresentorUtil.getFieldProperty(
-				Boolean.class::cast, "inline")
+			"isInline", getFieldProperty(Boolean.class::cast, "inline")
 		).addBoolean(
 			"isLocalizable", DDMFormField::isLocalizable
 		).addBoolean(
@@ -129,24 +131,20 @@ public class StructureItemResource
 			"isRequired", DDMFormField::isRequired
 		).addBoolean(
 			"isShowAsSwitcher",
-			StructureRepresentorUtil.getFieldProperty(
-				Boolean.class::cast, "showAsSwitcher")
+			getFieldProperty(Boolean.class::cast, "showAsSwitcher")
 		).addBoolean(
 			"isShowLabel", DDMFormField::isShowLabel
 		).addBoolean(
 			"isTransient", DDMFormField::isTransient
 		).addLocalizedStringByLocale(
-			"label",
-			LocalizedValueUtil.getLocalizedValue(DDMFormField::getLabel)
+			"label", getLocalizedValue(DDMFormField::getLabel)
 		).addLocalizedStringByLocale(
 			"predefinedValue",
-			LocalizedValueUtil.getLocalizedValue(
-				DDMFormField::getPredefinedValue)
+			getLocalizedValue(DDMFormField::getPredefinedValue)
 		).addLocalizedStringByLocale(
-			"style",
-			LocalizedValueUtil.getLocalizedValue(DDMFormField::getStyle)
+			"style", getLocalizedValue(DDMFormField::getStyle)
 		).addLocalizedStringByLocale(
-			"tip", LocalizedValueUtil.getLocalizedValue(DDMFormField::getTip)
+			"tip", getLocalizedValue(DDMFormField::getTip)
 		).addNested(
 			"grid", ddmFormField -> ddmFormField,
 			StructureItemResource::_buildGridProperties
@@ -154,31 +152,25 @@ public class StructureItemResource
 			"validation", DDMFormField::getDDMFormFieldValidation,
 			StructureItemResource::_buildValidationProperties
 		).addNestedList(
-			"options",
-			StructureRepresentorUtil.getFieldOptions(
-				DDMFormField::getDDMFormFieldOptions),
+			"options", getFieldOptions(DDMFormField::getDDMFormFieldOptions),
 			StructureItemResource::_buildFieldOptions
 		).addString(
 			"additionalType", DDMFormField::getType
 		).addString(
 			"dataSourceType",
-			StructureRepresentorUtil.getFieldProperty(
-				String.class::cast, "dataSourceType")
+			getFieldProperty(String.class::cast, "dataSourceType")
 		).addString(
 			"dataType", DDMFormField::getDataType
 		).addString(
-			"displayStyle",
-			StructureRepresentorUtil.getFieldProperty(
-				String.class::cast, "displayStyle")
+			"displayStyle", getFieldProperty(String.class::cast, "displayStyle")
 		).addString(
 			"indexType", DDMFormField::getIndexType
 		).addString(
 			"name", DDMFormField::getName
+		).addString(
+			"text", getFieldProperty(String.class::cast, "text")
 		).addLocalizedStringByLocale(
-			"placeholder",
-			StructureRepresentorUtil.getLocalizedValue("placeholder")
-		).addLocalizedStringByLocale(
-			"text", StructureRepresentorUtil.getLocalizedValue("text")
+			"placeholder", getLocalizedValue("placeholder")
 		).build();
 	}
 
@@ -203,10 +195,10 @@ public class StructureItemResource
 		return builder.types(
 			"FormFieldProperties"
 		).addNestedList(
-			"columns", StructureRepresentorUtil.getFieldOptions("columns"),
+			"columns", getFieldOptions("columns"),
 			StructureItemResource::_buildFieldOptions
 		).addNestedList(
-			"rows", StructureRepresentorUtil.getFieldOptions("rows"),
+			"rows", getFieldOptions("rows"),
 			StructureItemResource::_buildFieldOptions
 		).build();
 	}
@@ -219,13 +211,9 @@ public class StructureItemResource
 		).addBoolean(
 			"isEnabled", DDMFormSuccessPageSettings::isEnabled
 		).addLocalizedStringByLocale(
-			"headline",
-			LocalizedValueUtil.getLocalizedValue(
-				DDMFormSuccessPageSettings::getTitle)
+			"headline", getLocalizedValue(DDMFormSuccessPageSettings::getTitle)
 		).addLocalizedStringByLocale(
-			"text",
-			LocalizedValueUtil.getLocalizedValue(
-				DDMFormSuccessPageSettings::getBody)
+			"text", getLocalizedValue(DDMFormSuccessPageSettings::getBody)
 		).build();
 	}
 
@@ -254,6 +242,6 @@ public class StructureItemResource
 	}
 
 	@Reference
-	private DDMStructureLocalService _ddmStructureLocalService;
+	private DDMStructureService _ddmStructureService;
 
 }
