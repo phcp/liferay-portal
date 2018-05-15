@@ -86,41 +86,18 @@ public final class StructureRepresentorUtil {
 
 	public static List<FormLayoutPage> getPages(DDMStructure ddmStructure) {
 		return Try.fromFallible(
-			() -> {
-				DDMFormLayout ddmFormLayout = ddmStructure.getDDMFormLayout();
-				List<DDMFormField> ddmFormFields =
-					ddmStructure.getDDMFormFields(true);
-
-				List<DDMFormLayoutPage> ddmFormLayoutPages =
-					ddmFormLayout.getDDMFormLayoutPages();
-
-				Stream<DDMFormLayoutPage> ddmFormLayoutPageStream =
-					ddmFormLayoutPages.stream();
-
-				return ddmFormLayoutPageStream.map(
-					ddmFormLayoutPage -> {
-						List<String> fieldNamesPerPage = _getFieldNames(
-							ddmFormLayoutPage);
-
-						Stream<DDMFormField> ddmFormFieldStream =
-							ddmFormFields.stream();
-
-						List<DDMFormField> ddmFormFieldsPerPage =
-							ddmFormFieldStream.filter(
-								ddmFormField -> fieldNamesPerPage.contains(
-									ddmFormField.getName())
-							).collect(
-								Collectors.toList()
-							);
-
-						return new FormLayoutPage(
-							ddmFormLayoutPage.getDescription(),
-							ddmFormFieldsPerPage, ddmFormLayoutPage.getTitle());
-
-					}).collect(Collectors.toList());
-			}
-		).orElse(
-			null
+			ddmStructure::getDDMFormLayout
+		).map(
+			DDMFormLayout::getDDMFormLayoutPages
+		).map(
+			List::stream
+		).orElseGet(
+			Stream::empty
+		).map(
+			ddmFormLayoutPage ->
+				_getFormLayoutPage(ddmStructure, ddmFormLayoutPage)
+		).collect(
+			Collectors.toList()
 		);
 	}
 
@@ -160,6 +137,35 @@ public final class StructureRepresentorUtil {
 		).collect(
 			Collectors.toList()
 		);
+	}
+
+	private static List<DDMFormField> _getFieldsPerPage(
+		DDMStructure ddmStructure, List<String> fieldNamesPerPage) {
+
+		return Try.fromFallible(
+			() -> ddmStructure.getDDMFormFields(true)
+		).map(
+			List::stream
+		).orElseGet(
+			Stream::empty
+		).filter(
+			ddmFormField -> fieldNamesPerPage.contains(ddmFormField.getName())
+		).collect(
+			Collectors.toList()
+		);
+	}
+
+	private static FormLayoutPage _getFormLayoutPage(
+		DDMStructure ddmStructure, DDMFormLayoutPage ddmFormLayoutPage) {
+
+		List<String> fieldNamesPerPage = _getFieldNames(ddmFormLayoutPage);
+
+		List<DDMFormField> ddmFormFields = _getFieldsPerPage(
+			ddmStructure, fieldNamesPerPage);
+
+		return new FormLayoutPage(
+			ddmFormLayoutPage.getDescription(), ddmFormFields,
+			ddmFormLayoutPage.getTitle());
 	}
 
 }
