@@ -19,9 +19,12 @@ import com.google.gson.reflect.TypeToken;
 
 import com.liferay.apio.architect.functional.Try;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
+import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecordVersion;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
+import com.liferay.dynamic.data.mapping.model.UnlocalizedValue;
+import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.forms.apio.internal.FormFieldValue;
@@ -34,6 +37,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Paulo Cruz
@@ -45,12 +49,15 @@ public class FormInstanceRecordResourceUtil {
 
 		DDMFormValues ddmFormValues = new DDMFormValues(ddmForm);
 
-		Gson gson = new Gson();
-
 		FormFieldValueListToken formFieldValueListToken =
 			new FormFieldValueListToken();
 
+		Map<String, DDMFormField> ddmFormFieldsMap =
+			ddmForm.getDDMFormFieldsMap(true);
+
 		Type listType = formFieldValueListToken.getType();
+
+		Gson gson = new Gson();
 
 		List<FormFieldValue> formFieldValues = gson.fromJson(
 			fieldValues, listType);
@@ -61,11 +68,21 @@ public class FormInstanceRecordResourceUtil {
 			ddmFormFieldValue.setInstanceId(formFieldValue.identifier);
 			ddmFormFieldValue.setName(formFieldValue.name);
 
-			LocalizedValue localizedValue = new LocalizedValue();
+			DDMFormField ddmFormField = ddmFormFieldsMap.get(
+				formFieldValue.name);
 
-			localizedValue.addString(locale, formFieldValue.value);
+			Value value;
 
-			ddmFormFieldValue.setValue(localizedValue);
+			if (ddmFormField.isLocalizable()) {
+				value = new LocalizedValue();
+
+				value.addString(locale, formFieldValue.value);
+			}
+			else {
+				value = new UnlocalizedValue(formFieldValue.value);
+			}
+
+			ddmFormFieldValue.setValue(value);
 
 			ddmFormValues.addDDMFormFieldValue(ddmFormFieldValue);
 		}
