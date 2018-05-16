@@ -14,15 +14,35 @@
 
 package com.liferay.forms.apio.internal.representable;
 
-import com.liferay.apio.architect.customactions.PostRoute;
+import java.util.List;
 
 /**
  * @author Paulo Cruz
  */
-public class EvaluateContextRoute extends PostRoute {
+public class FormContextWrapper extends BaseFormContextWrapper {
 
-	@Override
-	public String getName() {
-		return "evaluate-context";
+	public FormContextWrapper(Object wrappedMap) {
+		super(wrappedMap);
 	}
+
+	public String getIdentifier() {
+		return getValue("containerId", String.class);
+	}
+
+	public List<FormPageContextWrapper> getPageContexts() {
+		return getPagesList("pages");
+	}
+
+	public boolean isReadOnly() {
+		return getValue("readOnly", Boolean.class);
+	}
+
+	public boolean isShowRequiredFieldsWarning() {
+		return getValue("showRequiredFieldsWarning", Boolean.class);
+	}
+
+	public boolean isShowSubmitButton() {
+		return getValue("showSubmitButton", Boolean.class);
+	}
+
 }

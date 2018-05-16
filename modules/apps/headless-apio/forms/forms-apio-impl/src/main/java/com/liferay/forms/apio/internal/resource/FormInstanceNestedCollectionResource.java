@@ -15,6 +15,7 @@
 package com.liferay.forms.apio.internal.resource;
 
 import com.liferay.apio.architect.customactions.PostRoute;
+import com.liferay.apio.architect.functional.Try;
 import com.liferay.apio.architect.pagination.PageItems;
 import com.liferay.apio.architect.pagination.Pagination;
 import com.liferay.apio.architect.representor.NestedRepresentor;
@@ -24,28 +25,31 @@ import com.liferay.apio.architect.routes.ItemRoutes;
 import com.liferay.apio.architect.routes.NestedCollectionRoutes;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderingContext;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormTemplateContextFactory;
+import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceSettings;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceVersion;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceService;
 import com.liferay.forms.apio.architect.identifier.FormInstanceIdentifier;
 import com.liferay.forms.apio.architect.identifier.StructureIdentifier;
 import com.liferay.forms.apio.internal.form.FormContextForm;
 import com.liferay.forms.apio.internal.representable.EvaluateContextRoute;
-import com.liferay.forms.apio.internal.representable.Thing;
-import com.liferay.forms.apio.internal.representable.ThingIdentifier;
+import com.liferay.forms.apio.internal.representable.FormContextIdentifier;
+import com.liferay.forms.apio.internal.representable.FormContextWrapper;
 import com.liferay.forms.apio.internal.util.FormInstanceRepresentorUtil;
+import com.liferay.forms.apio.internal.util.FormValuesUtil;
 import com.liferay.person.apio.identifier.PersonIdentifier;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONFactory;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.util.LocaleThreadLocal;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.site.apio.identifier.WebSiteIdentifier;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Provides the information necessary to expose FormInstance resources through a
@@ -82,8 +86,9 @@ public class FormInstanceNestedCollectionResource
 		return builder.addGetter(
 			_ddmFormInstanceService::getFormInstance
 		).addCustomRoute(evaluateContextRoute,
-			this::_evaluateContext, ThingIdentifier.class,
-			(credentials, aLong) -> true, FormContextForm::buildForm, DDMFormRenderingContext.class
+			this::_evaluateContext, FormContextIdentifier.class,
+			(credentials, aLong) -> true, FormContextForm::buildForm,
+			DDMFormRenderingContext.class
 		).build();
 	}
 
@@ -180,41 +185,51 @@ public class FormInstanceNestedCollectionResource
 		).build();
 	}
 
-	private Thing _evaluateContext(Long ddmFormInstanceId,
-								   FormContextForm formContextForm,
-								   DDMFormRenderingContext ddmFormRenderingContext)
+	private FormContextWrapper _evaluateContext(
+		Long ddmFormInstanceId, FormContextForm formContextForm,
+		DDMFormRenderingContext ddmFormRenderingContext)
 		throws PortalException {
 
-//		Locale locale = LocaleUtil.fromLanguageId(
-//			formContextForm.getLanguageId());
-//
-//		LocaleThreadLocal.setThemeDisplayLocale(locale);
-//
-//		DDMFormInstance ddmFormInstance =
-//			_ddmFormInstanceService.getFormInstance(ddmFormInstanceId);
-//
-//		JSONSerializer jsonSerializer = _jsonFactory.createJSONSerializer();
-//
-//		DDMStructure ddmStructure = ddmFormInstance.getStructure();
-//
-//		DDMForm ddmForm = ddmStructure.getDDMForm();
-//		DDMFormLayout ddmFormLayout = ddmStructure.getDDMFormLayout();
-//
-//		DDMFormValues ddmFormValues =
-//			FormInstanceRecordResourceHelper.getDDMFormValues(
-//				formContextForm.getFieldValues(), ddmForm, locale);
-//
-//		ddmFormRenderingContext.setDDMFormValues(ddmFormValues);
-//
-//		ddmFormRenderingContext.setLocale(locale);
-//
-//		Map<String, Object> templateContext =
-//			_ddmFormTemplateContextFactory.create(
-//				ddmForm, ddmFormLayout, ddmFormRenderingContext);
+		Locale locale = LocaleUtil.fromLanguageId(
+			formContextForm.getLanguageId());
 
-		//FIXME json?
+		LocaleThreadLocal.setThemeDisplayLocale(locale);
 
-		return new Thing();
+		DDMFormInstance ddmFormInstance =
+			_ddmFormInstanceService.getFormInstance(ddmFormInstanceId);
+
+		String fieldValues = formContextForm.getFieldValues();
+		ddmFormRenderingContext.setLocale(locale);
+
+		DDMForm ddmForm = Try.fromFallible(
+			() -> ddmFormInstance.getStructure()
+		).map(
+			DDMStructure::getDDMForm
+		).orElse(
+			null
+		);
+
+		Try.fromFallible(
+			() -> FormValuesUtil.getDDMFormValues(
+				fieldValues, ddmForm, locale)
+		).ifSuccess(
+			ddmFormRenderingContext::setDDMFormValues
+		);
+
+		return _getEvaluationResult(ddmForm, ddmFormRenderingContext);
+	}
+
+	private FormContextWrapper _getEvaluationResult(
+		DDMForm ddmForm, DDMFormRenderingContext ddmFormRenderingContext) {
+
+		return Try.fromFallible(
+			() -> _ddmFormTemplateContextFactory.create(
+				ddmForm, ddmFormRenderingContext)
+		).map(
+			FormContextWrapper::new
+		).orElse(
+			null
+		);
 	}
 
 	private PageItems<DDMFormInstance> _getPageItems(
@@ -231,16 +246,10 @@ public class FormInstanceNestedCollectionResource
 		return new PageItems<>(ddmFormInstances, count);
 	}
 
-	private static final Log _log = LogFactoryUtil.getLog(
-		FormInstanceNestedCollectionResource.class);
-
 	@Reference
 	private DDMFormInstanceService _ddmFormInstanceService;
 
 	@Reference
 	private DDMFormTemplateContextFactory _ddmFormTemplateContextFactory;
-
-	@Reference
-	private JSONFactory _jsonFactory;
 
 }
