@@ -18,6 +18,8 @@ import com.liferay.apio.architect.functional.Try;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -80,13 +82,33 @@ public class BaseFormContextWrapper {
 		).collect(Collectors.toList());
 	}
 
+	public <T> T getValue(String key, Function<Object, T> parseFunction) {
+		return Optional.ofNullable(
+			_wrappedMap.get(key)
+		).map(
+			parseFunction::apply
+		).orElse(
+			null
+		);
+	}
+
 	public <T> T getValue(String key, Class<T> type) {
-		return Try.fromFallible(
-			() -> _wrappedMap.get(key)
+		return Optional.ofNullable(
+			_wrappedMap.get(key)
 		).map(
 			type::cast
 		).orElse(
 			null
+		);
+	}
+
+	public <T> T getValue(String key, Class<T> type, T defaultValue) {
+		return Optional.ofNullable(
+			_wrappedMap.get(key)
+		).map(
+			type::cast
+		).orElse(
+			defaultValue
 		);
 	}
 

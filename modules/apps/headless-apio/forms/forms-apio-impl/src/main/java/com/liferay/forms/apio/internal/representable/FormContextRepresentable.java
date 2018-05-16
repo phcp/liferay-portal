@@ -68,6 +68,8 @@ public class FormContextRepresentable
 				fieldsBuilder -> fieldsBuilder.types(
 					"FormFieldContext"
 				).addBoolean(
+					"isEvaluable", FormFieldContextWrapper::isEvaluable
+				).addBoolean(
 					"isReadOnly", FormFieldContextWrapper::isReadOnly
 				).addBoolean(
 					"isRequired", FormFieldContextWrapper::isRequired
@@ -88,6 +90,8 @@ public class FormContextRepresentable
 					).build()
 				).addString(
 					"errorMessage", FormFieldContextWrapper::getErrorMessage
+				).addString(
+					"name", FormFieldContextWrapper::getName
 				).addString(
 					"pathThemeImages",
 					FormFieldContextWrapper::getPathThemeImages

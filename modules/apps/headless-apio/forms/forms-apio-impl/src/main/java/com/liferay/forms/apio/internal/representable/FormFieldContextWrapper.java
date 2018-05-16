@@ -52,8 +52,16 @@ public class FormFieldContextWrapper extends BaseFormContextWrapper {
 		return getValue("pathThemeImages", String.class);
 	}
 
+	public String getName() {
+		return getValue("fieldName", String.class);
+	}
+
 	public String getValue() {
-		return getValue("value", String.class);
+		return getValue("value", Object::toString);
+	}
+
+	public boolean isEvaluable() {
+		return getValue("evaluable", Boolean.class, false);
 	}
 
 	public boolean isReadOnly() {
