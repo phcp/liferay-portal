@@ -34,8 +34,8 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.forms.apio.architect.identifier.FormInstanceIdentifier;
 import com.liferay.forms.apio.architect.identifier.StructureIdentifier;
 import com.liferay.forms.apio.internal.form.FormContextForm;
-import com.liferay.forms.apio.internal.util.FormInstanceRecordResourceUtil;
 import com.liferay.forms.apio.internal.util.FormInstanceRepresentorUtil;
+import com.liferay.forms.apio.internal.util.FormValuesUtil;
 import com.liferay.person.apio.identifier.PersonIdentifier;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactory;
@@ -206,9 +206,8 @@ public class FormInstanceNestedCollectionResource
 			DDMForm ddmForm = ddmStructure.getDDMForm();
 			DDMFormLayout ddmFormLayout = ddmStructure.getDDMFormLayout();
 
-			DDMFormValues ddmFormValues =
-				FormInstanceRecordResourceUtil.getDDMFormValues(
-					formContextForm.getFieldValues(), ddmForm, locale);
+			DDMFormValues ddmFormValues = FormValuesUtil.getDDMFormValues(
+				formContextForm.getFieldValues(), ddmForm, locale);
 
 			ddmFormRenderingContext.setDDMFormValues(ddmFormValues);
 

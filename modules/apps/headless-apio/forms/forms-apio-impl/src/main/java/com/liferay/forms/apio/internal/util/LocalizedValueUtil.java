@@ -26,7 +26,7 @@ import java.util.function.Function;
  */
 public final class LocalizedValueUtil {
 
-	public static <T> BiFunction<T, Locale, String> getLocalizedValue(
+	public static <T> BiFunction<T, Locale, String> getLocalizedString(
 		Function<T, Value> function) {
 
 		return (t, locale) -> Try.fromFallible(

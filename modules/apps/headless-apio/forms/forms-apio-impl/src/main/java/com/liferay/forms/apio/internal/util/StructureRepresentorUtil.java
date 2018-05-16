@@ -80,7 +80,7 @@ public final class StructureRepresentorUtil {
 	public static BiFunction<DDMFormField, Locale, String> getLocalizedValue(
 		String key) {
 
-		return LocalizedValueUtil.getLocalizedValue(
+		return LocalizedValueUtil.getLocalizedString(
 			ddmFormField -> (LocalizedValue)ddmFormField.getProperty(key));
 	}
 
