@@ -15,6 +15,7 @@
 package com.liferay.forms.apio.internal.resource;
 
 import com.liferay.apio.architect.customactions.PostRoute;
+import com.liferay.apio.architect.file.BinaryFile;
 import com.liferay.apio.architect.functional.Try;
 import com.liferay.apio.architect.pagination.PageItems;
 import com.liferay.apio.architect.pagination.Pagination;
@@ -22,6 +23,7 @@ import com.liferay.apio.architect.representor.Representor;
 import com.liferay.apio.architect.resource.NestedCollectionResource;
 import com.liferay.apio.architect.routes.ItemRoutes;
 import com.liferay.apio.architect.routes.NestedCollectionRoutes;
+import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderingContext;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormTemplateContextFactory;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
@@ -31,19 +33,25 @@ import com.liferay.dynamic.data.mapping.service.DDMFormInstanceService;
 import com.liferay.forms.apio.architect.identifier.FormInstanceIdentifier;
 import com.liferay.forms.apio.architect.identifier.StructureIdentifier;
 import com.liferay.forms.apio.internal.form.FormContextForm;
+import com.liferay.forms.apio.internal.form.MediaObjectCreatorForm;
+import com.liferay.forms.apio.internal.representable.EvaluateContextRoute;
 import com.liferay.forms.apio.internal.representable.Thing;
 import com.liferay.forms.apio.internal.representable.ThingIdentifier;
-import com.liferay.forms.apio.internal.representable.EvaluateContextRoute;
+import com.liferay.media.object.apio.identifier.FileEntryIdentifier;
 import com.liferay.person.apio.identifier.PersonIdentifier;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.site.apio.identifier.WebSiteIdentifier;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -81,12 +89,50 @@ public class FormInstanceNestedCollectionResource
 
 		PostRoute evaluateContextRoute = new EvaluateContextRoute();
 
+		PostRoute uploadFileRoute = new UploadFileRoute();
+
 		return builder.addGetter(
 			_ddmFormInstanceService::getFormInstance
 		).addCustomRoute(evaluateContextRoute,
 			this::_evaluateContext, ThingIdentifier.class,
-			(credentials, aLong) -> true, FormContextForm::buildForm, DDMFormRenderingContext.class
+			(credentials, aLong) -> true,
+			FormContextForm::buildForm, DDMFormRenderingContext.class
+		).addCustomRoute(uploadFileRoute,
+			this::uploadFile, FileEntryIdentifier.class,
+			(credentials, aLong) -> true,
+			MediaObjectCreatorForm::buildForm
 		).build();
+	}
+
+	private FileEntry uploadFile(Long ddmFormInstanceId, MediaObjectCreatorForm mediaObjectCreatorForm)
+		throws PortalException {
+
+		Long folderId = 0L;
+
+		ServiceContext serviceContext = new ServiceContext();
+		BinaryFile binaryFile = mediaObjectCreatorForm.getBinaryFile();
+
+		String sourceFileName = mediaObjectCreatorForm.getName();
+
+		String title = mediaObjectCreatorForm.getTitle();
+
+		String mimeType = binaryFile.getMimeType();
+
+		String description = mediaObjectCreatorForm.getDescription();
+
+		String changelog = mediaObjectCreatorForm.getChangelog();
+
+		InputStream inputStream = binaryFile.getInputStream();
+
+		long size = binaryFile.getSize();
+
+		Folder folder = _dlAppService.getFolder(folderId);
+
+		long repositoryId = folder.getRepositoryId();
+
+		return _dlAppService.addFileEntry(
+			repositoryId, folderId, sourceFileName, mimeType, title,
+			description, changelog, inputStream, size, serviceContext);
 	}
 
 	@Override
@@ -162,9 +208,10 @@ public class FormInstanceNestedCollectionResource
 		).build();
 	}
 
-	private Thing _evaluateContext(Long ddmFormInstanceId,
-								   FormContextForm formContextForm,
-								   DDMFormRenderingContext ddmFormRenderingContext)
+	private Thing _evaluateContext(
+		Long ddmFormInstanceId,
+		FormContextForm formContextForm,
+		DDMFormRenderingContext ddmFormRenderingContext)
 		throws PortalException {
 
 //		Locale locale = LocaleUtil.fromLanguageId(
@@ -255,5 +302,8 @@ public class FormInstanceNestedCollectionResource
 
 	@Reference
 	private JSONFactory _jsonFactory;
+
+	@Reference
+	private DLAppService _dlAppService;
 
 }
