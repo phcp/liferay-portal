@@ -14,81 +14,17 @@
 
 package com.liferay.forms.apio.internal.util;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import com.liferay.apio.architect.functional.Try;
-import com.liferay.dynamic.data.mapping.model.DDMForm;
-import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecordVersion;
-import com.liferay.dynamic.data.mapping.model.LocalizedValue;
-import com.liferay.dynamic.data.mapping.model.UnlocalizedValue;
-import com.liferay.dynamic.data.mapping.model.Value;
-import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
-import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.forms.apio.internal.FormFieldValue;
 import com.liferay.forms.apio.internal.FormInstanceRecordServiceContext;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-
-import java.lang.reflect.Type;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * @author Paulo Cruz
  */
 public class FormInstanceRecordResourceUtil {
-
-	public static DDMFormValues getDDMFormValues(
-		String fieldValues, DDMForm ddmForm, Locale locale) {
-
-		DDMFormValues ddmFormValues = new DDMFormValues(ddmForm);
-
-		FormFieldValueListToken formFieldValueListToken =
-			new FormFieldValueListToken();
-
-		Map<String, DDMFormField> ddmFormFieldsMap =
-			ddmForm.getDDMFormFieldsMap(true);
-
-		Type listType = formFieldValueListToken.getType();
-
-		Gson gson = new Gson();
-
-		List<FormFieldValue> formFieldValues = gson.fromJson(
-			fieldValues, listType);
-
-		for (FormFieldValue formFieldValue : formFieldValues) {
-			DDMFormFieldValue ddmFormFieldValue = new DDMFormFieldValue();
-
-			ddmFormFieldValue.setInstanceId(formFieldValue.identifier);
-			ddmFormFieldValue.setName(formFieldValue.name);
-
-			DDMFormField ddmFormField = ddmFormFieldsMap.get(
-				formFieldValue.name);
-
-			Value value;
-
-			if (ddmFormField.isLocalizable()) {
-				value = new LocalizedValue();
-
-				value.addString(locale, formFieldValue.value);
-			}
-			else {
-				value = new UnlocalizedValue(formFieldValue.value);
-			}
-
-			ddmFormFieldValue.setValue(value);
-
-			ddmFormValues.addDDMFormFieldValue(ddmFormFieldValue);
-		}
-
-		return ddmFormValues;
-	}
 
 	public static DDMFormInstanceRecordVersion getVersion(
 		DDMFormInstanceRecord ddmFormInstanceRecord) {
@@ -119,10 +55,6 @@ public class FormInstanceRecordResourceUtil {
 		else {
 			serviceContext.setWorkflowAction(WorkflowConstants.ACTION_PUBLISH);
 		}
-	}
-
-	private static class FormFieldValueListToken
-		extends TypeToken<ArrayList<FormFieldValue>> {
 	}
 
 }
