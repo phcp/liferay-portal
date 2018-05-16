@@ -14,9 +14,9 @@
 
 package com.liferay.forms.apio.internal.resource;
 
-import static com.liferay.forms.apio.internal.util.FormInstanceRecordResourceUtil.getDDMFormValues;
 import static com.liferay.forms.apio.internal.util.FormInstanceRecordResourceUtil.setServiceContextAttributes;
-import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedValue;
+import static com.liferay.forms.apio.internal.util.FormValuesUtil.getDDMFormValues;
+import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedString;
 
 import com.liferay.apio.architect.functional.Try;
 import com.liferay.apio.architect.language.Language;
@@ -127,7 +127,7 @@ public class FormInstanceRecordNestedCollectionResource
 			fieldValuesBuilder -> fieldValuesBuilder.types(
 				"FormFieldValue"
 			).addLocalizedStringByLocale(
-				"value", getLocalizedValue(DDMFormFieldValue::getValue)
+				"value", getLocalizedString(DDMFormFieldValue::getValue)
 			).addString(
 				"identifier", DDMFormFieldValue::getInstanceId
 			).addString(

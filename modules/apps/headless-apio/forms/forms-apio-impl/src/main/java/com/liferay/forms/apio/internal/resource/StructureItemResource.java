@@ -14,7 +14,7 @@
 
 package com.liferay.forms.apio.internal.resource;
 
-import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedValue;
+import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedString;
 import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getFieldOptions;
 import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getFieldProperty;
 import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getLocalizedValue;
@@ -104,7 +104,7 @@ public class StructureItemResource
 		return builder.types(
 			"FormFieldOptions"
 		).addLocalizedStringByLocale(
-			"label", getLocalizedValue(Entry::getValue)
+			"label", getLocalizedString(Entry::getValue)
 		).addString(
 			"value", Entry::getKey
 		).build();
@@ -117,6 +117,8 @@ public class StructureItemResource
 			"FormField"
 		).addBoolean(
 			"isAutocomplete", DDMFormField::isLocalizable
+		).addBoolean(
+			"isEvaluable", getFieldProperty(Boolean.class::cast, "evaluable")
 		).addBoolean(
 			"isInline", getFieldProperty(Boolean.class::cast, "inline")
 		).addBoolean(
@@ -137,14 +139,14 @@ public class StructureItemResource
 		).addBoolean(
 			"isTransient", DDMFormField::isTransient
 		).addLocalizedStringByLocale(
-			"label", getLocalizedValue(DDMFormField::getLabel)
+			"label", getLocalizedString(DDMFormField::getLabel)
 		).addLocalizedStringByLocale(
 			"predefinedValue",
-			getLocalizedValue(DDMFormField::getPredefinedValue)
+			getLocalizedString(DDMFormField::getPredefinedValue)
 		).addLocalizedStringByLocale(
-			"style", getLocalizedValue(DDMFormField::getStyle)
+			"style", getLocalizedString(DDMFormField::getStyle)
 		).addLocalizedStringByLocale(
-			"tip", getLocalizedValue(DDMFormField::getTip)
+			"tip", getLocalizedString(DDMFormField::getTip)
 		).addNested(
 			"grid", ddmFormField -> ddmFormField,
 			StructureItemResource::_buildGridProperties
@@ -211,9 +213,9 @@ public class StructureItemResource
 		).addBoolean(
 			"isEnabled", DDMFormSuccessPageSettings::isEnabled
 		).addLocalizedStringByLocale(
-			"headline", getLocalizedValue(DDMFormSuccessPageSettings::getTitle)
+			"headline", getLocalizedString(DDMFormSuccessPageSettings::getTitle)
 		).addLocalizedStringByLocale(
-			"text", getLocalizedValue(DDMFormSuccessPageSettings::getBody)
+			"text", getLocalizedString(DDMFormSuccessPageSettings::getBody)
 		).build();
 	}
 
