@@ -34,6 +34,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.site.apio.identifier.WebSiteIdentifier;
 
 import java.io.InputStream;
 
@@ -104,6 +105,8 @@ public class MediaObjectNestedCollectionResource
 			"datePublished", FileEntry::getLastPublishDate
 		).addLinkedModel(
 			"author", PersonIdentifier.class, FileEntry::getUserId
+		).addLinkedModel(
+			"interactionService", WebSiteIdentifier.class, FileEntry::getGroupId
 		).addNumber(
 			"contentSize", FileEntry::getSize
 		).addString(
@@ -114,6 +117,8 @@ public class MediaObjectNestedCollectionResource
 			"name", FileEntry::getFileName
 		).addString(
 			"text", FileEntry::getDescription
+		).addString(
+			"uuid", FileEntry::getUuid
 		).build();
 	}
 
