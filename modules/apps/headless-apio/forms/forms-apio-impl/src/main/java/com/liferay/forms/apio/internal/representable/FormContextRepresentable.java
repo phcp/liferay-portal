@@ -102,7 +102,4 @@ public class FormContextRepresentable
 		).build();
 	}
 
-	public interface FormContextIdentifier extends Identifier<String> {
-	}
-
 }

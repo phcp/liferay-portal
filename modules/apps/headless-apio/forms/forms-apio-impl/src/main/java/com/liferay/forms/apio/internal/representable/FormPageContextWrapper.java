@@ -35,7 +35,7 @@ public class FormPageContextWrapper extends BaseFormContextWrapper {
 	}
 
 	public List<FormFieldContextWrapper> getFormFieldContexts() {
-		List<List<BaseFormContextWrapper>> columnsListOfList = Try.fromFallible(
+		return Try.fromFallible(
 			() -> getListFromValue("rows")
 		).map(
 			List::stream
@@ -43,27 +43,13 @@ public class FormPageContextWrapper extends BaseFormContextWrapper {
 			Stream::empty
 		).map(
 			row -> getListFromMap(row.getWrappedMap(), "columns")
-		).collect(Collectors.toList());
-
-		List<BaseFormContextWrapper> columns =
-			columnsListOfList.stream().reduce(
-				(columns1, columns2) -> {
-					columns1.addAll(columns2);
-					return columns1;
-				}
-			).get();
-
-
-		List<FormFieldContextWrapper> fields = columns.stream().map(
+		).flatMap(
+			List::stream
+		).map(
 			column -> getFieldsList(column.getWrappedMap(), "fields")
-		).reduce(
-			(fields1, fields2) -> {
-				fields1.addAll(fields2);
-				return fields1;
-			}
-		).get();
-
-		return fields;
+		).flatMap(
+			List::stream
+		).collect(Collectors.toList());
 	}
 
 	public LocalizedValue getTitle() {
