@@ -51,14 +51,15 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
-import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.site.apio.identifier.WebSiteIdentifier;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 import java.io.InputStream;
+
 import java.util.List;
 import java.util.Locale;
+
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Provides the information necessary to expose FormInstance resources through a
@@ -102,40 +103,8 @@ public class FormInstanceNestedCollectionResource
 			DDMFormRenderingContext.class, Language.class
 		).addCustomRoute(uploadFileRoute,
 			this::uploadFile, FileEntryIdentifier.class,
-			(credentials, aLong) -> true,
-			MediaObjectCreatorForm::buildForm
+			(credentials, aLong) -> true, MediaObjectCreatorForm::buildForm
 		).build();
-	}
-
-	private FileEntry uploadFile(Long ddmFormInstanceId, MediaObjectCreatorForm mediaObjectCreatorForm)
-		throws PortalException {
-
-		Long folderId = 0L;
-
-		ServiceContext serviceContext = new ServiceContext();
-		BinaryFile binaryFile = mediaObjectCreatorForm.getBinaryFile();
-
-		String sourceFileName = mediaObjectCreatorForm.getName();
-
-		String title = mediaObjectCreatorForm.getTitle();
-
-		String mimeType = binaryFile.getMimeType();
-
-		String description = mediaObjectCreatorForm.getDescription();
-
-		String changelog = mediaObjectCreatorForm.getChangelog();
-
-		InputStream inputStream = binaryFile.getInputStream();
-
-		long size = binaryFile.getSize();
-
-		Folder folder = _dlAppService.getFolder(folderId);
-
-		long repositoryId = folder.getRepositoryId();
-
-		return _dlAppService.addFileEntry(
-			repositoryId, folderId, sourceFileName, mimeType, title,
-			description, changelog, inputStream, size, serviceContext);
 	}
 
 	@Override
@@ -232,8 +201,8 @@ public class FormInstanceNestedCollectionResource
 	}
 
 	private FormContextWrapper _evaluateContext(
-		Long ddmFormInstanceId, FormContextForm formContextForm,
-		DDMFormRenderingContext ddmFormRenderingContext, Language language)
+			Long ddmFormInstanceId, FormContextForm formContextForm,
+			DDMFormRenderingContext ddmFormRenderingContext, Language language)
 		throws PortalException {
 
 		Locale locale = language.getPreferredLocale();
@@ -255,8 +224,7 @@ public class FormInstanceNestedCollectionResource
 		);
 
 		Try.fromFallible(
-			() -> FormValuesUtil.getDDMFormValues(
-				fieldValues, ddmForm, locale)
+			() -> FormValuesUtil.getDDMFormValues(fieldValues, ddmForm, locale)
 		).ifSuccess(
 			ddmFormRenderingContext::setDDMFormValues
 		);
@@ -289,6 +257,39 @@ public class FormInstanceNestedCollectionResource
 			company.getCompanyId(), groupId);
 
 		return new PageItems<>(ddmFormInstances, count);
+	}
+
+	private FileEntry uploadFile(
+			Long ddmFormInstanceId,
+			MediaObjectCreatorForm mediaObjectCreatorForm)
+		throws PortalException {
+
+		Long folderId = 0L;
+
+		ServiceContext serviceContext = new ServiceContext();
+		BinaryFile binaryFile = mediaObjectCreatorForm.getBinaryFile();
+
+		String sourceFileName = mediaObjectCreatorForm.getName();
+
+		String title = mediaObjectCreatorForm.getTitle();
+
+		String mimeType = binaryFile.getMimeType();
+
+		String description = mediaObjectCreatorForm.getDescription();
+
+		String changelog = mediaObjectCreatorForm.getChangelog();
+
+		InputStream inputStream = binaryFile.getInputStream();
+
+		long size = binaryFile.getSize();
+
+		Folder folder = _dlAppService.getFolder(folderId);
+
+		long repositoryId = folder.getRepositoryId();
+
+		return _dlAppService.addFileEntry(
+			repositoryId, folderId, sourceFileName, mimeType, title,
+			description, changelog, inputStream, size, serviceContext);
 	}
 
 	@Reference
