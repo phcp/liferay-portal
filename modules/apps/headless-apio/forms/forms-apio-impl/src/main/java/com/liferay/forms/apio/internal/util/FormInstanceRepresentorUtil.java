@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 /**
  * @author Paulo Cruz
  */
-public class FormInstanceRepresentorUtil {
+public final class FormInstanceRepresentorUtil {
 
 	public static List<String> getAvailableLanguages(
 		DDMFormInstance ddmFormInstance) {

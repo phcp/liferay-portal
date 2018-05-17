@@ -14,6 +14,12 @@
 
 package com.liferay.forms.apio.internal.resource;
 
+import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedString;
+import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getFieldOptions;
+import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getFieldProperty;
+import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getLocalizedValue;
+import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.hasFormRules;
+
 import com.liferay.apio.architect.representor.NestedRepresentor;
 import com.liferay.apio.architect.representor.NestedRepresentor.Builder;
 import com.liferay.apio.architect.representor.Representor;
@@ -30,16 +36,11 @@ import com.liferay.forms.apio.architect.identifier.StructureIdentifier;
 import com.liferay.forms.apio.internal.FormLayoutPage;
 import com.liferay.forms.apio.internal.util.StructureRepresentorUtil;
 import com.liferay.person.apio.identifier.PersonIdentifier;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 import java.util.Map.Entry;
 
-import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedString;
-import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getFieldOptions;
-import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getFieldProperty;
-import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getLocalizedValue;
-import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.hasFormRules;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Provides the information necessary to expose Structure resources through a
