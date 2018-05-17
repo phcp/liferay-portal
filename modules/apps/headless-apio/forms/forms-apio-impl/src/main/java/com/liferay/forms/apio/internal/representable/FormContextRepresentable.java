@@ -14,20 +14,23 @@
 
 package com.liferay.forms.apio.internal.representable;
 
-import com.liferay.apio.architect.identifier.Identifier;
+import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedString;
+
+import com.liferay.apio.architect.representor.NestedRepresentor;
+import com.liferay.apio.architect.representor.NestedRepresentor.Builder;
 import com.liferay.apio.architect.representor.Representable;
 import com.liferay.apio.architect.representor.Representor;
 import com.liferay.portal.kernel.util.KeyValuePair;
-import org.osgi.service.component.annotations.Component;
 
-import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedString;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Paulo Cruz
  */
 @Component(immediate = true)
 public class FormContextRepresentable
-	implements Representable<FormContextWrapper, String, FormContextIdentifier> {
+	implements Representable<FormContextWrapper, String,
+		FormContextIdentifier> {
 
 	@Override
 	public String getName() {
@@ -51,54 +54,62 @@ public class FormContextRepresentable
 			"isShowSubmitButton", FormContextWrapper::isShowSubmitButton
 		).addNestedList(
 			"pages", FormContextWrapper::getPageContexts,
-			pagesBuilder -> pagesBuilder.types(
-				"FormPageContext"
-			).addBoolean(
-				"isEnabled", FormPageContextWrapper::isEnabled
-			).addBoolean(
-				"isShowRequiredFieldsWarning",
-				FormPageContextWrapper::isShowRequiredFieldsWarning
-			).addLocalizedStringByLocale(
-				"headline", getLocalizedString(FormPageContextWrapper::getTitle)
-			).addLocalizedStringByLocale(
-				"text",
-				getLocalizedString(FormPageContextWrapper::getDescription)
-			).addNestedList(
-				"fields", FormPageContextWrapper::getFormFieldContexts,
-				fieldsBuilder -> fieldsBuilder.types(
-					"FormFieldContext"
-				).addBoolean(
-					"isEvaluable", FormFieldContextWrapper::isEvaluable
-				).addBoolean(
-					"isReadOnly", FormFieldContextWrapper::isReadOnly
-				).addBoolean(
-					"isRequired", FormFieldContextWrapper::isRequired
-				).addBoolean(
-					"isValid", FormFieldContextWrapper::isValid
-				).addBoolean(
-					"isValueChanged", FormFieldContextWrapper::isValueChanged
-				).addBoolean(
-					"isVisible", FormFieldContextWrapper::isVisible
-				).addNestedList(
-					"options", FormFieldContextWrapper::getOptions,
-					optionsBuilder -> optionsBuilder.types(
-						"FormFieldOptions"
-					).addString(
-						"label", KeyValuePair::getValue
-					).addString(
-						"value", KeyValuePair::getKey
-					).build()
-				).addString(
-					"errorMessage", FormFieldContextWrapper::getErrorMessage
-				).addString(
-					"name", FormFieldContextWrapper::getName
-				).addString(
-					"pathThemeImages",
-					FormFieldContextWrapper::getPathThemeImages
-				).addString(
-					"value", FormFieldContextWrapper::getValue
-				).build()
+			this::_buildFormContextPages
+		).build();
+	}
+
+	private NestedRepresentor<FormFieldContextWrapper> _buildFormContextFields(
+		Builder<FormFieldContextWrapper> builder) {
+
+		return builder.types(
+			"FormFieldContext"
+		).addBoolean(
+			"isEvaluable", FormFieldContextWrapper::isEvaluable
+		).addBoolean(
+			"isReadOnly", FormFieldContextWrapper::isReadOnly
+		).addBoolean(
+			"isRequired", FormFieldContextWrapper::isRequired
+		).addBoolean(
+			"isValid", FormFieldContextWrapper::isValid
+		).addBoolean(
+			"isValueChanged", FormFieldContextWrapper::isValueChanged
+		).addBoolean(
+			"isVisible", FormFieldContextWrapper::isVisible
+		).addNestedList(
+			"options", FormFieldContextWrapper::getOptions,
+			optionsBuilder -> optionsBuilder.types(
+				"FormFieldOptions"
+			).addString(
+				"label", KeyValuePair::getValue
+			).addString(
+				"value", KeyValuePair::getKey
 			).build()
+		).addString(
+			"errorMessage", FormFieldContextWrapper::getErrorMessage
+		).addString(
+			"name", FormFieldContextWrapper::getName
+		).addString(
+			"value", FormFieldContextWrapper::getValue
+		).build();
+	}
+
+	private NestedRepresentor<FormPageContextWrapper> _buildFormContextPages(
+		Builder<FormPageContextWrapper> builder) {
+
+		return builder.types(
+			"FormPageContext"
+		).addBoolean(
+			"isEnabled", FormPageContextWrapper::isEnabled
+		).addBoolean(
+			"isShowRequiredFieldsWarning",
+			FormPageContextWrapper::isShowRequiredFieldsWarning
+		).addLocalizedStringByLocale(
+			"headline", getLocalizedString(FormPageContextWrapper::getTitle)
+		).addLocalizedStringByLocale(
+			"text", getLocalizedString(FormPageContextWrapper::getDescription)
+		).addNestedList(
+			"fields", FormPageContextWrapper::getFormFieldContexts,
+			this::_buildFormContextFields
 		).build();
 	}
 

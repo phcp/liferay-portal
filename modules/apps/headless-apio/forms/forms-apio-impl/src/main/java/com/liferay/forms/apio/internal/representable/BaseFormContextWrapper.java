@@ -28,94 +28,61 @@ import java.util.stream.Stream;
  */
 public class BaseFormContextWrapper {
 
-	public BaseFormContextWrapper(Object wrappedMap) {
-		_wrappedMap = (Map<String, Object>) wrappedMap;
+	public BaseFormContextWrapper(Map<String, Object> wrappedMap) {
+		_wrappedMap = wrappedMap;
 	}
 
-	public List<BaseFormContextWrapper> getListFromValue(String key) {
-		return getListFromMap(_wrappedMap, key);
-	}
-
-	public List<BaseFormContextWrapper> getListFromMap(
-		Map<String, Object> map, String key) {
+	public <T extends BaseFormContextWrapper> List<T> getListFromMap(
+		Map<String, Object> map, String key,
+		Function<Map<String, Object>, T> parseItemFunction) {
 
 		return Try.fromFallible(
-			() -> (List<Object>) map.get(key)
+			() -> (List<Map<String, Object>>) map.get(key)
 		).map(
 			List::stream
 		).orElseGet(
 			Stream::empty
 		).map(
-			object -> (Map<String, Object>) object
-		).map(
-			BaseFormContextWrapper::new
-		).collect(Collectors.toList());
+			parseItemFunction::apply
+		).collect(
+			Collectors.toList()
+		);
 	}
 
-	public List<FormPageContextWrapper> getPagesList(String key) {
-		return Try.fromFallible(
-			() -> (List<Object>) _wrappedMap.get(key)
-		).map(
-			List::stream
-		).orElseGet(
-			Stream::empty
-		).map(
-			object -> (Map<String, Object>) object
-		).map(
-			FormPageContextWrapper::new
-		).collect(Collectors.toList());
-	}
-
-	public List<FormFieldContextWrapper> getFieldsList(
-		Map<String, Object> map, String key) {
-
-		return Try.fromFallible(
-			() -> (List<Object>) map.get(key)
-		).map(
-			List::stream
-		).orElseGet(
-			Stream::empty
-		).map(
-			object -> (Map<String, Object>) object
-		).map(
-			FormFieldContextWrapper::new
-		).collect(Collectors.toList());
+	public <T> T getValue(String key, Class<T> type) {
+		return getValueOrDefault(key, type::cast, null);
 	}
 
 	public <T> T getValue(String key, Function<Object, T> parseFunction) {
+		return getValueOrDefault(key, parseFunction, null);
+	}
+
+	public <T> T getValueOrDefault(String key, Class<T> type, T defaultValue) {
+		return getValueOrDefault(key, type::cast, defaultValue);
+	}
+
+	public <T> T getValueOrDefault(
+		String key, Function<Object, T> parseFunction, T defaultValue) {
+
 		return Optional.ofNullable(
 			_wrappedMap.get(key)
 		).map(
 			parseFunction::apply
 		).orElse(
-			null
-		);
-	}
-
-	public <T> T getValue(String key, Class<T> type) {
-		return Optional.ofNullable(
-			_wrappedMap.get(key)
-		).map(
-			type::cast
-		).orElse(
-			null
-		);
-	}
-
-	public <T> T getValue(String key, Class<T> type, T defaultValue) {
-		return Optional.ofNullable(
-			_wrappedMap.get(key)
-		).map(
-			type::cast
-		).orElse(
 			defaultValue
 		);
+	}
+
+	public <T extends BaseFormContextWrapper> List<T> getWrappedList(
+		String key, Function<Map<String, Object>, T> parseItemFunction) {
+
+		return getListFromMap(_wrappedMap, key, parseItemFunction);
 	}
 
 	public Map<String, Object> getWrappedMap() {
 		return _wrappedMap;
 	}
 
-	private Map<String, Object> _wrappedMap;
+	private final Map<String, Object> _wrappedMap;
 
 }

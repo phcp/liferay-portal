@@ -15,13 +15,14 @@
 package com.liferay.forms.apio.internal.representable;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Paulo Cruz
  */
 public class FormContextWrapper extends BaseFormContextWrapper {
 
-	public FormContextWrapper(Object wrappedMap) {
+	public FormContextWrapper(Map<String, Object> wrappedMap) {
 		super(wrappedMap);
 	}
 
@@ -30,7 +31,7 @@ public class FormContextWrapper extends BaseFormContextWrapper {
 	}
 
 	public List<FormPageContextWrapper> getPageContexts() {
-		return getPagesList("pages");
+		return getWrappedList("pages", FormPageContextWrapper::new);
 	}
 
 	public boolean isReadOnly() {
