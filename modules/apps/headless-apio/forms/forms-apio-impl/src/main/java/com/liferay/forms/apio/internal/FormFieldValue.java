@@ -19,13 +19,11 @@ package com.liferay.forms.apio.internal;
  */
 public class FormFieldValue {
 
-	public FormFieldValue(String identifier, String name, String value) {
-		this.identifier = identifier;
+	public FormFieldValue(String name, String value) {
 		this.name = name;
 		this.value = value;
 	}
 
-	public final String identifier;
 	public final String name;
 	public final String value;
 
