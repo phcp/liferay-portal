@@ -14,11 +14,6 @@
 
 package com.liferay.forms.apio.internal.resource;
 
-import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedString;
-import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getFieldOptions;
-import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getFieldProperty;
-import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getLocalizedValue;
-
 import com.liferay.apio.architect.representor.NestedRepresentor;
 import com.liferay.apio.architect.representor.NestedRepresentor.Builder;
 import com.liferay.apio.architect.representor.Representor;
@@ -35,11 +30,16 @@ import com.liferay.forms.apio.architect.identifier.StructureIdentifier;
 import com.liferay.forms.apio.internal.FormLayoutPage;
 import com.liferay.forms.apio.internal.util.StructureRepresentorUtil;
 import com.liferay.person.apio.identifier.PersonIdentifier;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import java.util.Map.Entry;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedString;
+import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getFieldOptions;
+import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getFieldProperty;
+import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getLocalizedValue;
+import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.hasFormRules;
 
 /**
  * Provides the information necessary to expose Structure resources through a
@@ -110,15 +110,16 @@ public class StructureItemResource
 		).build();
 	}
 
-	private static NestedRepresentor<DDMFormField> _buildFormField(
+	private static NestedRepresentor<DDMFormField> _buildFormFields(
 		Builder<DDMFormField> builder) {
 
 		return builder.types(
 			"FormField"
 		).addBoolean(
-			"isAutocomplete", DDMFormField::isLocalizable
+			"hasFormRules", hasFormRules()
 		).addBoolean(
-			"isEvaluable", getFieldProperty(Boolean.class::cast, "evaluable")
+			"isAutocomplete",
+			getFieldProperty(Boolean.class::cast, "autocomplete")
 		).addBoolean(
 			"isInline", getFieldProperty(Boolean.class::cast, "inline")
 		).addBoolean(
@@ -140,6 +141,8 @@ public class StructureItemResource
 			"isTransient", DDMFormField::isTransient
 		).addLocalizedStringByLocale(
 			"label", getLocalizedString(DDMFormField::getLabel)
+		).addLocalizedStringByLocale(
+			"placeholder", getLocalizedValue("placeholder")
 		).addLocalizedStringByLocale(
 			"predefinedValue",
 			getLocalizedString(DDMFormField::getPredefinedValue)
@@ -171,15 +174,13 @@ public class StructureItemResource
 			"name", DDMFormField::getName
 		).addString(
 			"text", getFieldProperty(String.class::cast, "text")
-		).addLocalizedStringByLocale(
-			"placeholder", getLocalizedValue("placeholder")
 		).build();
 	}
 
 	private static NestedRepresentor<FormLayoutPage> _buildFormPages(
-		Builder<FormLayoutPage> pagesBuilder) {
+		Builder<FormLayoutPage> builder) {
 
-		return pagesBuilder.types(
+		return builder.types(
 			"FormLayoutPage"
 		).addLocalizedStringByLocale(
 			"headline", FormLayoutPage::getTitle
@@ -187,7 +188,7 @@ public class StructureItemResource
 			"text", FormLayoutPage::getDescription
 		).addNestedList(
 			"fields", FormLayoutPage::getFields,
-			StructureItemResource::_buildFormField
+			StructureItemResource::_buildFormFields
 		).build();
 	}
 

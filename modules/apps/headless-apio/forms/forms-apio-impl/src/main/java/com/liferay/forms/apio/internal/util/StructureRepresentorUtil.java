@@ -21,6 +21,7 @@ import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayoutPage;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayoutRow;
+import com.liferay.dynamic.data.mapping.model.DDMFormRule;
 import com.liferay.dynamic.data.mapping.model.DDMFormSuccessPageSettings;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureVersion;
@@ -114,6 +115,22 @@ public final class StructureRepresentorUtil {
 			ddmStructure::getStructureVersion
 		).orElse(
 			null
+		);
+	}
+
+	public static Function<DDMFormField, Boolean> hasFormRules() {
+		return ddmFormField -> Try.fromFallible(
+			() -> ddmFormField.getDDMForm()
+		).map(
+			ddmForm -> ddmForm.getDDMFormRules()
+		).map(
+			List::stream
+		).orElseGet(
+			Stream::empty
+		).map(
+			DDMFormRule::getCondition
+		).anyMatch(
+			ruleCondition -> ruleCondition.contains(ddmFormField.getName())
 		);
 	}
 
