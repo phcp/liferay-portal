@@ -59,7 +59,6 @@ public class FormValuesUtil {
 		for (FormFieldValue formFieldValue : formFieldValues) {
 			DDMFormFieldValue ddmFormFieldValue = new DDMFormFieldValue();
 
-			ddmFormFieldValue.setInstanceId(formFieldValue.identifier);
 			ddmFormFieldValue.setName(formFieldValue.name);
 
 			DDMFormField ddmFormField = ddmFormFieldsMap.get(
