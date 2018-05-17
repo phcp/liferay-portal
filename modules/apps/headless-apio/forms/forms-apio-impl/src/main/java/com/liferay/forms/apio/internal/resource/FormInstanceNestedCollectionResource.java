@@ -264,8 +264,6 @@ public class FormInstanceNestedCollectionResource
 			MediaObjectCreatorForm mediaObjectCreatorForm)
 		throws PortalException {
 
-		Long folderId = 0L;
-
 		ServiceContext serviceContext = new ServiceContext();
 		BinaryFile binaryFile = mediaObjectCreatorForm.getBinaryFile();
 
@@ -283,12 +281,13 @@ public class FormInstanceNestedCollectionResource
 
 		long size = binaryFile.getSize();
 
-		Folder folder = _dlAppService.getFolder(folderId);
+		DDMFormInstance formInstance =
+			_ddmFormInstanceService.getFormInstance(ddmFormInstanceId);
 
-		long repositoryId = folder.getRepositoryId();
+		long repositoryId = formInstance.getGroupId();
 
 		return _dlAppService.addFileEntry(
-			repositoryId, folderId, sourceFileName, mimeType, title,
+			repositoryId, 0, sourceFileName, mimeType, title,
 			description, changelog, inputStream, size, serviceContext);
 	}
 
