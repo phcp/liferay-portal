@@ -14,12 +14,7 @@
 
 package com.liferay.forms.apio.internal.architect.resource;
 
-import static com.liferay.forms.apio.internal.util.FormInstanceRecordResourceUtil.setServiceContextAttributes;
-import static com.liferay.forms.apio.internal.util.FormValuesUtil.getDDMFormValues;
-import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedString;
-
 import com.google.gson.Gson;
-
 import com.liferay.apio.architect.functional.Try;
 import com.liferay.apio.architect.language.Language;
 import com.liferay.apio.architect.pagination.PageItems;
@@ -45,7 +40,7 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.forms.apio.architect.identifier.FormInstanceIdentifier;
 import com.liferay.forms.apio.architect.identifier.FormInstanceRecordIdentifier;
 import com.liferay.forms.apio.internal.FileEntryValue;
-import com.liferay.forms.apio.internal.FormInstanceRecordServiceContext;
+import com.liferay.forms.apio.internal.ServiceContextWrapper;
 import com.liferay.forms.apio.internal.architect.form.FormInstanceRecordForm;
 import com.liferay.forms.apio.internal.util.FormInstanceRecordResourceUtil;
 import com.liferay.person.apio.architect.identifier.PersonIdentifier;
@@ -53,12 +48,15 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+import static com.liferay.forms.apio.internal.util.FormInstanceRecordResourceUtil.setServiceContextAttributes;
+import static com.liferay.forms.apio.internal.util.FormValuesUtil.getDDMFormValues;
+import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedString;
 
 /**
  * Provides the information necessary to expose FormInstanceRecord resources
@@ -82,8 +80,8 @@ public class FormInstanceRecordNestedCollectionResource
 			this::_getPageItems
 		).addCreator(
 			this::_addFormInstanceRecord, Language.class,
-			FormInstanceRecordServiceContext.class,
-			(credentials, aLong) -> true, FormInstanceRecordForm::buildForm
+			ServiceContextWrapper.class, (credentials, aLong) -> true,
+			FormInstanceRecordForm::buildForm
 		).build();
 	}
 
@@ -100,7 +98,7 @@ public class FormInstanceRecordNestedCollectionResource
 			_ddmFormInstanceRecordService::getFormInstanceRecord
 		).addUpdater(
 			this::_updateFormInstanceRecord, Language.class,
-			FormInstanceRecordServiceContext.class,
+			ServiceContextWrapper.class,
 			(credentials, aLong) -> true, FormInstanceRecordForm::buildForm
 		).build();
 	}
@@ -126,7 +124,7 @@ public class FormInstanceRecordNestedCollectionResource
 			"author", PersonIdentifier.class, DDMFormInstanceRecord::getUserId
 		).addNested(
 			"version", FormInstanceRecordResourceUtil::getVersion,
-			nestedBuilder -> nestedBuilder.types(
+			versionBuilder -> versionBuilder.types(
 				"FormInstanceRecordVersion"
 			).addLinkedModel(
 				"author", PersonIdentifier.class,
@@ -141,8 +139,6 @@ public class FormInstanceRecordNestedCollectionResource
 			).addLocalizedStringByLocale(
 				"value", getLocalizedString(DDMFormFieldValue::getValue)
 			).addString(
-				"identifier", DDMFormFieldValue::getInstanceId
-			).addString(
 				"name", DDMFormFieldValue::getName
 			).build()
 		).build();
@@ -151,7 +147,7 @@ public class FormInstanceRecordNestedCollectionResource
 	private DDMFormInstanceRecord _addFormInstanceRecord(
 			long ddmFormInstanceId,
 			FormInstanceRecordForm formInstanceRecordForm, Language language,
-			FormInstanceRecordServiceContext formInstanceRecordServiceContext)
+			ServiceContextWrapper serviceContextWrapper)
 		throws PortalException {
 
 		DDMFormInstance ddmFormInstance =
@@ -164,13 +160,13 @@ public class FormInstanceRecordNestedCollectionResource
 			language.getPreferredLocale());
 
 		setServiceContextAttributes(
-			formInstanceRecordServiceContext, formInstanceRecordForm.isDraft());
+			serviceContextWrapper, formInstanceRecordForm.isDraft());
 
 		long groupId = ddmFormInstance.getGroupId();
 		long formInstanceId = ddmFormInstance.getFormInstanceId();
 
 		ServiceContext serviceContext =
-			formInstanceRecordServiceContext.getServiceContext();
+			serviceContextWrapper.getServiceContext();
 
 		DDMForm ddmForm = ddmStructure.getDDMForm();
 
@@ -280,7 +276,7 @@ public class FormInstanceRecordNestedCollectionResource
 	private DDMFormInstanceRecord _updateFormInstanceRecord(
 			long formInstanceRecordId,
 			FormInstanceRecordForm formInstanceRecordForm, Language language,
-			FormInstanceRecordServiceContext formInstanceRecordServiceContext)
+			ServiceContextWrapper serviceContextWrapper)
 		throws PortalException {
 
 		DDMFormInstanceRecord ddmFormInstanceRecord =
@@ -297,10 +293,10 @@ public class FormInstanceRecordNestedCollectionResource
 			language.getPreferredLocale());
 
 		ServiceContext serviceContext =
-			formInstanceRecordServiceContext.getServiceContext();
+			serviceContextWrapper.getServiceContext();
 
 		setServiceContextAttributes(
-			formInstanceRecordServiceContext, formInstanceRecordForm.isDraft());
+			serviceContextWrapper, formInstanceRecordForm.isDraft());
 
 		return _ddmFormInstanceRecordService.updateFormInstanceRecord(
 			formInstanceRecordId, false, ddmFormValues, serviceContext);
