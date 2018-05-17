@@ -42,8 +42,6 @@ public class FormContextForm {
 			FormContextForm::new
 		).addRequiredString(
 			"fieldValues", FormContextForm::_setFieldValues
-		).addRequiredString(
-			"inLanguage", FormContextForm::_setLanguageId
 		).build();
 	}
 
@@ -51,19 +49,10 @@ public class FormContextForm {
 		return _fieldValues;
 	}
 
-	public String getLanguageId() {
-		return _languageId;
-	}
-
 	private void _setFieldValues(String fieldValues) {
 		_fieldValues = fieldValues;
 	}
 
-	private void _setLanguageId(String languageId) {
-		_languageId = languageId;
-	}
-
 	private String _fieldValues;
-	private String _languageId;
 
 }

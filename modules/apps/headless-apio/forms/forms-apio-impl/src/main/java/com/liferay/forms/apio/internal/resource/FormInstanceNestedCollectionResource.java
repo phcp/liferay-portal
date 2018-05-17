@@ -17,6 +17,7 @@ package com.liferay.forms.apio.internal.resource;
 import com.liferay.apio.architect.customactions.PostRoute;
 import com.liferay.apio.architect.file.BinaryFile;
 import com.liferay.apio.architect.functional.Try;
+import com.liferay.apio.architect.language.Language;
 import com.liferay.apio.architect.pagination.PageItems;
 import com.liferay.apio.architect.pagination.Pagination;
 import com.liferay.apio.architect.representor.NestedRepresentor;
@@ -98,7 +99,7 @@ public class FormInstanceNestedCollectionResource
 		).addCustomRoute(evaluateContextRoute,
 			this::_evaluateContext, FormContextIdentifier.class,
 			(credentials, aLong) -> true, FormContextForm::buildForm,
-			DDMFormRenderingContext.class
+			DDMFormRenderingContext.class, Language.class
 		).addCustomRoute(uploadFileRoute,
 			this::uploadFile, FileEntryIdentifier.class,
 			(credentials, aLong) -> true,
@@ -232,11 +233,10 @@ public class FormInstanceNestedCollectionResource
 
 	private FormContextWrapper _evaluateContext(
 		Long ddmFormInstanceId, FormContextForm formContextForm,
-		DDMFormRenderingContext ddmFormRenderingContext)
+		DDMFormRenderingContext ddmFormRenderingContext, Language language)
 		throws PortalException {
 
-		Locale locale = LocaleUtil.fromLanguageId(
-			formContextForm.getLanguageId());
+		Locale locale = language.getPreferredLocale();
 
 		LocaleThreadLocal.setThemeDisplayLocale(locale);
 
