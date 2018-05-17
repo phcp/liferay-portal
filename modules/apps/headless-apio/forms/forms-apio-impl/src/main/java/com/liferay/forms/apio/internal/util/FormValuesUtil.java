@@ -36,7 +36,7 @@ import java.util.Map;
 /**
  * @author Paulo Cruz
  */
-public class FormValuesUtil {
+public final class FormValuesUtil {
 
 	public static DDMFormValues getDDMFormValues(
 		String fieldValues, DDMForm ddmForm, Locale locale) {
