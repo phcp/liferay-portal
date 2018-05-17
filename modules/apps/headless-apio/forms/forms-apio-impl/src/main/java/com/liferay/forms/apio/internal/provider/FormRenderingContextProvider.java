@@ -16,18 +16,16 @@ package com.liferay.forms.apio.internal.provider;
 
 import com.liferay.apio.architect.provider.Provider;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderingContext;
+import org.osgi.service.component.annotations.Component;
 
 import javax.servlet.http.HttpServletRequest;
-
 import javax.ws.rs.InternalServerErrorException;
-
-import org.osgi.service.component.annotations.Component;
 
 /**
  * @author Victor Oliveira
  */
 @Component(immediate = true)
-public class DDMFormRenderingContextProvider
+public class FormRenderingContextProvider
 	implements Provider<DDMFormRenderingContext> {
 
 	@Override

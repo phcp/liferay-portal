@@ -17,14 +17,14 @@ package com.liferay.forms.apio.internal.util;
 import com.liferay.apio.architect.functional.Try;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecordVersion;
-import com.liferay.forms.apio.internal.FormInstanceRecordServiceContext;
+import com.liferay.forms.apio.internal.ServiceContextWrapper;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 /**
  * @author Paulo Cruz
  */
-public class FormInstanceRecordResourceUtil {
+public final class FormInstanceRecordResourceUtil {
 
 	public static DDMFormInstanceRecordVersion getVersion(
 		DDMFormInstanceRecord ddmFormInstanceRecord) {
@@ -39,11 +39,10 @@ public class FormInstanceRecordResourceUtil {
 	}
 
 	public static void setServiceContextAttributes(
-		FormInstanceRecordServiceContext formInstanceRecordServiceContext,
-		boolean draft) {
+		ServiceContextWrapper serviceContextWrapper, boolean draft) {
 
 		ServiceContext serviceContext =
-			formInstanceRecordServiceContext.getServiceContext();
+			serviceContextWrapper.getServiceContext();
 
 		if (draft) {
 			serviceContext.setAttribute(
