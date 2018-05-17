@@ -251,7 +251,7 @@ public class FormInstanceRecordNestedCollectionResource
 						fileEntryId);
 
 					FileEntryValue fileEntryValue = new FileEntryValue(
-						fileEntry.getGroupId(), fileEntry.getUserUuid());
+						fileEntry.getGroupId(), fileEntry.getUuid());
 
 					Gson gson = new Gson();
 
