@@ -18,6 +18,7 @@ import com.liferay.apio.architect.functional.Try;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,7 +27,7 @@ import java.util.stream.Stream;
  */
 public class FormPageContextWrapper extends BaseFormContextWrapper {
 
-	public FormPageContextWrapper(Object wrappedMap) {
+	public FormPageContextWrapper(Map<String, Object> wrappedMap) {
 		super(wrappedMap);
 	}
 
@@ -36,17 +37,19 @@ public class FormPageContextWrapper extends BaseFormContextWrapper {
 
 	public List<FormFieldContextWrapper> getFormFieldContexts() {
 		return Try.fromFallible(
-			() -> getListFromValue("rows")
+			() -> getWrappedList("rows", BaseFormContextWrapper::new)
 		).map(
 			List::stream
 		).orElseGet(
 			Stream::empty
 		).map(
-			row -> getListFromMap(row.getWrappedMap(), "columns")
+			row -> getListFromMap(
+				row.getWrappedMap(), "columns", BaseFormContextWrapper::new)
 		).flatMap(
 			List::stream
 		).map(
-			column -> getFieldsList(column.getWrappedMap(), "fields")
+			column -> getListFromMap(
+				column.getWrappedMap(), "fields", FormFieldContextWrapper::new)
 		).flatMap(
 			List::stream
 		).collect(Collectors.toList());

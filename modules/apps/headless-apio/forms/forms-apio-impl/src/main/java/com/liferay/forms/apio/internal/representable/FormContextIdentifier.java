@@ -17,7 +17,7 @@ package com.liferay.forms.apio.internal.representable;
 import com.liferay.apio.architect.identifier.Identifier;
 
 /**
- * @author Paulo Cruz
+ * @author Javier Gamarra
  */
 public interface FormContextIdentifier extends Identifier<String> {
 }

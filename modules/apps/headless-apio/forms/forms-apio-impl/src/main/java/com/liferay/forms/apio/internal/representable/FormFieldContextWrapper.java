@@ -18,6 +18,7 @@ import com.liferay.apio.architect.functional.Try;
 import com.liferay.portal.kernel.util.KeyValuePair;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,7 +27,7 @@ import java.util.stream.Stream;
  */
 public class FormFieldContextWrapper extends BaseFormContextWrapper {
 
-	public FormFieldContextWrapper(Object wrappedMap) {
+	public FormFieldContextWrapper(Map<String, Object> wrappedMap) {
 		super(wrappedMap);
 	}
 
@@ -34,9 +35,13 @@ public class FormFieldContextWrapper extends BaseFormContextWrapper {
 		return getValue("errorMessage", String.class);
 	}
 
+	public String getName() {
+		return getValue("fieldName", String.class);
+	}
+
 	public List<KeyValuePair> getOptions() {
 		return Try.fromFallible(
-			() -> getListFromValue("options")
+			() -> getWrappedList("options", BaseFormContextWrapper::new)
 		).map(
 			List::stream
 		).orElseGet(
@@ -48,20 +53,12 @@ public class FormFieldContextWrapper extends BaseFormContextWrapper {
 		);
 	}
 
-	public String getPathThemeImages() {
-		return getValue("pathThemeImages", String.class);
-	}
-
-	public String getName() {
-		return getValue("fieldName", String.class);
-	}
-
 	public String getValue() {
 		return getValue("value", Object::toString);
 	}
 
 	public boolean isEvaluable() {
-		return getValue("evaluable", Boolean.class, false);
+		return getValueOrDefault("evaluable", Boolean.class, false);
 	}
 
 	public boolean isReadOnly() {
