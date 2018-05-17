@@ -16,16 +16,14 @@ package com.liferay.forms.apio.internal.provider;
 
 import com.liferay.apio.architect.provider.Provider;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
-import com.liferay.forms.apio.internal.FormInstanceRecordServiceContext;
+import com.liferay.forms.apio.internal.ServiceContextWrapper;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import org.osgi.service.component.annotations.Component;
 
 import javax.servlet.http.HttpServletRequest;
-
 import javax.ws.rs.InternalServerErrorException;
-
-import org.osgi.service.component.annotations.Component;
 
 /**
  * Lets resources provide the service context {@code ServiceContext} as a
@@ -34,18 +32,18 @@ import org.osgi.service.component.annotations.Component;
  * @author Paulo Cruz
  */
 @Component(immediate = true)
-public class FormInstanceRecordServiceContextProvider
-	implements Provider<FormInstanceRecordServiceContext> {
+public class ServiceContextWrapperProvider
+	implements Provider<ServiceContextWrapper> {
 
 	@Override
-	public FormInstanceRecordServiceContext createContext(
+	public ServiceContextWrapper createContext(
 		HttpServletRequest httpServletRequest) {
 
 		try {
 			ServiceContext serviceContext = ServiceContextFactory.getInstance(
 				DDMFormInstanceRecord.class.getName(), httpServletRequest);
 
-			return new FormInstanceRecordServiceContext(serviceContext);
+			return new ServiceContextWrapper(serviceContext);
 		}
 		catch (PortalException pe) {
 			throw new InternalServerErrorException(pe.getMessage(), pe);
