@@ -16,7 +16,6 @@ package com.liferay.forms.apio.internal.provider;
 
 import com.liferay.apio.architect.provider.Provider;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
-import com.liferay.forms.apio.internal.ServiceContextWrapper;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
