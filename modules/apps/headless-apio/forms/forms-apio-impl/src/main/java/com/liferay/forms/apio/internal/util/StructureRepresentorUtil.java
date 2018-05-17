@@ -19,6 +19,7 @@ import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
+import com.liferay.dynamic.data.mapping.model.DDMFormLayoutColumn;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayoutPage;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayoutRow;
 import com.liferay.dynamic.data.mapping.model.DDMFormRule;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -95,8 +97,7 @@ public final class StructureRepresentorUtil {
 		).orElseGet(
 			Stream::empty
 		).map(
-			ddmFormLayoutPage ->
-				_getFormLayoutPage(ddmStructure, ddmFormLayoutPage)
+			_getFormLayoutPage(ddmStructure)
 		).collect(
 			Collectors.toList()
 		);
@@ -120,9 +121,9 @@ public final class StructureRepresentorUtil {
 
 	public static Function<DDMFormField, Boolean> hasFormRules() {
 		return ddmFormField -> Try.fromFallible(
-			() -> ddmFormField.getDDMForm()
+			ddmFormField::getDDMForm
 		).map(
-			ddmForm -> ddmForm.getDDMFormRules()
+			DDMForm::getDDMFormRules
 		).map(
 			List::stream
 		).orElseGet(
@@ -137,18 +138,18 @@ public final class StructureRepresentorUtil {
 	private static List<String> _getFieldNames(
 		DDMFormLayoutPage ddmFormLayoutPage) {
 
-		List<DDMFormLayoutRow> ddmFormLayoutRows =
-			ddmFormLayoutPage.getDDMFormLayoutRows();
-
-		Stream<DDMFormLayoutRow> ddmFormLayoutRowStream =
-			ddmFormLayoutRows.stream();
-
-		return ddmFormLayoutRowStream.map(
+		return Optional.ofNullable(
+			ddmFormLayoutPage.getDDMFormLayoutRows()
+		).map(
+			List::stream
+		).orElseGet(
+			Stream::empty
+		).map(
 			DDMFormLayoutRow::getDDMFormLayoutColumns
 		).flatMap(
 			List::stream
 		).map(
-			ddmFormLayoutColumn -> ddmFormLayoutColumn.getDDMFormFieldNames()
+			DDMFormLayoutColumn::getDDMFormFieldNames
 		).flatMap(
 			List::stream
 		).collect(
@@ -156,10 +157,10 @@ public final class StructureRepresentorUtil {
 		);
 	}
 
-	private static List<DDMFormField> _getFieldsPerPage(
-		DDMStructure ddmStructure, List<String> fieldNamesPerPage) {
+	private static Function<List<String>, List<DDMFormField>>
+		_getFieldsPerPage(DDMStructure ddmStructure) {
 
-		return Try.fromFallible(
+		return fieldNamesPerPage -> Try.fromFallible(
 			() -> ddmStructure.getDDMFormFields(true)
 		).map(
 			List::stream
@@ -172,17 +173,19 @@ public final class StructureRepresentorUtil {
 		);
 	}
 
-	private static FormLayoutPage _getFormLayoutPage(
-		DDMStructure ddmStructure, DDMFormLayoutPage ddmFormLayoutPage) {
+	private static Function<DDMFormLayoutPage, FormLayoutPage>
+		_getFormLayoutPage(DDMStructure ddmStructure) {
 
-		List<String> fieldNamesPerPage = _getFieldNames(ddmFormLayoutPage);
-
-		List<DDMFormField> ddmFormFields = _getFieldsPerPage(
-			ddmStructure, fieldNamesPerPage);
-
-		return new FormLayoutPage(
-			ddmFormLayoutPage.getDescription(), ddmFormFields,
-			ddmFormLayoutPage.getTitle());
+		return ddmFormLayoutPage -> Optional.ofNullable(
+			_getFieldNames(ddmFormLayoutPage)
+		).map(
+			_getFieldsPerPage(ddmStructure)
+		).map(
+			ddmFormFields -> new FormLayoutPage(
+				ddmFormLayoutPage, ddmFormFields)
+		).orElse(
+			null
+		);
 	}
 
 }
