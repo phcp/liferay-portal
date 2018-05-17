@@ -17,7 +17,7 @@ package com.liferay.forms.apio.internal.util;
 import com.liferay.apio.architect.functional.Try;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecordVersion;
-import com.liferay.forms.apio.internal.ServiceContextWrapper;
+import com.liferay.forms.apio.internal.provider.ServiceContextWrapper;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
