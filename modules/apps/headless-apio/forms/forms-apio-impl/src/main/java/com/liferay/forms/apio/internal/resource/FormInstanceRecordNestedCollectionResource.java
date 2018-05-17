@@ -40,7 +40,7 @@ import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.forms.apio.architect.identifier.FormInstanceIdentifier;
 import com.liferay.forms.apio.architect.identifier.FormInstanceRecordIdentifier;
 import com.liferay.forms.apio.internal.FileEntryValue;
-import com.liferay.forms.apio.internal.ServiceContextWrapper;
+import com.liferay.forms.apio.internal.provider.ServiceContextWrapper;
 import com.liferay.forms.apio.internal.form.FormInstanceRecordForm;
 import com.liferay.forms.apio.internal.util.FormInstanceRecordResourceUtil;
 import com.liferay.person.apio.identifier.PersonIdentifier;
