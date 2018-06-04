@@ -64,15 +64,20 @@ public final class FormValuesUtil {
 			DDMFormField ddmFormField = ddmFormFieldsMap.get(
 				formFieldValue.name);
 
+			String stringValue = "";
 			Value value;
+
+			if (formFieldValue.value != null) {
+				stringValue = formFieldValue.value.toString();
+			}
 
 			if (ddmFormField.isLocalizable()) {
 				value = new LocalizedValue();
 
-				value.addString(locale, formFieldValue.value);
+				value.addString(locale, stringValue);
 			}
 			else {
-				value = new UnlocalizedValue(formFieldValue.value);
+				value = new UnlocalizedValue(stringValue);
 			}
 
 			ddmFormFieldValue.setValue(value);

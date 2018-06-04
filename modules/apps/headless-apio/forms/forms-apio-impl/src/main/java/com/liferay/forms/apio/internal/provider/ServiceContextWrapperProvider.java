@@ -19,10 +19,12 @@ import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
-import org.osgi.service.component.annotations.Component;
 
 import javax.servlet.http.HttpServletRequest;
+
 import javax.ws.rs.InternalServerErrorException;
+
+import org.osgi.service.component.annotations.Component;
 
 /**
  * Lets resources provide the service context {@code ServiceContext} as a
