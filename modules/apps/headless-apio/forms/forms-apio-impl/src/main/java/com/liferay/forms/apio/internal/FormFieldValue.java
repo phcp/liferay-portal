@@ -14,17 +14,19 @@
 
 package com.liferay.forms.apio.internal;
 
+import com.google.gson.JsonElement;
+
 /**
  * @author Paulo Cruz
  */
 public class FormFieldValue {
 
-	public FormFieldValue(String name, String value) {
+	public FormFieldValue(String name, JsonElement value) {
 		this.name = name;
 		this.value = value;
 	}
 
 	public final String name;
-	public final String value;
+	public final JsonElement value;
 
 }

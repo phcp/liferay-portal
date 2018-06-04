@@ -17,7 +17,6 @@ package com.liferay.forms.apio.internal.architect.resource;
 import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedString;
 import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getFieldOptions;
 import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getFieldProperty;
-import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.getLocalizedValue;
 import static com.liferay.forms.apio.internal.util.StructureRepresentorUtil.hasFormRules;
 
 import com.liferay.apio.architect.representor.NestedRepresentor;
@@ -143,7 +142,8 @@ public class StructureItemResource
 		).addLocalizedStringByLocale(
 			"label", getLocalizedString(DDMFormField::getLabel)
 		).addLocalizedStringByLocale(
-			"placeholder", getLocalizedValue("placeholder")
+			"placeholder",
+			StructureRepresentorUtil.getLocalizedString("placeholder")
 		).addLocalizedStringByLocale(
 			"predefinedValue",
 			getLocalizedString(DDMFormField::getPredefinedValue)
