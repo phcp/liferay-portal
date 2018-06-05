@@ -14,13 +14,15 @@
 
 package com.liferay.forms.apio.internal.util;
 
-import com.liferay.apio.architect.function.throwable.ThrowableFunction;
 import com.liferay.apio.architect.functional.Try;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormRenderingContext;
 import com.liferay.dynamic.data.mapping.form.renderer.DDMFormTemplateContextFactory;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
+import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
+import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
 import com.liferay.forms.apio.internal.representable.FormContextWrapper;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.LocaleThreadLocal;
 
 import java.util.Locale;
@@ -36,17 +38,21 @@ public final class EvaluateContextUtil {
 		_ddmFormTemplateContextFactory = ddmFormTemplateContextFactory;
 	}
 
-	public ThrowableFunction<DDMForm, FormContextWrapper> evaluateContext(
-		String fieldValues, DDMFormRenderingContext ddmFormRenderingContext,
-		Locale locale) {
+	public FormContextWrapper evaluateContext(
+			String fieldValues, DDMStructure ddmStructure,
+			DDMFormRenderingContext ddmFormRenderingContext, Locale locale)
+		throws PortalException {
+
+		DDMForm ddmForm = ddmStructure.getDDMForm();
+		DDMFormLayout ddmFormLayout = ddmStructure.getDDMFormLayout();
 
 		_setEvaluatorLocale(ddmFormRenderingContext, locale);
 
-		return ddmForm -> Try.fromFallible(
+		return Try.fromFallible(
 			() -> FormValuesUtil.getDDMFormValues(fieldValues, ddmForm, locale)
 		).map(
 			ddmFormValues -> _getEvaluationResult(
-				ddmForm, ddmFormValues, ddmFormRenderingContext)
+				ddmForm, ddmFormValues, ddmFormLayout, ddmFormRenderingContext)
 		).orElse(
 			null
 		);
@@ -54,13 +60,14 @@ public final class EvaluateContextUtil {
 
 	private FormContextWrapper _getEvaluationResult(
 		DDMForm ddmForm, DDMFormValues ddmFormValues,
+		DDMFormLayout ddmFormLayout,
 		DDMFormRenderingContext ddmFormRenderingContext) {
 
 		ddmFormRenderingContext.setDDMFormValues(ddmFormValues);
 
 		return Try.fromFallible(
 			() -> _ddmFormTemplateContextFactory.create(
-				ddmForm, ddmFormRenderingContext)
+				ddmForm, ddmFormLayout, ddmFormRenderingContext)
 		).map(
 			FormContextWrapper::new
 		).orElse(

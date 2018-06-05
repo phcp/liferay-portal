@@ -43,7 +43,7 @@ public class BaseFormContextWrapper {
 		).orElseGet(
 			Stream::empty
 		).map(
-			parseItemFunction::apply
+			parseItemFunction
 		).collect(
 			Collectors.toList()
 		);
@@ -67,7 +67,7 @@ public class BaseFormContextWrapper {
 		return Optional.ofNullable(
 			_wrappedMap.get(key)
 		).map(
-			parseFunction::apply
+			parseFunction
 		).orElse(
 			defaultValue
 		);
