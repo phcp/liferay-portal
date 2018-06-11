@@ -52,7 +52,9 @@ public class FormPageContextWrapper extends BaseFormContextWrapper {
 				column.getWrappedMap(), "fields", FormFieldContextWrapper::new)
 		).flatMap(
 			List::stream
-		).collect(Collectors.toList());
+		).collect(
+			Collectors.toList()
+		);
 	}
 
 	public LocalizedValue getTitle() {

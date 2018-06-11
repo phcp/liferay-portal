@@ -19,9 +19,9 @@ package com.liferay.forms.apio.internal;
  */
 public class FileEntryValue {
 
-	public FileEntryValue(long groupId, String userUuid) {
+	public FileEntryValue(long groupId, String uuid) {
 		this.groupId = groupId;
-		this.uuid = userUuid;
+		this.uuid = uuid;
 	}
 
 	public final long groupId;
