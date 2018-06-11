@@ -15,6 +15,7 @@
 package com.liferay.forms.apio.internal.util;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
 import com.liferay.dynamic.data.mapping.model.DDMForm;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Paulo Cruz
@@ -64,28 +66,48 @@ public final class FormValuesUtil {
 			DDMFormField ddmFormField = ddmFormFieldsMap.get(
 				formFieldValue.name);
 
-			String stringValue = "";
-			Value value;
+			if ((ddmFormField != null) && !ddmFormField.isTransient()) {
+				Value value = Optional.ofNullable(
+					formFieldValue.value
+				).map(
+					JsonElement::toString
+				).map(
+					stringValue -> _getValue(stringValue, ddmFormField, locale)
+				).orElse(
+					null
+				);
 
-			if (formFieldValue.value != null) {
-				stringValue = formFieldValue.value.toString();
+				_setFieldValue(value, ddmFormValues, ddmFormFieldValue);
 			}
-
-			if (ddmFormField.isLocalizable()) {
-				value = new LocalizedValue();
-
-				value.addString(locale, stringValue);
-			}
-			else {
-				value = new UnlocalizedValue(stringValue);
-			}
-
-			ddmFormFieldValue.setValue(value);
-
-			ddmFormValues.addDDMFormFieldValue(ddmFormFieldValue);
 		}
 
 		return ddmFormValues;
+	}
+
+	private static Value _getValue(
+		String stringValue, DDMFormField ddmFormField, Locale locale) {
+
+		Value value;
+
+		if (ddmFormField.isLocalizable()) {
+			value = new LocalizedValue();
+
+			value.addString(locale, stringValue);
+		}
+		else {
+			value = new UnlocalizedValue(stringValue);
+		}
+
+		return value;
+	}
+
+	private static void _setFieldValue(
+		Value value, DDMFormValues ddmFormValues,
+		DDMFormFieldValue ddmFormFieldValue) {
+
+		ddmFormFieldValue.setValue(value);
+
+		ddmFormValues.addDDMFormFieldValue(ddmFormFieldValue);
 	}
 
 	private static class FormFieldValueListToken

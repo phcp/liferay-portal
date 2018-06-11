@@ -53,8 +53,11 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -180,20 +183,33 @@ public class FormInstanceRecordNestedCollectionResource
 	}
 
 	private Long _extractFileEntryId(DDMFormFieldValue ddmFormFieldValue) {
-		Value value = ddmFormFieldValue.getValue();
-
-		String fileEntryUrl = (String)value.getValues().values().toArray()[0];
-
-		String fileEntryId = fileEntryUrl.substring(
-			fileEntryUrl.lastIndexOf("/") + 1);
-
-		return Long.valueOf(fileEntryId);
+		return Try.fromFallible(
+			() -> ddmFormFieldValue.getValue()
+		).map(
+			Value::getValues
+		).map(
+			Map::values
+		).map(
+			Collection::stream
+		).mapOptional(
+			Stream::findFirst
+		).map(
+			fileEntryUrl -> fileEntryUrl.substring(
+				fileEntryUrl.lastIndexOf("/") + 1)
+		).map(
+			Long::valueOf
+		).orElse(
+			null
+		);
 	}
 
 	private Optional<DDMFormFieldValue> _findField(
-		DDMFormField formField, List<DDMFormFieldValue> formFieldValues) {
+		DDMFormField formField, List<DDMFormFieldValue> ddmFormFieldValues) {
 
-		return formFieldValues.stream().filter(
+		Stream<DDMFormFieldValue> ddmFormFieldValuesStream =
+			ddmFormFieldValues.stream();
+
+		return ddmFormFieldValuesStream.filter(
 			value -> value.getName().equals(formField.getName())
 		).findFirst();
 	}
@@ -211,7 +227,8 @@ public class FormInstanceRecordNestedCollectionResource
 	}
 
 	private PageItems<DDMFormInstanceRecord> _getPageItems(
-		Pagination pagination, Long formInstanceId) throws PortalException {
+			Pagination pagination, Long formInstanceId)
+		throws PortalException {
 
 		List<DDMFormInstanceRecord> ddmFormInstanceRecords =
 			_ddmFormInstanceRecordService.getFormInstanceRecords(
@@ -229,7 +246,9 @@ public class FormInstanceRecordNestedCollectionResource
 		List<DDMFormField> ddmFormFields,
 		List<DDMFormFieldValue> ddmFormFieldValues) {
 
-		ddmFormFields.stream().filter(
+		Stream<DDMFormField> ddmFormFieldsStream = ddmFormFields.stream();
+
+		ddmFormFieldsStream.filter(
 			formField -> formField.getType().equals("document_library")
 		).map(
 			field -> _findField(field, ddmFormFieldValues)
@@ -241,11 +260,12 @@ public class FormInstanceRecordNestedCollectionResource
 	private void _setFileEntryAsFormFieldValue(
 		DDMFormFieldValue ddmFormFieldValue) {
 
-		Long fileEntryId = _extractFileEntryId(ddmFormFieldValue);
 		Gson gson = new Gson();
 
 		Try.fromFallible(
-			() -> _dlAppService.getFileEntry(fileEntryId)
+			() -> _extractFileEntryId(ddmFormFieldValue)
+		).map(
+			_dlAppService::getFileEntry
 		).map(
 			fileEntry -> new FileEntryValue(
 				fileEntry.getGroupId(), fileEntry.getUuid())
