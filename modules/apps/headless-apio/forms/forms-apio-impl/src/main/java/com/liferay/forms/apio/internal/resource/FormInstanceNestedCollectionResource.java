@@ -43,7 +43,6 @@ import com.liferay.forms.apio.internal.util.EvaluateContextUtil;
 import com.liferay.forms.apio.internal.util.FormInstanceRepresentorUtil;
 import com.liferay.media.object.apio.identifier.FileEntryIdentifier;
 import com.liferay.person.apio.identifier.PersonIdentifier;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.service.ServiceContext;
@@ -99,7 +98,7 @@ public class FormInstanceNestedCollectionResource
 			FormContextForm::buildForm, DDMFormRenderingContext.class,
 			Language.class
 		).addCustomRoute(
-			uploadFileRoute, this::uploadFile, FileEntryIdentifier.class,
+			uploadFileRoute, this::_uploadFile, FileEntryIdentifier.class,
 			(credentials, aLong) -> true, MediaObjectCreatorForm::buildForm
 		).build();
 	}
@@ -233,36 +232,31 @@ public class FormInstanceNestedCollectionResource
 		return new PageItems<>(ddmFormInstances, count);
 	}
 
-	private FileEntry uploadFile(
-			Long ddmFormInstanceId,
-			MediaObjectCreatorForm mediaObjectCreatorForm)
-		throws PortalException {
+	private FileEntry _uploadFile(
+		Long ddmFormInstanceId, MediaObjectCreatorForm mediaObjectCreatorForm) {
 
 		ServiceContext serviceContext = new ServiceContext();
 		BinaryFile binaryFile = mediaObjectCreatorForm.getBinaryFile();
-
 		String sourceFileName = mediaObjectCreatorForm.getName();
-
 		String title = mediaObjectCreatorForm.getTitle();
-
 		String mimeType = binaryFile.getMimeType();
-
 		String description = mediaObjectCreatorForm.getDescription();
-
 		String changelog = mediaObjectCreatorForm.getChangelog();
-
 		InputStream inputStream = binaryFile.getInputStream();
-
 		long size = binaryFile.getSize();
+		long folderId = 0;
 
-		DDMFormInstance formInstance = _ddmFormInstanceService.getFormInstance(
-			ddmFormInstanceId);
-
-		long repositoryId = formInstance.getGroupId();
-
-		return _dlAppService.addFileEntry(
-			repositoryId, 0, sourceFileName, mimeType, title, description,
-			changelog, inputStream, size, serviceContext);
+		return Try.fromFallible(
+			() -> _ddmFormInstanceService.getFormInstance(ddmFormInstanceId)
+		).map(
+			DDMFormInstance::getGroupId
+		).map(
+			repositoryId -> _dlAppService.addFileEntry(
+				repositoryId, folderId, sourceFileName, mimeType, title,
+				description, changelog, inputStream, size, serviceContext)
+		).orElse(
+			null
+		);
 	}
 
 	@Reference

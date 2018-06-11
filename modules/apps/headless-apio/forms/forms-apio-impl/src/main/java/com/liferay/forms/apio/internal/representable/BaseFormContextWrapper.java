@@ -37,7 +37,7 @@ public class BaseFormContextWrapper {
 		Function<Map<String, Object>, T> parseItemFunction) {
 
 		return Try.fromFallible(
-			() -> (List<Map<String, Object>>) map.get(key)
+			() -> (List<Map<String, Object>>)map.get(key)
 		).map(
 			List::stream
 		).orElseGet(
