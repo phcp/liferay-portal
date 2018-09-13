@@ -15,7 +15,6 @@
 package com.liferay.forms.apio.internal.architect.form;
 
 import com.liferay.apio.architect.form.Form;
-import com.liferay.apio.architect.form.Form.Builder;
 
 /**
  * Instances of this class represent the values extracted from a form
@@ -33,7 +32,7 @@ public class FormContextForm {
 	 * @return a context form instance
 	 */
 	public static Form<FormContextForm> buildForm(
-		Builder<FormContextForm> formBuilder) {
+		Form.Builder<FormContextForm> formBuilder) {
 
 		return formBuilder.title(
 			__ -> "The form context form"
