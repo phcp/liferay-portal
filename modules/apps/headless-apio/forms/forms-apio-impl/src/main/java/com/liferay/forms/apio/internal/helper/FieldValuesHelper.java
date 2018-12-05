@@ -12,13 +12,11 @@
  * details.
  */
 
-package com.liferay.forms.apio.internal.util;
+package com.liferay.forms.apio.internal.helper;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.reflect.TypeToken;
-
+import com.liferay.apio.architect.functional.Try;
+import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormField;
 import com.liferay.dynamic.data.mapping.model.LocalizedValue;
@@ -26,11 +24,11 @@ import com.liferay.dynamic.data.mapping.model.UnlocalizedValue;
 import com.liferay.dynamic.data.mapping.model.Value;
 import com.liferay.dynamic.data.mapping.storage.DDMFormFieldValue;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
-import com.liferay.forms.apio.internal.model.FormFieldValue;
+import com.liferay.forms.apio.internal.architect.form.FieldValueForm;
+import com.liferay.forms.apio.internal.model.FileEntryValue;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-import java.lang.reflect.Type;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -39,48 +37,38 @@ import java.util.Optional;
 /**
  * @author Paulo Cruz
  */
-public final class FormValuesUtil {
+@Component(immediate = true, service = FieldValuesHelper.class)
+public final class FieldValuesHelper {
 
-	public static DDMFormValues getDDMFormValues(
-		String fieldValues, DDMForm ddmForm, Locale locale) {
+	public DDMFormValues getDDMFormValues(
+		List<FieldValueForm> fieldValueForms, DDMForm ddmForm, Locale locale) {
 
 		DDMFormValues ddmFormValues = new DDMFormValues(ddmForm);
 
 		ddmFormValues.addAvailableLocale(locale);
 		ddmFormValues.setDefaultLocale(locale);
 
-		FormValuesUtil.FormFieldValueListToken formFieldValueListToken =
-			new FormValuesUtil.FormFieldValueListToken();
-
 		Map<String, DDMFormField> ddmFormFieldsMap =
 			ddmForm.getDDMFormFieldsMap(true);
 
-		Type listType = formFieldValueListToken.getType();
-
-		Gson gson = new Gson();
-
-		List<FormFieldValue> formFieldValues = gson.fromJson(
-			fieldValues, listType);
-
-		for (FormFieldValue formFieldValue : formFieldValues) {
+		for (FieldValueForm fieldValueForm : fieldValueForms) {
 			DDMFormFieldValue ddmFormFieldValue = new DDMFormFieldValue();
 
-			ddmFormFieldValue.setName(formFieldValue.name);
+			ddmFormFieldValue.setName(fieldValueForm.getName());
 
 			DDMFormField ddmFormField = ddmFormFieldsMap.get(
-				formFieldValue.name);
+				fieldValueForm.getName());
 
 			Value value = _EMPTY_VALUE;
 
 			if (ddmFormField != null) {
 				value = Optional.ofNullable(
-					formFieldValue.value
-				).map(
-					FormValuesUtil::_toString
+					fieldValueForm.getValue()
 				).map(
 					stringValue -> _getValue(stringValue, ddmFormField, locale)
-				).orElse(
-					_EMPTY_VALUE
+				).orElseGet(
+					() -> _getDocumentValue(
+						fieldValueForm, ddmFormField, locale)
 				);
 			}
 
@@ -90,24 +78,53 @@ public final class FormValuesUtil {
 		return ddmFormValues;
 	}
 
-	private static Value _getValue(
-		String stringValue, DDMFormField ddmFormField, Locale locale) {
+	private Value _getDocumentValue(
+		FieldValueForm fieldValueForm, DDMFormField ddmFormField,
+		Locale locale) {
 
-		Value value = null;
-
-		if (ddmFormField.isLocalizable()) {
-			value = new LocalizedValue();
-
-			value.addString(locale, stringValue);
-		}
-		else {
-			value = new UnlocalizedValue(stringValue);
-		}
-
-		return value;
+		return Optional.ofNullable(
+			fieldValueForm.getDocument()
+		).map(
+			document -> _getFileData(fieldValueForm)
+		).map(
+			stringValue -> _getValue(stringValue, ddmFormField, locale)
+		).orElse(
+			_EMPTY_VALUE
+		);
 	}
 
-	private static void _setFieldValue(
+	private String _getFileData(FieldValueForm fieldValueForm) {
+		return Try.fromFallible(
+			fieldValueForm::getDocument
+		).map(
+			_dlAppService::getFileEntry
+		).map(
+			fileEntry -> new FileEntryValue(
+				fileEntry.getFileEntryId(), fileEntry.getGroupId(),
+				fileEntry.getTitle(), fileEntry.getMimeType(),
+				fileEntry.getUuid(), fileEntry.getVersion())
+		).map(
+			fileEntryValue -> gson.toJson(fileEntryValue)
+		).orElse(
+			null
+		);
+	}
+
+	private Value _getValue(
+		String stringValue, DDMFormField ddmFormField, Locale locale) {
+
+		if (ddmFormField.isLocalizable()) {
+			LocalizedValue localizedValue = new LocalizedValue();
+
+			localizedValue.addString(locale, stringValue);
+
+			return localizedValue;
+		}
+
+		return new UnlocalizedValue(stringValue);
+	}
+
+	private void _setFieldValue(
 		Value value, DDMFormValues ddmFormValues,
 		DDMFormFieldValue ddmFormFieldValue) {
 
@@ -116,23 +133,12 @@ public final class FormValuesUtil {
 		ddmFormValues.addDDMFormFieldValue(ddmFormFieldValue);
 	}
 
-	private static String _toString(JsonElement jsonElement) {
-		if (jsonElement instanceof JsonPrimitive) {
-			JsonPrimitive jsonPrimitive = (JsonPrimitive)jsonElement;
-
-			if (!jsonPrimitive.isJsonNull()) {
-				return jsonPrimitive.getAsString();
-			}
-		}
-
-		return jsonElement.toString();
-	}
-
 	private static final Value _EMPTY_VALUE = new UnlocalizedValue(
 		(String)null);
 
-	private static class FormFieldValueListToken
-		extends TypeToken<ArrayList<FormFieldValue>> {
-	}
+	private Gson gson = new Gson();
+
+	@Reference
+	private DLAppService _dlAppService;
 
 }

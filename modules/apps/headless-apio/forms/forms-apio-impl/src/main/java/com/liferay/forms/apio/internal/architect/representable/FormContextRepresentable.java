@@ -16,16 +16,22 @@ package com.liferay.forms.apio.internal.architect.representable;
 
 import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedString;
 
+import com.liferay.apio.architect.functional.Try;
 import com.liferay.apio.architect.representor.NestedRepresentor;
 import com.liferay.apio.architect.representor.Representable;
 import com.liferay.apio.architect.representor.Representor;
+import com.liferay.document.library.kernel.service.DLAppService;
 import com.liferay.forms.apio.architect.identifier.FormContextIdentifier;
 import com.liferay.forms.apio.internal.model.FormContextWrapper;
 import com.liferay.forms.apio.internal.model.FormFieldContextWrapper;
 import com.liferay.forms.apio.internal.model.FormPageContextWrapper;
+import com.liferay.media.object.apio.architect.identifier.MediaObjectIdentifier;
 import com.liferay.portal.kernel.util.KeyValuePair;
 
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.structured.content.apio.architect.util.StructuredContentUtil;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Paulo Cruz
@@ -78,6 +84,16 @@ public class FormContextRepresentable
 			"isValueChanged", FormFieldContextWrapper::isValueChanged
 		).addBoolean(
 			"isVisible", FormFieldContextWrapper::isVisible
+		).addLinkedModel(
+			"document", MediaObjectIdentifier.class,
+			formFieldContextWrapper -> Try.fromFallible(
+				formFieldContextWrapper::getValue
+			).map(
+				string -> StructuredContentUtil.getFileEntryId(
+					string, _dlAppService)
+			).orElse(
+				null
+			)
 		).addNestedList(
 			"options", FormFieldContextWrapper::getOptions,
 			optionsBuilder -> optionsBuilder.types(
@@ -115,5 +131,8 @@ public class FormContextRepresentable
 			this::_buildFormContextFields
 		).build();
 	}
+
+	@Reference
+	private DLAppService _dlAppService;
 
 }

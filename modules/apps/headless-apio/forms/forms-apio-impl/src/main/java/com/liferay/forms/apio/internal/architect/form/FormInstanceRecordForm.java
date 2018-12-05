@@ -16,6 +16,8 @@ package com.liferay.forms.apio.internal.architect.form;
 
 import com.liferay.apio.architect.form.Form;
 
+import java.util.List;
+
 /**
  * Represents the values extracted from a form instance record form.
  *
@@ -42,14 +44,15 @@ public class FormInstanceRecordForm {
 		).constructor(
 			FormInstanceRecordForm::new
 		).addRequiredBoolean(
-			"isDraft", FormInstanceRecordForm::setDraft
-		).addRequiredString(
-			"fieldValues", FormInstanceRecordForm::setFieldValues
+			"draft", FormInstanceRecordForm::setDraft
+		).addRequiredNestedModelList(
+			"fieldValues", FieldValueForm::buildForm,
+			FormInstanceRecordForm::setFieldValueForms
 		).build();
 	}
 
-	public String getFieldValues() {
-		return _fieldValues;
+	public List<FieldValueForm> getFieldValueForms() {
+		return _fieldValueForms;
 	}
 
 	public boolean isDraft() {
@@ -60,11 +63,11 @@ public class FormInstanceRecordForm {
 		_draft = draft;
 	}
 
-	public void setFieldValues(String formValues) {
-		_fieldValues = formValues;
+	public void setFieldValueForms(List<FieldValueForm> formValues) {
+		_fieldValueForms = formValues;
 	}
 
 	private boolean _draft;
-	private String _fieldValues;
+	private List<FieldValueForm> _fieldValueForms;
 
 }

@@ -160,7 +160,7 @@ public class FormInstanceNestedCollectionResource
 			DDMFormInstance::getStructure
 		).map(
 			ddmStructure -> _evaluateContextHelper.evaluateContext(
-				formContextForm.getFieldValues(), ddmStructure,
+				formContextForm.getFieldValueForms(), ddmStructure,
 				ddmFormRenderingContext, acceptLanguage.getPreferredLocale())
 		).orElse(
 			null

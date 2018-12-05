@@ -16,6 +16,8 @@ package com.liferay.forms.apio.internal.architect.form;
 
 import com.liferay.apio.architect.form.Form;
 
+import java.util.List;
+
 /**
  * Represents the values extracted from a form context form.
  *
@@ -39,19 +41,20 @@ public class FormContextForm {
 			__ -> "This form can be used to evaluate a form context"
 		).constructor(
 			FormContextForm::new
-		).addRequiredString(
-			"fieldValues", FormContextForm::setFieldValues
+		).addRequiredNestedModelList(
+			"fieldValues", FieldValueForm::buildForm,
+			FormContextForm::setFieldValueForms
 		).build();
 	}
 
-	public String getFieldValues() {
-		return _fieldValues;
+	public List<FieldValueForm> getFieldValueForms() {
+		return _fieldValueForms;
 	}
 
-	public void setFieldValues(String fieldValues) {
-		_fieldValues = fieldValues;
+	public void setFieldValueForms(List<FieldValueForm> fieldValueForms) {
+		_fieldValueForms = fieldValueForms;
 	}
 
-	private String _fieldValues;
+	private List<FieldValueForm> _fieldValueForms;
 
 }

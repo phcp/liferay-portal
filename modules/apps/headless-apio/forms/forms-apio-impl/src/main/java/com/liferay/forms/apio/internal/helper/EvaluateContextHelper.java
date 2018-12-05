@@ -21,9 +21,10 @@ import com.liferay.dynamic.data.mapping.model.DDMForm;
 import com.liferay.dynamic.data.mapping.model.DDMFormLayout;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.storage.DDMFormValues;
+import com.liferay.forms.apio.internal.architect.form.FieldValueForm;
 import com.liferay.forms.apio.internal.model.FormContextWrapper;
-import com.liferay.forms.apio.internal.util.FormValuesUtil;
 
+import java.util.List;
 import java.util.Locale;
 
 import org.osgi.service.component.annotations.Component;
@@ -36,7 +37,7 @@ import org.osgi.service.component.annotations.Reference;
 public final class EvaluateContextHelper {
 
 	public FormContextWrapper evaluateContext(
-		String fieldValues, DDMStructure ddmStructure,
+		List<FieldValueForm> fieldValueForms, DDMStructure ddmStructure,
 		DDMFormRenderingContext ddmFormRenderingContext, Locale locale) {
 
 		DDMForm ddmForm = ddmStructure.getDDMForm();
@@ -44,7 +45,8 @@ public final class EvaluateContextHelper {
 		ddmFormRenderingContext.setLocale(locale);
 
 		return Try.fromFallible(
-			() -> FormValuesUtil.getDDMFormValues(fieldValues, ddmForm, locale)
+			() -> _fieldValuesHelper.getDDMFormValues(
+				fieldValueForms, ddmForm, locale)
 		).map(
 			ddmFormValues -> _getFormContextWrapper(
 				ddmForm, ddmFormValues, ddmStructure.getDDMFormLayout(),
@@ -73,5 +75,8 @@ public final class EvaluateContextHelper {
 
 	@Reference
 	private DDMFormTemplateContextFactory _ddmFormTemplateContextFactory;
+
+	@Reference
+	private FieldValuesHelper _fieldValuesHelper;
 
 }

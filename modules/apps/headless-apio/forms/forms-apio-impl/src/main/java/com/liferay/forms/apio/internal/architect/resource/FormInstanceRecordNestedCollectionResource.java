@@ -15,7 +15,6 @@
 package com.liferay.forms.apio.internal.architect.resource;
 
 import static com.liferay.forms.apio.internal.util.FormInstanceRecordResourceUtil.calculateServiceContextAttributes;
-import static com.liferay.forms.apio.internal.util.FormValuesUtil.getDDMFormValues;
 import static com.liferay.forms.apio.internal.util.LocalizedValueUtil.getLocalizedString;
 
 import com.liferay.apio.architect.functional.Try;
@@ -38,7 +37,7 @@ import com.liferay.forms.apio.architect.identifier.FormInstanceIdentifier;
 import com.liferay.forms.apio.architect.identifier.FormInstanceRecordIdentifier;
 import com.liferay.forms.apio.internal.architect.form.FormInstanceRecordForm;
 import com.liferay.forms.apio.internal.architect.locale.AcceptLocale;
-import com.liferay.forms.apio.internal.helper.UploadFileHelper;
+import com.liferay.forms.apio.internal.helper.FieldValuesHelper;
 import com.liferay.forms.apio.internal.model.ServiceContextWrapper;
 import com.liferay.media.object.apio.architect.identifier.MediaObjectIdentifier;
 import com.liferay.person.apio.architect.identifier.PersonIdentifier;
@@ -160,12 +159,9 @@ public class FormInstanceRecordNestedCollectionResource
 
 		DDMForm ddmForm = ddmStructure.getDDMForm();
 
-		DDMFormValues ddmFormValues = getDDMFormValues(
-			formInstanceRecordForm.getFieldValues(), ddmForm,
+		DDMFormValues ddmFormValues = _fieldValuesHelper.getDDMFormValues(
+			formInstanceRecordForm.getFieldValueForms(), ddmForm,
 			acceptLocale.get());
-
-		_uploadFileHelper.linkFiles(
-			ddmForm.getDDMFormFields(), ddmFormValues.getDDMFormFieldValues());
 
 		ServiceContext serviceContext = calculateServiceContextAttributes(
 			serviceContextWrapper, formInstanceRecordForm.isDraft());
@@ -230,12 +226,9 @@ public class FormInstanceRecordNestedCollectionResource
 
 		DDMForm ddmForm = ddmStructure.getDDMForm();
 
-		DDMFormValues ddmFormValues = getDDMFormValues(
-			formInstanceRecordForm.getFieldValues(), ddmForm,
+		DDMFormValues ddmFormValues = _fieldValuesHelper.getDDMFormValues(
+			formInstanceRecordForm.getFieldValueForms(), ddmForm,
 			acceptLocale.get());
-
-		_uploadFileHelper.linkFiles(
-			ddmForm.getDDMFormFields(), ddmFormValues.getDDMFormFieldValues());
 
 		ServiceContext serviceContext = calculateServiceContextAttributes(
 			serviceContextWrapper, formInstanceRecordForm.isDraft());
@@ -253,12 +246,12 @@ public class FormInstanceRecordNestedCollectionResource
 	@Reference
 	private DLAppService _dlAppService;
 
+	@Reference
+	private FieldValuesHelper _fieldValuesHelper;
+
 	@Reference(
 		target = "(model.class.name=com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord)"
 	)
 	private HasPermission<Long> _hasPermission;
-
-	@Reference
-	private UploadFileHelper _uploadFileHelper;
 
 }
