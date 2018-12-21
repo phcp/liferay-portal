@@ -66,7 +66,7 @@ public class FormStructureContentApioTest {
 		assertThat(inputControl, equalTo("text"));
 	}
 
-	private String _getFieldProperty(
+	private <T> T _getFieldProperty(
 		String fieldName, String fieldPropertyName) {
 
 		return ApioClientBuilder.given(
