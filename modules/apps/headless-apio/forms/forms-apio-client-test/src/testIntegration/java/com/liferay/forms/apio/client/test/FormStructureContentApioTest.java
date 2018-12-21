@@ -14,7 +14,8 @@
 
 package com.liferay.forms.apio.client.test;
 
-import static io.restassured.RestAssured.withArgs;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 import com.liferay.forms.apio.client.test.activator.FormStructureApioTestBundleActivator;
 import com.liferay.oauth2.provider.test.util.OAuth2ProviderTestUtil;
@@ -22,9 +23,6 @@ import com.liferay.portal.apio.test.util.ApioClientBuilder;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -56,20 +54,46 @@ public class FormStructureContentApioTest {
 
 	@Test
 	public void testTextFieldDataTypeIsDisplayed() {
-		_fieldPropertyMatches(
-			"MyTextField", "dataType", Matchers.equalTo("string"));
+		String dataType = _getFieldProperty("MyTextField", "dataType");
+
+		assertThat(dataType, equalTo("string"));
 	}
 
 	@Test
 	public void testTextFieldInputControlIsDisplayed() {
-		_fieldPropertyMatches(
-			"MyTextField", "inputControl", Matchers.equalTo("text"));
+		String inputControl = _getFieldProperty("MyTextField", "inputControl");
+
+		assertThat(inputControl, equalTo("text"));
 	}
 
-	private void _fieldPropertyMatches(
-		String fieldName, String fieldPropertyName, Matcher matcher) {
+	private String _getFieldProperty(
+		String fieldName, String fieldPropertyName) {
 
-		String href = ApioClientBuilder.given(
+		return ApioClientBuilder.given(
+		).basicAuth(
+			"test@liferay.com", "test"
+		).header(
+			"Accept", "application/hal+json"
+		).header(
+			"Accept-Language", "en-US"
+		).when(
+		).get(
+			_getFormStructuresLink()
+		).then(
+		).log(
+		).ifError(
+		).statusCode(
+			200
+		).extract(
+		).path(
+			"_embedded.Structure[0]._embedded.formPages._embedded[0]." +
+				"_embedded.fields._embedded.find {it.name == '%s'}.%s",
+			fieldName, fieldPropertyName
+		);
+	}
+
+	private String _getFormStructuresLink() {
+		return ApioClientBuilder.given(
 		).basicAuth(
 			"test@liferay.com", "test"
 		).header(
@@ -85,29 +109,8 @@ public class FormStructureContentApioTest {
 		).extract(
 		).path(
 			"_embedded.ContentSpace.find {it.name == '%s'}._links." +
-				"formStructures.href",
+			"formStructures.href",
 			FormStructureApioTestBundleActivator.SITE_NAME
-		);
-
-		ApioClientBuilder.given(
-		).basicAuth(
-			"test@liferay.com", "test"
-		).header(
-			"Accept", "application/hal+json"
-		).header(
-			"Accept-Language", "en-US"
-		).when(
-		).get(
-			href
-		).then(
-		).log(
-		).ifError(
-		).statusCode(
-			200
-		).body(
-			"_embedded.Structure[0]._embedded.formPages._embedded[0]." +
-				"_embedded.fields._embedded.find {it.name == '%s'}.%s",
-			withArgs(fieldName, fieldPropertyName), matcher
 		);
 	}
 
