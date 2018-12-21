@@ -1,0 +1,58 @@
+{
+	"availableLanguageIds": [
+		"en_US"
+	],
+	"defaultLanguageId": "en_US",
+	"fields": [
+		{
+			"autocomplete": false,
+			"dataSourceType": "",
+			"dataType": "string",
+			"ddmDataProviderInstanceId": "[]",
+			"ddmDataProviderInstanceOutput": "[]",
+			"displayStyle": "singleline",
+			"fieldNamespace": "",
+			"indexType": "keyword",
+			"label": {
+				"en_US": "My Text Field"
+			},
+			"localizable": true,
+			"name": "MyTextField",
+			"options": [
+				{
+					"label": {
+						"en_US": "Option"
+					},
+					"value": "Option"
+				}
+			],
+			"placeholder": {
+				"en_US": ""
+			},
+			"predefinedValue": {
+				"en_US": ""
+			},
+			"readOnly": false,
+			"repeatable": false,
+			"required": false,
+			"showLabel": true,
+			"tip": {
+				"en_US": ""
+			},
+			"tooltip": {
+				"en_US": ""
+			},
+			"type": "text",
+			"validation": {
+				"errorMessage": "",
+				"expression": ""
+			},
+			"visibilityExpression": ""
+		}
+	],
+	"successPage": {
+		"body": {},
+		"enabled": false,
+		"title": {}
+	}
+}
