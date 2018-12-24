@@ -16,13 +16,15 @@ package com.liferay.forms.apio.client.test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 import com.liferay.forms.apio.client.test.activator.FormStructureApioTestBundleActivator;
+import com.liferay.forms.apio.client.test.util.FormStructureApioTestUtil;
 import com.liferay.oauth2.provider.test.util.OAuth2ProviderTestUtil;
-import com.liferay.portal.apio.test.util.ApioClientBuilder;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -39,7 +41,9 @@ import org.junit.runner.RunWith;
  */
 @RunAsClient
 @RunWith(Arquillian.class)
-public class FormStructureContentApioTest {
+public class FormStructureApioTest {
+
+	private static final String TEXT_FIELD_NAME = "MyTextField";
 
 	@Deployment
 	public static Archive<?> getArchive() throws Exception {
@@ -53,65 +57,41 @@ public class FormStructureContentApioTest {
 	}
 
 	@Test
+	public void testGetTextFieldFromFormStructure() {
+		Map<String, Object> fieldProperties =
+			FormStructureApioTestUtil.getFieldProperties(
+				_rootEndpointURL, TEXT_FIELD_NAME);
+
+		assertThat(fieldProperties.get("autocomplete"), notNullValue());
+		assertThat(fieldProperties.get("displayStyle"), notNullValue());
+		assertThat(fieldProperties.get("hasFormRules"), notNullValue());
+		assertThat(fieldProperties.get("showLabel"), notNullValue());
+		assertThat(fieldProperties.get("repeatable"), notNullValue());
+		assertThat(fieldProperties.get("required"), notNullValue());
+	}
+
+	@Test
 	public void testTextFieldDataTypeIsDisplayed() {
-		String dataType = _getFieldProperty("MyTextField", "dataType");
+		String dataType = FormStructureApioTestUtil.getFieldProperty(
+			_rootEndpointURL, TEXT_FIELD_NAME, "dataType");
 
 		assertThat(dataType, equalTo("string"));
 	}
 
 	@Test
 	public void testTextFieldInputControlIsDisplayed() {
-		String inputControl = _getFieldProperty("MyTextField", "inputControl");
+		String inputControl = FormStructureApioTestUtil.getFieldProperty(
+			_rootEndpointURL, TEXT_FIELD_NAME, "inputControl");
 
 		assertThat(inputControl, equalTo("text"));
 	}
 
-	private <T> T _getFieldProperty(
-		String fieldName, String fieldPropertyName) {
+	@Test
+	public void testTextFieldLabelIsDisplayed() {
+		String inputControl = FormStructureApioTestUtil.getFieldProperty(
+			_rootEndpointURL, TEXT_FIELD_NAME, "label");
 
-		return ApioClientBuilder.given(
-		).basicAuth(
-			"test@liferay.com", "test"
-		).header(
-			"Accept", "application/hal+json"
-		).header(
-			"Accept-Language", "en-US"
-		).when(
-		).get(
-			_getFormStructuresLink()
-		).then(
-		).log(
-		).ifError(
-		).statusCode(
-			200
-		).extract(
-		).path(
-			"_embedded.Structure[0]._embedded.formPages._embedded[0]." +
-				"_embedded.fields._embedded.find {it.name == '%s'}.%s",
-			fieldName, fieldPropertyName
-		);
-	}
-
-	private String _getFormStructuresLink() {
-		return ApioClientBuilder.given(
-		).basicAuth(
-			"test@liferay.com", "test"
-		).header(
-			"Accept", "application/hal+json"
-		).header(
-			"Accept-Language", "en-US"
-		).when(
-		).get(
-			_rootEndpointURL.toExternalForm()
-		).follow(
-			"_links.content-space.href"
-		).then(
-		).extract(
-		).path(
-			"_embedded.ContentSpace.find {it.name == '%s'}._links." +
-			"formStructures.href",
-			FormStructureApioTestBundleActivator.SITE_NAME
-		);
+		assertThat(inputControl, equalTo("My Text Field"));
 	}
 
 	private URL _rootEndpointURL;

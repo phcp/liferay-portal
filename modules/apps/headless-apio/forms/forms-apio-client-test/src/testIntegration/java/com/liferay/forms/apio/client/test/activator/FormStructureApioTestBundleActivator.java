@@ -59,6 +59,8 @@ public class FormStructureApioTestBundleActivator implements BundleActivator {
 	public static final String SITE_NAME =
 		FormStructureApioTestBundleActivator.class.getSimpleName() + "Site";
 
+	public static final String STRUCTURE_DEFAULT_LANGUAGE = "en-US";
+
 	@Override
 	public void start(BundleContext bundleContext) {
 		_autoCloseables = new ArrayList<>();
