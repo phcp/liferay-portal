@@ -41,7 +41,7 @@ import org.junit.runner.RunWith;
  */
 @RunAsClient
 @RunWith(Arquillian.class)
-public class FormStructureApioTest {
+public class TextFieldFormStructureApioTest {
 
 	private static final String TEXT_FIELD_NAME = "MyTextField";
 

@@ -2,21 +2,36 @@
 	"availableLanguageIds": [
 		"en_US"
 	],
+	"successPage": {
+		"body": {},
+		"title": {},
+		"enabled": false
+	},
 	"defaultLanguageId": "en_US",
 	"fields": [
 		{
 			"autocomplete": false,
-			"dataSourceType": "",
-			"dataType": "string",
 			"ddmDataProviderInstanceId": "[]",
-			"ddmDataProviderInstanceOutput": "[]",
-			"displayStyle": "singleline",
-			"fieldNamespace": "",
-			"indexType": "keyword",
+			"dataType": "string",
+			"predefinedValue": {
+				"en_US": ""
+			},
+			"tooltip": {
+				"en_US": ""
+			},
+			"readOnly": false,
 			"label": {
 				"en_US": "My Text Field"
 			},
-			"localizable": true,
+			"type": "text",
+			"required": false,
+			"showLabel": true,
+			"displayStyle": "singleline",
+			"fieldNamespace": "",
+			"indexType": "keyword",
+			"visibilityExpression": "",
+			"ddmDataProviderInstanceOutput": "[]",
+			"repeatable": false,
 			"name": "MyTextField",
 			"options": [
 				{
@@ -26,33 +41,82 @@
 					"value": "Option"
 				}
 			],
+			"localizable": true,
+			"tip": {
+				"en_US": ""
+			},
 			"placeholder": {
 				"en_US": ""
 			},
+			"dataSourceType": "",
+			"validation": {
+				"expression": "",
+				"errorMessage": ""
+			}
+		},
+		{
+			"dataType": "integer",
 			"predefinedValue": {
-				"en_US": ""
-			},
-			"readOnly": false,
-			"repeatable": false,
-			"required": false,
-			"showLabel": true,
-			"tip": {
-				"en_US": ""
+				"en_US": "null"
 			},
 			"tooltip": {
 				"en_US": ""
 			},
-			"type": "text",
-			"validation": {
-				"errorMessage": "",
-				"expression": ""
+			"readOnly": false,
+			"label": {
+				"en_US": "My Integer Field"
 			},
-			"visibilityExpression": ""
+			"type": "numeric",
+			"required": false,
+			"showLabel": true,
+			"fieldNamespace": "",
+			"indexType": "keyword",
+			"visibilityExpression": "",
+			"repeatable": false,
+			"name": "MyIntegerField",
+			"localizable": true,
+			"tip": {
+				"en_US": ""
+			},
+			"placeholder": {
+				"en_US": ""
+			},
+			"validation": {
+				"expression": "",
+				"errorMessage": ""
+			}
+		},
+		{
+			"dataType": "double",
+			"predefinedValue": {
+				"en_US": "null"
+			},
+			"tooltip": {
+				"en_US": ""
+			},
+			"readOnly": false,
+			"label": {
+				"en_US": "My Double Field"
+			},
+			"type": "numeric",
+			"required": false,
+			"showLabel": true,
+			"fieldNamespace": "",
+			"indexType": "keyword",
+			"visibilityExpression": "",
+			"repeatable": false,
+			"name": "MyDoubleField",
+			"localizable": true,
+			"tip": {
+				"en_US": ""
+			},
+			"placeholder": {
+				"en_US": ""
+			},
+			"validation": {
+				"expression": "",
+				"errorMessage": ""
+			}
 		}
-	],
-	"successPage": {
-		"body": {},
-		"enabled": false,
-		"title": {}
-	}
+	]
 }
