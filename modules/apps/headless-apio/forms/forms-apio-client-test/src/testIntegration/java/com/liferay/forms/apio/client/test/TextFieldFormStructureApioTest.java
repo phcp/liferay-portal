@@ -88,10 +88,10 @@ public class TextFieldFormStructureApioTest {
 
 	@Test
 	public void testTextFieldLabelIsDisplayed() {
-		String inputControl = FormStructureApioTestUtil.getFieldProperty(
+		String label = FormStructureApioTestUtil.getFieldProperty(
 			_rootEndpointURL, TEXT_FIELD_NAME, "label");
 
-		assertThat(inputControl, equalTo("My Text Field"));
+		assertThat(label, equalTo("My Text Field"));
 	}
 
 	private URL _rootEndpointURL;
