@@ -35,7 +35,7 @@ public final class FormStructureApioTestUtil {
 		return formStructureResponse.extract(
 		).path(
 			"_embedded.Structure[0]._embedded.formPages._embedded[0]." +
-			"_embedded.fields._embedded.find {it.name == '%s'}",
+				"_embedded.fields._embedded.find {it.name == '%s'}",
 			fieldName
 		);
 	}
