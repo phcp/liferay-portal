@@ -57,7 +57,7 @@ public class NumericFormApioTest {
 	}
 
 	@Test
-	public void testGetNumericFieldsFromFormStructure() {
+	public void testGetNumericFieldsFromForm() {
 		_assertNumericFieldProperties(_DOUBLE_FIELD_NAME);
 		_assertNumericFieldProperties(_INTEGER_FIELD_NAME);
 	}
