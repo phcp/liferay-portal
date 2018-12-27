@@ -32,6 +32,12 @@ public class TextFormApioTestBundleActivator
 	private interface FormWithTextFields {
 
 		@DDMFormField(
+			label = "My Multiline Text Field", name = "MyMultilineTextField",
+			properties = "displayStyle=multiline", type = "text"
+		)
+		public String multilineTextValue();
+
+		@DDMFormField(
 			label = "My Text Field", name = "MyTextField",
 			properties = "displayStyle=singleline", type = "text"
 		)

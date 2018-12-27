@@ -58,7 +58,7 @@ public class TextFormApioTest {
 	}
 
 	@Test
-	public void testGetTextFieldFromFormStructure() {
+	public void testGetTextFieldFromForm() {
 		Map<String, Object> fieldProperties =
 			FormApioTestUtil.getFieldProperties(
 				_rootEndpointURL, _TEXT_FIELD_NAME);
@@ -79,6 +79,18 @@ public class TextFormApioTest {
 	}
 
 	@Test
+	public void testTextFieldDisplayStyle() {
+		String multilineDisplayStyle = FormApioTestUtil.getFieldProperty(
+			_rootEndpointURL, _MULTILINE_TEXT_FIELD_NAME, "displayStyle");
+
+		String singlelineDisplayStyle = FormApioTestUtil.getFieldProperty(
+			_rootEndpointURL, _TEXT_FIELD_NAME, "displayStyle");
+
+		assertThat(multilineDisplayStyle, equalTo("multiline"));
+		assertThat(singlelineDisplayStyle, equalTo("singleline"));
+	}
+
+	@Test
 	public void testTextFieldInputControlIsDisplayed() {
 		String inputControl = FormApioTestUtil.getFieldProperty(
 			_rootEndpointURL, _TEXT_FIELD_NAME, "inputControl");
@@ -93,6 +105,9 @@ public class TextFormApioTest {
 
 		assertThat(label, equalTo("My Text Field"));
 	}
+
+	private static final String _MULTILINE_TEXT_FIELD_NAME =
+		"MyMultilineTextField";
 
 	private static final String _TEXT_FIELD_NAME = "MyTextField";
 
