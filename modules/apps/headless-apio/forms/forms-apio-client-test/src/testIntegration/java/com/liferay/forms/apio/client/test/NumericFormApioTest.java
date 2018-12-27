@@ -14,13 +14,13 @@
 
 package com.liferay.forms.apio.client.test;
 
-import static com.liferay.forms.apio.client.test.util.FormStructureMatchersUtil.isBoolean;
+import static com.liferay.forms.apio.client.test.matcher.FormApioTestMatchers.isBoolean;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import com.liferay.forms.apio.client.test.activator.FormStructureApioTestBundleActivator;
-import com.liferay.forms.apio.client.test.util.FormStructureApioTestUtil;
+import com.liferay.forms.apio.client.test.internal.activator.NumericFormApioTestBundleActivator;
+import com.liferay.forms.apio.client.test.util.FormApioTestUtil;
 import com.liferay.oauth2.provider.test.util.OAuth2ProviderTestUtil;
 
 import java.net.MalformedURLException;
@@ -43,12 +43,12 @@ import org.junit.runner.RunWith;
  */
 @RunAsClient
 @RunWith(Arquillian.class)
-public class NumericFieldFormStructureApioTest {
+public class NumericFormApioTest {
 
 	@Deployment
 	public static Archive<?> getArchive() throws Exception {
 		return OAuth2ProviderTestUtil.getArchive(
-			FormStructureApioTestBundleActivator.class);
+			NumericFormApioTestBundleActivator.class);
 	}
 
 	@Before
@@ -64,10 +64,10 @@ public class NumericFieldFormStructureApioTest {
 
 	@Test
 	public void testNumericFieldsDataTypeIsDisplayed() {
-		String doubleDataType = FormStructureApioTestUtil.getFieldProperty(
+		String doubleDataType = FormApioTestUtil.getFieldProperty(
 			_rootEndpointURL, _DOUBLE_FIELD_NAME, "dataType");
 
-		String integerDataType = FormStructureApioTestUtil.getFieldProperty(
+		String integerDataType = FormApioTestUtil.getFieldProperty(
 			_rootEndpointURL, _INTEGER_FIELD_NAME, "dataType");
 
 		assertThat(doubleDataType, equalTo("double"));
@@ -76,10 +76,10 @@ public class NumericFieldFormStructureApioTest {
 
 	@Test
 	public void testNumericFieldsLabelIsDisplayed() {
-		String doubleLabel = FormStructureApioTestUtil.getFieldProperty(
+		String doubleLabel = FormApioTestUtil.getFieldProperty(
 			_rootEndpointURL, _DOUBLE_FIELD_NAME, "label");
 
-		String integerLabel = FormStructureApioTestUtil.getFieldProperty(
+		String integerLabel = FormApioTestUtil.getFieldProperty(
 			_rootEndpointURL, _INTEGER_FIELD_NAME, "label");
 
 		assertThat(doubleLabel, equalTo("My Double Field"));
@@ -88,8 +88,7 @@ public class NumericFieldFormStructureApioTest {
 
 	private void _assertNumericFieldProperties(String fieldName) {
 		Map<String, Object> fieldProperties =
-			FormStructureApioTestUtil.getFieldProperties(
-				_rootEndpointURL, fieldName);
+			FormApioTestUtil.getFieldProperties(_rootEndpointURL, fieldName);
 
 		assertThat(fieldProperties.get("hasFormRules"), isBoolean());
 		assertThat(fieldProperties.get("showLabel"), isBoolean());

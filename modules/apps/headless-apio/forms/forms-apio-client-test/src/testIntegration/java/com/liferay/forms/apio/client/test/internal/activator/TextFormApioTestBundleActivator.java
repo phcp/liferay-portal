@@ -12,20 +12,31 @@
  * details.
  */
 
-package com.liferay.forms.apio.client.test.util;
+package com.liferay.forms.apio.client.test.internal.activator;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-
-import org.hamcrest.Matcher;
+import com.liferay.dynamic.data.mapping.annotations.DDMForm;
+import com.liferay.dynamic.data.mapping.annotations.DDMFormField;
 
 /**
  * @author Paulo Cruz
  */
-public final class FormStructureMatchersUtil {
+public class TextFormApioTestBundleActivator
+	extends BaseFormApioTestBundleActivator {
 
-	public static Matcher<Object> isBoolean() {
-		return is(instanceOf(Boolean.class));
+	@Override
+	protected Class<?> getFormDefinitionClass() {
+		return FormWithTextFields.class;
+	}
+
+	@DDMForm
+	private interface FormWithTextFields {
+
+		@DDMFormField(
+			label = "My Text Field", name = "MyTextField",
+			properties = "displayStyle=singleline", type = "text"
+		)
+		public String textValue();
+
 	}
 
 }

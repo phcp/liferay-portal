@@ -14,14 +14,14 @@
 
 package com.liferay.forms.apio.client.test;
 
-import static com.liferay.forms.apio.client.test.util.FormStructureMatchersUtil.isBoolean;
+import static com.liferay.forms.apio.client.test.matcher.FormApioTestMatchers.isBoolean;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-import com.liferay.forms.apio.client.test.activator.FormStructureApioTestBundleActivator;
-import com.liferay.forms.apio.client.test.util.FormStructureApioTestUtil;
+import com.liferay.forms.apio.client.test.internal.activator.TextFormApioTestBundleActivator;
+import com.liferay.forms.apio.client.test.util.FormApioTestUtil;
 import com.liferay.oauth2.provider.test.util.OAuth2ProviderTestUtil;
 
 import java.net.MalformedURLException;
@@ -44,12 +44,12 @@ import org.junit.runner.RunWith;
  */
 @RunAsClient
 @RunWith(Arquillian.class)
-public class TextFieldFormStructureApioTest {
+public class TextFormApioTest {
 
 	@Deployment
 	public static Archive<?> getArchive() throws Exception {
 		return OAuth2ProviderTestUtil.getArchive(
-			FormStructureApioTestBundleActivator.class);
+			TextFormApioTestBundleActivator.class);
 	}
 
 	@Before
@@ -60,10 +60,9 @@ public class TextFieldFormStructureApioTest {
 	@Test
 	public void testGetTextFieldFromFormStructure() {
 		Map<String, Object> fieldProperties =
-			FormStructureApioTestUtil.getFieldProperties(
+			FormApioTestUtil.getFieldProperties(
 				_rootEndpointURL, _TEXT_FIELD_NAME);
 
-		assertThat(fieldProperties.get("autocomplete"), isBoolean());
 		assertThat(fieldProperties.get("displayStyle"), notNullValue());
 		assertThat(fieldProperties.get("hasFormRules"), isBoolean());
 		assertThat(fieldProperties.get("showLabel"), isBoolean());
@@ -73,7 +72,7 @@ public class TextFieldFormStructureApioTest {
 
 	@Test
 	public void testTextFieldDataTypeIsDisplayed() {
-		String dataType = FormStructureApioTestUtil.getFieldProperty(
+		String dataType = FormApioTestUtil.getFieldProperty(
 			_rootEndpointURL, _TEXT_FIELD_NAME, "dataType");
 
 		assertThat(dataType, equalTo("string"));
@@ -81,7 +80,7 @@ public class TextFieldFormStructureApioTest {
 
 	@Test
 	public void testTextFieldInputControlIsDisplayed() {
-		String inputControl = FormStructureApioTestUtil.getFieldProperty(
+		String inputControl = FormApioTestUtil.getFieldProperty(
 			_rootEndpointURL, _TEXT_FIELD_NAME, "inputControl");
 
 		assertThat(inputControl, equalTo("text"));
@@ -89,7 +88,7 @@ public class TextFieldFormStructureApioTest {
 
 	@Test
 	public void testTextFieldLabelIsDisplayed() {
-		String label = FormStructureApioTestUtil.getFieldProperty(
+		String label = FormApioTestUtil.getFieldProperty(
 			_rootEndpointURL, _TEXT_FIELD_NAME, "label");
 
 		assertThat(label, equalTo("My Text Field"));

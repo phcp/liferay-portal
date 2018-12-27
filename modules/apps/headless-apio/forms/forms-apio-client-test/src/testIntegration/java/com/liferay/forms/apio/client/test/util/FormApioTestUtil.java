@@ -14,7 +14,7 @@
 
 package com.liferay.forms.apio.client.test.util;
 
-import com.liferay.forms.apio.client.test.activator.FormStructureApioTestBundleActivator;
+import com.liferay.forms.apio.client.test.internal.activator.BaseFormApioTestBundleActivator;
 import com.liferay.portal.apio.test.util.ApioClientBuilder;
 
 import io.restassured.response.ValidatableResponse;
@@ -24,18 +24,18 @@ import java.net.URL;
 /**
  * @author Paulo Cruz
  */
-public final class FormStructureApioTestUtil {
+public final class FormApioTestUtil {
 
 	public static <T> T getFieldProperties(
 		URL rootEndpointURL, String fieldName) {
 
-		ValidatableResponse formStructureResponse =
-			_getFormStructureWithDefaultLanguage(rootEndpointURL);
+		ValidatableResponse formStructureResponse = _getFormWithDefaultLanguage(
+			rootEndpointURL);
 
 		return formStructureResponse.extract(
 		).path(
-			"_embedded.Structure[0]._embedded.formPages._embedded[0]." +
-				"_embedded.fields._embedded.find {it.name == '%s'}",
+			"_embedded.Form[0]._embedded.formPages._embedded[0]._embedded." +
+				"fields._embedded.find {it.name == '%s'}",
 			fieldName
 		);
 	}
@@ -43,19 +43,22 @@ public final class FormStructureApioTestUtil {
 	public static <T> T getFieldProperty(
 		URL rootEndpointURL, String fieldName, String fieldPropertyName) {
 
-		ValidatableResponse formStructureResponse =
-			_getFormStructureWithDefaultLanguage(rootEndpointURL);
+		ValidatableResponse formStructureResponse = _getFormWithDefaultLanguage(
+			rootEndpointURL);
 
 		return formStructureResponse.extract(
 		).path(
-			"_embedded.Structure[0]._embedded.formPages._embedded[0]." +
-				"_embedded.fields._embedded.find {it.name == '%s'}.%s",
+			"_embedded.Form[0]._embedded.formPages._embedded[0]._embedded." +
+				"fields._embedded.find {it.name == '%s'}.%s",
 			fieldName, fieldPropertyName
 		);
 	}
 
-	private static ValidatableResponse _getFormStructure(
+	private static ValidatableResponse _getForm(
 		URL rootEndpointURL, String acceptLanguage) {
+
+		String formsEndpointURL =
+			_getFormsEndpointURL(rootEndpointURL) + "?embedded=structure";
 
 		return ApioClientBuilder.given(
 		).basicAuth(
@@ -66,7 +69,7 @@ public final class FormStructureApioTestUtil {
 			"Accept-Language", acceptLanguage
 		).when(
 		).get(
-			_getFormStructuresEndpointURL(rootEndpointURL)
+			formsEndpointURL
 		).then(
 		).log(
 		).ifError(
@@ -75,7 +78,7 @@ public final class FormStructureApioTestUtil {
 		);
 	}
 
-	private static String _getFormStructuresEndpointURL(URL rootEndpointURL) {
+	private static String _getFormsEndpointURL(URL rootEndpointURL) {
 		return ApioClientBuilder.given(
 		).basicAuth(
 			"test@liferay.com", "test"
@@ -91,18 +94,17 @@ public final class FormStructureApioTestUtil {
 		).then(
 		).extract(
 		).path(
-			"_embedded.ContentSpace.find {it.name == '%s'}._links." +
-				"formStructures.href",
-			FormStructureApioTestBundleActivator.SITE_NAME
+			"_embedded.ContentSpace.find {it.name == '%s'}._links.forms.href",
+			BaseFormApioTestBundleActivator.SITE_NAME
 		);
 	}
 
-	private static ValidatableResponse _getFormStructureWithDefaultLanguage(
+	private static ValidatableResponse _getFormWithDefaultLanguage(
 		URL rootEndpointURL) {
 
-		return _getFormStructure(
+		return _getForm(
 			rootEndpointURL,
-			FormStructureApioTestBundleActivator.STRUCTURE_DEFAULT_LANGUAGE);
+			BaseFormApioTestBundleActivator.FORM_DEFAULT_LANGUAGE);
 	}
 
 }

@@ -12,20 +12,22 @@
  * details.
  */
 
-package com.liferay.forms.apio.client.test.activator;
+package com.liferay.forms.apio.client.test.internal.activator;
 
-import com.liferay.dynamic.data.mapping.io.DDMFormDeserializer;
-import com.liferay.dynamic.data.mapping.io.DDMFormDeserializerDeserializeRequest;
-import com.liferay.dynamic.data.mapping.io.DDMFormDeserializerDeserializeResponse;
-import com.liferay.dynamic.data.mapping.io.DDMFormDeserializerTracker;
 import com.liferay.dynamic.data.mapping.model.DDMForm;
+import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMStructure;
 import com.liferay.dynamic.data.mapping.model.DDMStructureConstants;
+import com.liferay.dynamic.data.mapping.model.LocalizedValue;
+import com.liferay.dynamic.data.mapping.service.DDMFormInstanceLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalServiceUtil;
 import com.liferay.dynamic.data.mapping.storage.StorageType;
+import com.liferay.dynamic.data.mapping.test.util.DDMFormValuesTestUtil;
 import com.liferay.dynamic.data.mapping.test.util.DDMStructureTestHelper;
+import com.liferay.dynamic.data.mapping.util.DDMFormFactory;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.apio.test.util.AuthConfigurationTestUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
@@ -38,9 +40,6 @@ import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.kernel.util.StringUtil;
-
-import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,20 +53,17 @@ import org.osgi.framework.BundleContext;
 /**
  * @author Paulo Cruz
  */
-public class FormStructureApioTestBundleActivator implements BundleActivator {
+public abstract class BaseFormApioTestBundleActivator
+	implements BundleActivator {
+
+	public static final String FORM_DEFAULT_LANGUAGE = "en-US";
 
 	public static final String SITE_NAME =
-		FormStructureApioTestBundleActivator.class.getSimpleName() + "Site";
-
-	public static final String STRUCTURE_DEFAULT_LANGUAGE = "en-US";
+		BaseFormApioTestBundleActivator.class.getSimpleName() + "Site";
 
 	@Override
 	public void start(BundleContext bundleContext) {
 		_autoCloseables = new ArrayList<>();
-
-		_ddmFormDeserializerTracker = bundleContext.getService(
-			bundleContext.getServiceReference(
-				DDMFormDeserializerTracker.class));
 
 		try {
 			AuthConfigurationTestUtil.deployOAuthConfiguration(bundleContext);
@@ -86,21 +82,29 @@ public class FormStructureApioTestBundleActivator implements BundleActivator {
 		_cleanUp();
 	}
 
-	protected DDMForm deserialize(String content) {
-		DDMFormDeserializer ddmFormDeserializer =
-			_ddmFormDeserializerTracker.getDDMFormDeserializer("json");
+	protected abstract Class<?> getFormDefinitionClass();
 
-		DDMFormDeserializerDeserializeRequest.Builder builder =
-			DDMFormDeserializerDeserializeRequest.Builder.newBuilder(content);
+	private DDMFormInstance _addDDMFormInstance(
+			User user, Group group, DDMStructure ddmStructure)
+		throws PortalException {
 
-		DDMFormDeserializerDeserializeResponse
-			ddmFormDeserializerDeserializeResponse =
-				ddmFormDeserializer.deserialize(builder.build());
+		LocalizedValue name = new LocalizedValue();
 
-		return ddmFormDeserializerDeserializeResponse.getDDMForm();
+		name.addString(LocaleUtil.getDefault(), "My Form");
+
+		LocalizedValue description = new LocalizedValue();
+
+		description.addString(LocaleUtil.getDefault(), "This is my Form");
+
+		return DDMFormInstanceLocalServiceUtil.addFormInstance(
+			user.getUserId(), group.getGroupId(), ddmStructure.getStructureId(),
+			name.getValues(), description.getValues(),
+			DDMFormValuesTestUtil.createDDMFormValues(
+				ddmStructure.getDDMForm()),
+			ServiceContextTestUtil.getServiceContext(group, user.getUserId()));
 	}
 
-	private DDMStructure _addDDMStructure(Group group, String fileName)
+	private DDMStructure _addDDMStructure(Group group, DDMForm ddmForm)
 		throws Exception {
 
 		long classNameId = PortalUtil.getClassNameId(
@@ -110,8 +114,7 @@ public class FormStructureApioTestBundleActivator implements BundleActivator {
 			new DDMStructureTestHelper(classNameId, group);
 
 		return ddmStructureTestHelper.addStructure(
-			classNameId, null, FormStructureApioTestBundleActivator.SITE_NAME,
-			deserialize(_read(fileName)), StorageType.JSON.getValue(),
+			classNameId, null, SITE_NAME, ddmForm, StorageType.JSON.getValue(),
 			DDMStructureConstants.TYPE_DEFAULT);
 	}
 
@@ -138,33 +141,30 @@ public class FormStructureApioTestBundleActivator implements BundleActivator {
 			GroupConstants.DEFAULT_LIVE_GROUP_ID, nameMap, nameMap,
 			GroupConstants.TYPE_SITE_OPEN, true,
 			GroupConstants.DEFAULT_MEMBERSHIP_RESTRICTION,
-			StringPool.SLASH + FriendlyURLNormalizerUtil.normalize(SITE_NAME),
+			StringPool.SLASH +
+				FriendlyURLNormalizerUtil.normalize(SITE_NAME),
 			true, true, ServiceContextTestUtil.getServiceContext());
 
 		_autoCloseables.add(() -> GroupLocalServiceUtil.deleteGroup(group));
 
-		DDMStructure ddmStructure = _addDDMStructure(
-			group, "test-structure.json");
+		DDMForm ddmForm = DDMFormFactory.create(getFormDefinitionClass());
+
+		DDMStructure ddmStructure = _addDDMStructure(group, ddmForm);
 
 		_autoCloseables.add(
 			() -> DDMStructureLocalServiceUtil.deleteStructure(ddmStructure));
-	}
 
-	private String _read(String fileName) throws Exception {
-		Class<?> clazz = getClass();
+		DDMFormInstance ddmFormInstance = _addDDMFormInstance(
+			user, group, ddmStructure);
 
-		ClassLoader classLoader = clazz.getClassLoader();
-
-		InputStream inputStream = classLoader.getResourceAsStream(
-			"/com/liferay/forms/apio/client/test/activator/" + fileName);
-
-		return StringUtil.read(inputStream);
+		_autoCloseables.add(
+			() -> DDMFormInstanceLocalServiceUtil.deleteFormInstance(
+				ddmFormInstance));
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
-		FormStructureApioTestBundleActivator.class);
+		BaseFormApioTestBundleActivator.class);
 
 	private List<AutoCloseable> _autoCloseables;
-	private DDMFormDeserializerTracker _ddmFormDeserializerTracker;
 
 }
