@@ -16,17 +16,17 @@ package com.liferay.forms.apio.client.test;
 
 import static com.liferay.forms.apio.client.test.matcher.FormApioTestMatchers.isBoolean;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static io.restassured.RestAssured.withArgs;
+
 import static org.hamcrest.Matchers.equalTo;
 
 import com.liferay.forms.apio.client.test.internal.activator.NumericFormApioTestBundleActivator;
-import com.liferay.forms.apio.client.test.util.FormApioTestUtil;
 import com.liferay.oauth2.provider.test.util.OAuth2ProviderTestUtil;
+import com.liferay.portal.apio.test.util.ApioClientBuilder;
+import com.liferay.portal.apio.test.util.ContentSpaceApioTestUtil;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import java.util.Map;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -53,54 +53,149 @@ public class NumericFormApioTest {
 
 	@Before
 	public void setUp() throws MalformedURLException {
-		_rootEndpointURL = new URL(_url, "/o/api");
+		URL rootEndpointURL = new URL(_url, "/o/api");
+
+		URL contentSpaceHrefURL = new URL(
+			ContentSpaceApioTestUtil.getContentSpaceHref(
+				rootEndpointURL.toExternalForm(),
+				NumericFormApioTestBundleActivator.SITE_NAME));
+
+		_formHrefURL = new URL(
+			ApioClientBuilder.given(
+			).basicAuth(
+				"test@liferay.com", "test"
+			).header(
+				"Accept", "application/hal+json"
+			).header(
+				"Accept-Language", "en-US"
+			).when(
+			).get(
+				contentSpaceHrefURL.toExternalForm()
+			).follow(
+				"_links.forms.href"
+			).then(
+			).extract(
+			).path(
+				"_embedded.Form[0]._links.self.href"
+			));
 	}
 
 	@Test
-	public void testGetNumericFieldsFromForm() {
-		_assertNumericFieldProperties(_DOUBLE_FIELD_NAME);
-		_assertNumericFieldProperties(_INTEGER_FIELD_NAME);
+	public void testGetNumericFields() {
+		ApioClientBuilder.given(
+		).basicAuth(
+			"test@liferay.com", "test"
+		).header(
+			"Accept", "application/hal+json"
+		).header(
+			"Accept-Language", "en-US"
+		).when(
+		).get(
+			_formHrefURL.toExternalForm() + "?embedded=structure"
+		).then(
+		).log(
+		).ifError(
+		).statusCode(
+			200
+		).root(
+			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
+				"find {it.name == '%s'}",
+			withArgs(_DOUBLE_FIELD_NAME)
+		).body(
+			"hasFormRules", isBoolean()
+		).body(
+			"showLabel", isBoolean()
+		).body(
+			"repeatable", isBoolean()
+		).body(
+			"required", isBoolean()
+		).noRoot(
+		).root(
+			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
+				"find {it.name == '%s'}",
+			withArgs(_INTEGER_FIELD_NAME)
+		).body(
+			"hasFormRules", isBoolean()
+		).body(
+			"showLabel", isBoolean()
+		).body(
+			"repeatable", isBoolean()
+		).body(
+			"required", isBoolean()
+		);
 	}
 
 	@Test
 	public void testNumericFieldsDataTypeIsDisplayed() {
-		String doubleDataType = FormApioTestUtil.getFieldProperty(
-			_rootEndpointURL, _DOUBLE_FIELD_NAME, "dataType");
-
-		String integerDataType = FormApioTestUtil.getFieldProperty(
-			_rootEndpointURL, _INTEGER_FIELD_NAME, "dataType");
-
-		assertThat(doubleDataType, equalTo("double"));
-		assertThat(integerDataType, equalTo("integer"));
+		ApioClientBuilder.given(
+		).basicAuth(
+			"test@liferay.com", "test"
+		).header(
+			"Accept", "application/hal+json"
+		).header(
+			"Accept-Language", "en-US"
+		).when(
+		).get(
+			_formHrefURL.toExternalForm() + "?embedded=structure"
+		).then(
+		).log(
+		).ifError(
+		).statusCode(
+			200
+		).root(
+			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
+				"find {it.name == '%s'}",
+			withArgs(_DOUBLE_FIELD_NAME)
+		).body(
+			"dataType", equalTo("double")
+		).noRoot(
+		).root(
+			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
+				"find {it.name == '%s'}",
+			withArgs(_INTEGER_FIELD_NAME)
+		).body(
+			"dataType", equalTo("integer")
+		);
 	}
 
 	@Test
 	public void testNumericFieldsLabelIsDisplayed() {
-		String doubleLabel = FormApioTestUtil.getFieldProperty(
-			_rootEndpointURL, _DOUBLE_FIELD_NAME, "label");
-
-		String integerLabel = FormApioTestUtil.getFieldProperty(
-			_rootEndpointURL, _INTEGER_FIELD_NAME, "label");
-
-		assertThat(doubleLabel, equalTo("My Double Field"));
-		assertThat(integerLabel, equalTo("My Integer Field"));
-	}
-
-	private void _assertNumericFieldProperties(String fieldName) {
-		Map<String, Object> fieldProperties =
-			FormApioTestUtil.getFieldProperties(_rootEndpointURL, fieldName);
-
-		assertThat(fieldProperties.get("hasFormRules"), isBoolean());
-		assertThat(fieldProperties.get("showLabel"), isBoolean());
-		assertThat(fieldProperties.get("repeatable"), isBoolean());
-		assertThat(fieldProperties.get("required"), isBoolean());
+		ApioClientBuilder.given(
+		).basicAuth(
+			"test@liferay.com", "test"
+		).header(
+			"Accept", "application/hal+json"
+		).header(
+			"Accept-Language", "en-US"
+		).when(
+		).get(
+			_formHrefURL.toExternalForm() + "?embedded=structure"
+		).then(
+		).log(
+		).ifError(
+		).statusCode(
+			200
+		).root(
+			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
+				"find {it.name == '%s'}",
+			withArgs(_DOUBLE_FIELD_NAME)
+		).body(
+			"label", equalTo("My Double Field")
+		).noRoot(
+		).root(
+			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
+				"find {it.name == '%s'}",
+			withArgs(_INTEGER_FIELD_NAME)
+		).body(
+			"label", equalTo("My Integer Field")
+		);
 	}
 
 	private static final String _DOUBLE_FIELD_NAME = "MyDoubleField";
 
 	private static final String _INTEGER_FIELD_NAME = "MyIntegerField";
 
-	private URL _rootEndpointURL;
+	private URL _formHrefURL;
 
 	@ArquillianResource
 	private URL _url;

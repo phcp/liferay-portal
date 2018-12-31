@@ -16,18 +16,18 @@ package com.liferay.forms.apio.client.test;
 
 import static com.liferay.forms.apio.client.test.matcher.FormApioTestMatchers.isBoolean;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static io.restassured.RestAssured.withArgs;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 import com.liferay.forms.apio.client.test.internal.activator.TextFormApioTestBundleActivator;
-import com.liferay.forms.apio.client.test.util.FormApioTestUtil;
 import com.liferay.oauth2.provider.test.util.OAuth2ProviderTestUtil;
+import com.liferay.portal.apio.test.util.ApioClientBuilder;
+import com.liferay.portal.apio.test.util.ContentSpaceApioTestUtil;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import java.util.Map;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
@@ -54,56 +54,176 @@ public class TextFormApioTest {
 
 	@Before
 	public void setUp() throws MalformedURLException {
-		_rootEndpointURL = new URL(_url, "/o/api");
+		URL rootEndpointURL = new URL(_url, "/o/api");
+
+		URL contentSpaceHrefURL = new URL(
+			ContentSpaceApioTestUtil.getContentSpaceHref(
+				rootEndpointURL.toExternalForm(),
+				TextFormApioTestBundleActivator.SITE_NAME));
+
+		_formHrefURL = new URL(
+			ApioClientBuilder.given(
+			).basicAuth(
+				"test@liferay.com", "test"
+			).header(
+				"Accept", "application/hal+json"
+			).header(
+				"Accept-Language", "en-US"
+			).when(
+			).get(
+				contentSpaceHrefURL.toExternalForm()
+			).follow(
+				"_links.forms.href"
+			).then(
+			).extract(
+			).path(
+				"_embedded.Form[0]._links.self.href"
+			));
 	}
 
 	@Test
-	public void testGetTextFieldFromForm() {
-		Map<String, Object> fieldProperties =
-			FormApioTestUtil.getFieldProperties(
-				_rootEndpointURL, _TEXT_FIELD_NAME);
-
-		assertThat(fieldProperties.get("displayStyle"), notNullValue());
-		assertThat(fieldProperties.get("hasFormRules"), isBoolean());
-		assertThat(fieldProperties.get("showLabel"), isBoolean());
-		assertThat(fieldProperties.get("repeatable"), isBoolean());
-		assertThat(fieldProperties.get("required"), isBoolean());
+	public void testGetTextField() {
+		ApioClientBuilder.given(
+		).basicAuth(
+			"test@liferay.com", "test"
+		).header(
+			"Accept", "application/hal+json"
+		).header(
+			"Accept-Language", "en-US"
+		).when(
+		).get(
+			_formHrefURL.toExternalForm() + "?embedded=structure"
+		).then(
+		).log(
+		).ifError(
+		).statusCode(
+			200
+		).root(
+			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
+				"find {it.name == '%s'}",
+			withArgs(_TEXT_FIELD_NAME)
+		).body(
+			"displayStyle", notNullValue()
+		).body(
+			"hasFormRules", isBoolean()
+		).body(
+			"showLabel", isBoolean()
+		).body(
+			"repeatable", isBoolean()
+		).body(
+			"required", isBoolean()
+		);
 	}
 
 	@Test
 	public void testTextFieldDataTypeIsDisplayed() {
-		String dataType = FormApioTestUtil.getFieldProperty(
-			_rootEndpointURL, _TEXT_FIELD_NAME, "dataType");
-
-		assertThat(dataType, equalTo("string"));
+		ApioClientBuilder.given(
+		).basicAuth(
+			"test@liferay.com", "test"
+		).header(
+			"Accept", "application/hal+json"
+		).header(
+			"Accept-Language", "en-US"
+		).when(
+		).get(
+			_formHrefURL.toExternalForm() + "?embedded=structure"
+		).then(
+		).log(
+		).ifError(
+		).statusCode(
+			200
+		).root(
+			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
+				"find {it.name == '%s'}",
+			withArgs(_TEXT_FIELD_NAME)
+		).body(
+			"dataType", equalTo("string")
+		);
 	}
 
 	@Test
 	public void testTextFieldDisplayStyle() {
-		String multilineDisplayStyle = FormApioTestUtil.getFieldProperty(
-			_rootEndpointURL, _MULTILINE_TEXT_FIELD_NAME, "displayStyle");
-
-		String singlelineDisplayStyle = FormApioTestUtil.getFieldProperty(
-			_rootEndpointURL, _TEXT_FIELD_NAME, "displayStyle");
-
-		assertThat(multilineDisplayStyle, equalTo("multiline"));
-		assertThat(singlelineDisplayStyle, equalTo("singleline"));
+		ApioClientBuilder.given(
+		).basicAuth(
+			"test@liferay.com", "test"
+		).header(
+			"Accept", "application/hal+json"
+		).header(
+			"Accept-Language", "en-US"
+		).when(
+		).get(
+			_formHrefURL.toExternalForm() + "?embedded=structure"
+		).then(
+		).log(
+		).ifError(
+		).statusCode(
+			200
+		).root(
+			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
+				"find {it.name == '%s'}",
+			withArgs(_MULTILINE_TEXT_FIELD_NAME)
+		).body(
+			"displayStyle", equalTo("multiline")
+		).noRoot(
+		).root(
+			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
+				"find {it.name == '%s'}",
+			withArgs(_TEXT_FIELD_NAME)
+		).body(
+			"displayStyle", equalTo("singleline")
+		);
 	}
 
 	@Test
 	public void testTextFieldInputControlIsDisplayed() {
-		String inputControl = FormApioTestUtil.getFieldProperty(
-			_rootEndpointURL, _TEXT_FIELD_NAME, "inputControl");
-
-		assertThat(inputControl, equalTo("text"));
+		ApioClientBuilder.given(
+		).basicAuth(
+			"test@liferay.com", "test"
+		).header(
+			"Accept", "application/hal+json"
+		).header(
+			"Accept-Language", "en-US"
+		).when(
+		).get(
+			_formHrefURL.toExternalForm() + "?embedded=structure"
+		).then(
+		).log(
+		).ifError(
+		).statusCode(
+			200
+		).root(
+			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
+				"find {it.name == '%s'}",
+			withArgs(_TEXT_FIELD_NAME)
+		).body(
+			"inputControl", equalTo("text")
+		);
 	}
 
 	@Test
 	public void testTextFieldLabelIsDisplayed() {
-		String label = FormApioTestUtil.getFieldProperty(
-			_rootEndpointURL, _TEXT_FIELD_NAME, "label");
-
-		assertThat(label, equalTo("My Text Field"));
+		ApioClientBuilder.given(
+		).basicAuth(
+			"test@liferay.com", "test"
+		).header(
+			"Accept", "application/hal+json"
+		).header(
+			"Accept-Language", "en-US"
+		).when(
+		).get(
+			_formHrefURL.toExternalForm() + "?embedded=structure"
+		).then(
+		).log(
+		).ifError(
+		).statusCode(
+			200
+		).root(
+			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
+				"find {it.name == '%s'}",
+			withArgs(_TEXT_FIELD_NAME)
+		).body(
+			"label", equalTo("My Text Field")
+		);
 	}
 
 	private static final String _MULTILINE_TEXT_FIELD_NAME =
@@ -111,7 +231,7 @@ public class TextFormApioTest {
 
 	private static final String _TEXT_FIELD_NAME = "MyTextField";
 
-	private URL _rootEndpointURL;
+	private URL _formHrefURL;
 
 	@ArquillianResource
 	private URL _url;
