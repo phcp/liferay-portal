@@ -23,6 +23,11 @@ import com.liferay.dynamic.data.mapping.annotations.DDMFormField;
 public class TextFormApioTestBundleActivator
 	extends BaseFormApioTestBundleActivator {
 
+	public static final String MULTILINE_TEXT_FIELD_NAME =
+		"MyMultilineTextField";
+
+	public static final String TEXT_FIELD_NAME = "MyTextField";
+
 	@Override
 	protected Class<?> getFormDefinitionClass() {
 		return FormWithTextFields.class;
@@ -32,13 +37,13 @@ public class TextFormApioTestBundleActivator
 	private interface FormWithTextFields {
 
 		@DDMFormField(
-			label = "My Multiline Text Field", name = "MyMultilineTextField",
+			label = "My Multiline Text Field", name = MULTILINE_TEXT_FIELD_NAME,
 			properties = "displayStyle=multiline", type = "text"
 		)
 		public String multilineTextValue();
 
 		@DDMFormField(
-			label = "My Text Field", name = "MyTextField",
+			label = "My Text Field", name = TEXT_FIELD_NAME,
 			properties = "displayStyle=singleline", type = "text"
 		)
 		public String textValue();

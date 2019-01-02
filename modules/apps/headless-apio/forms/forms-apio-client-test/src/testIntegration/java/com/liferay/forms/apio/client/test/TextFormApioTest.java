@@ -101,7 +101,7 @@ public class TextFormApioTest {
 		).root(
 			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
 				"find {it.name == '%s'}",
-			withArgs(_TEXT_FIELD_NAME)
+			withArgs(TextFormApioTestBundleActivator.TEXT_FIELD_NAME)
 		).body(
 			"displayStyle", notNullValue()
 		).body(
@@ -135,7 +135,7 @@ public class TextFormApioTest {
 		).root(
 			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
 				"find {it.name == '%s'}",
-			withArgs(_TEXT_FIELD_NAME)
+			withArgs(TextFormApioTestBundleActivator.TEXT_FIELD_NAME)
 		).body(
 			"dataType", equalTo("string")
 		);
@@ -161,14 +161,14 @@ public class TextFormApioTest {
 		).root(
 			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
 				"find {it.name == '%s'}",
-			withArgs(_MULTILINE_TEXT_FIELD_NAME)
+			withArgs(TextFormApioTestBundleActivator.MULTILINE_TEXT_FIELD_NAME)
 		).body(
 			"displayStyle", equalTo("multiline")
 		).noRoot(
 		).root(
 			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
 				"find {it.name == '%s'}",
-			withArgs(_TEXT_FIELD_NAME)
+			withArgs(TextFormApioTestBundleActivator.TEXT_FIELD_NAME)
 		).body(
 			"displayStyle", equalTo("singleline")
 		);
@@ -194,7 +194,7 @@ public class TextFormApioTest {
 		).root(
 			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
 				"find {it.name == '%s'}",
-			withArgs(_TEXT_FIELD_NAME)
+			withArgs(TextFormApioTestBundleActivator.TEXT_FIELD_NAME)
 		).body(
 			"inputControl", equalTo("text")
 		);
@@ -220,16 +220,11 @@ public class TextFormApioTest {
 		).root(
 			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
 				"find {it.name == '%s'}",
-			withArgs(_TEXT_FIELD_NAME)
+			withArgs(TextFormApioTestBundleActivator.TEXT_FIELD_NAME)
 		).body(
 			"label", equalTo("My Text Field")
 		);
 	}
-
-	private static final String _MULTILINE_TEXT_FIELD_NAME =
-		"MyMultilineTextField";
-
-	private static final String _TEXT_FIELD_NAME = "MyTextField";
 
 	private URL _formHrefURL;
 
