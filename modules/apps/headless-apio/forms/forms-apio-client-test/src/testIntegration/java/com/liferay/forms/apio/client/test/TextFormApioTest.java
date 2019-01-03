@@ -107,11 +107,11 @@ public class TextFormApioTest {
 		).body(
 			"hasFormRules", isBoolean()
 		).body(
-			"showLabel", isBoolean()
-		).body(
 			"repeatable", isBoolean()
 		).body(
 			"required", isBoolean()
+		).body(
+			"showLabel", isBoolean()
 		);
 	}
 

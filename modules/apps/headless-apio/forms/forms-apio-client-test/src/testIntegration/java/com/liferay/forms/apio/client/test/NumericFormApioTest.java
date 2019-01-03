@@ -104,11 +104,11 @@ public class NumericFormApioTest {
 		).body(
 			"hasFormRules", isBoolean()
 		).body(
-			"showLabel", isBoolean()
-		).body(
 			"repeatable", isBoolean()
 		).body(
 			"required", isBoolean()
+		).body(
+			"showLabel", isBoolean()
 		).noRoot(
 		).root(
 			"_embedded.formPages._embedded[0]._embedded.fields._embedded." +
@@ -117,11 +117,11 @@ public class NumericFormApioTest {
 		).body(
 			"hasFormRules", isBoolean()
 		).body(
-			"showLabel", isBoolean()
-		).body(
 			"repeatable", isBoolean()
 		).body(
 			"required", isBoolean()
+		).body(
+			"showLabel", isBoolean()
 		);
 	}
 
