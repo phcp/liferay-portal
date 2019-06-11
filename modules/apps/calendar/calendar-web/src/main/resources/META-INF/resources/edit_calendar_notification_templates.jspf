@@ -35,6 +35,7 @@ String notificationTemplateSubject = BeanPropertiesUtil.getString(calendarNotifi
 <liferay-ui:header
 	backURL="<%= backURL %>"
 	cssClass="container-fluid-1280"
+	localizeTitle="<%= false %>"
 	title="<%= calendarName %>"
 />
 

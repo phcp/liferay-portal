@@ -30,6 +30,7 @@ portletURL.setParameter("calendarResourceId", String.valueOf(calendarResource.ge
 
 <liferay-ui:header
 	backURL="<%= redirect %>"
+	localizeTitle="<%= false %>"
 	title='<%= LanguageUtil.format(request, "x-calendars", calendarResource.getName(locale), false) %>'
 />
 
