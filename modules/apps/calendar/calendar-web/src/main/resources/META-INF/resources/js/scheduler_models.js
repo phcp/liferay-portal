@@ -246,6 +246,16 @@ AUI.add(
 					);
 				},
 
+				intersects: function(evt) {
+					var instance = this;
+					var endDate = instance.get('endDate');
+					var startDate = instance.get('startDate');
+					var evtStartDate = evt.get('startDate');
+
+					return (instance.sameStartDate(evt) || DateMath.between(
+							evtStartDate, startDate, endDate) || instance._isShortDurationEventIntersecting(evtStartDate));
+				},
+
 				isRecurring: function() {
 					var instance = this;
 
@@ -327,6 +337,25 @@ AUI.add(
 					}
 
 					return result;
+				},
+
+				_isShortDurationEventIntersecting: function(evtStartDate) {
+					var instance = this;
+					var shortDurationEventIntersecting = false;
+
+					if (instance.getMinutesDuration() < 30) {
+						var endDate = instance.get('endDate');
+						var earlierEvtStartDate = DateMath.subtract(
+							DateMath.clone(evtStartDate), DateMath.MINUTES, 30);
+
+						if (DateMath.compare(endDate, evtStartDate) ||
+							DateMath.between(endDate, earlierEvtStartDate, evtStartDate)) {
+
+							shortDurationEventIntersecting = true;
+						}
+					}
+
+					return shortDurationEventIntersecting;
 				},
 
 				_onLoadingChange: function(event) {
