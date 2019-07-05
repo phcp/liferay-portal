@@ -1226,30 +1226,54 @@ definition {
 		}
 	}
 
-	macro tearDown {
-		if ("${marketplace}" == "true") {
-			ProductMenu.gotoPortlet(
-				category = "Site Builder",
-				panel = "Site Administration",
-				portlet = "Pages");
+		macro tearDown {
+			if ("${marketplace}" == "true") {
+				ProductMenu.gotoPortlet(
+					category = "Site Builder",
+					panel = "Site Administration",
+					portlet = "Pages");
 
-			SitePages.addPublicPage(pageName = "Marketplace Calendar Testing");
+				SitePages.addPublicPage(pageName = "Marketplace Calendar Testing");
 
-			Navigator.gotoPage(pageName = "Marketplace Calendar Testing");
+				Navigator.gotoPage(pageName = "Marketplace Calendar Testing");
 
-			Portlet.addPG(
-				i = "${i}",
-				pageName = "Marketplace Calendar Testing",
-				portletName = "Calendar");
+				Portlet.addPG(
+					i = "${i}",
+					pageName = "Marketplace Calendar Testing",
+					portletName = "Calendar");
 
-			Navigator.gotoPage(pageName = "Marketplace Calendar Testing");
+				Navigator.gotoPage(pageName = "Marketplace Calendar Testing");
+			}
+
+			CalendarEvent.delete();
+
+			Alert.viewSuccessMessage();
 		}
 
-		CalendarEvent.delete();
+		macro viewToday {
+			var eventTitle = "${eventTitle}";
 
-		Alert.viewSuccessMessage();
-	}
+			CalendarScheduler.viewDay(eventTitle = "${eventTitle}");
 
+			CalendarScheduler.viewWeek(
+				eventTitle = "${eventTitle}",
+				frequency = "${frequency}",
+				numberOfOccurrences = "${numberOfOccurrences}");
+
+			CalendarScheduler.viewMonth(
+				eventTitle = "${eventTitle}",
+				frequency = "${frequency}",
+				numberOfOccurrences = "${numberOfOccurrences}");
+
+			CalendarNavigator.gotoToday();
+
+			CalendarScheduler.viewAgenda(
+				eventTitle = "${eventTitle}",
+				numberOfOccurrences = "${numberOfOccurrences}");
+
+			CalendarNavigator.gotoView(viewType = "Week");
+		}
+		
 	macro view {
 		var eventTitle = "${eventTitle}";
 
