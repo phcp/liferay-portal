@@ -248,12 +248,17 @@ AUI.add(
 
 				intersects: function(evt) {
 					var instance = this;
+
 					var endDate = instance.get('endDate');
 					var startDate = instance.get('startDate');
+
 					var evtStartDate = evt.get('startDate');
 
-					return (instance.sameStartDate(evt) || DateMath.between(
-							evtStartDate, startDate, endDate) || instance._isShortDurationEventIntersecting(evtStartDate));
+					return (
+						DateMath.between(evtStartDate, startDate, endDate) ||
+						instance._isShortDurationEventIntersecting(evtStartDate) ||
+						instance.sameStartDate(evt)
+					);
 				},
 
 				isRecurring: function() {
@@ -344,15 +349,14 @@ AUI.add(
 					var shortDurationEventIntersecting = false;
 
 					if (instance.getMinutesDuration() < 30) {
-						var endDate = instance.get('endDate');
 						var earlierEvtStartDate = DateMath.subtract(
 							DateMath.clone(evtStartDate), DateMath.MINUTES, 30);
+						var endDate = instance.get('endDate');
 
-						if (DateMath.compare(endDate, evtStartDate) ||
-							DateMath.between(endDate, earlierEvtStartDate, evtStartDate)) {
-
-							shortDurationEventIntersecting = true;
-						}
+						shortDurationEventIntersecting = (
+							DateMath.between(endDate, earlierEvtStartDate, evtStartDate) ||
+							DateMath.compare(endDate, evtStartDate)
+						);
 					}
 
 					return shortDurationEventIntersecting;
