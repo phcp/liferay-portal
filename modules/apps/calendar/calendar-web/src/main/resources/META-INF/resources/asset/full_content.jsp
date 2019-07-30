@@ -34,7 +34,8 @@ String languageId = LanguageUtil.getLanguageId(request);
 
 	<p>
 		<liferay-ui:icon
-			iconCssClass="icon-user"
+			iconCssClass="user"
+			markupView="lexicon"
 			message="owner"
 		/>
 
@@ -52,7 +53,8 @@ String languageId = LanguageUtil.getLanguageId(request);
 			<br />
 
 			<liferay-ui:icon
-				iconCssClass="icon-globe"
+				iconCssClass="globe"
+				markupView="lexicon"
 				message="resources"
 			/>
 
@@ -75,7 +77,8 @@ String languageId = LanguageUtil.getLanguageId(request);
 			<br /><br />
 
 			<liferay-ui:icon
-				iconCssClass="icon-list-alt"
+				iconCssClass="list"
+				markupView="lexicon"
 				message="recurring"
 			/>
 
@@ -85,7 +88,8 @@ String languageId = LanguageUtil.getLanguageId(request);
 		<br /><br />
 
 		<liferay-ui:icon
-			iconCssClass="icon-calendar"
+			iconCssClass="calendar"
+			markupView="lexicon"
 			message="starts"
 		/>
 
@@ -98,7 +102,8 @@ String languageId = LanguageUtil.getLanguageId(request);
 		<br />
 
 		<liferay-ui:icon
-			iconCssClass="icon-calendar"
+			iconCssClass="calendar"
+			markupView="lexicon"
 			message="ends"
 		/>
 
@@ -112,7 +117,8 @@ String languageId = LanguageUtil.getLanguageId(request);
 			<br /><br />
 
 			<liferay-ui:icon
-				iconCssClass="icon-location-arrow"
+				iconCssClass="geolocation"
+				markupView="lexicon"
 				message="location"
 			/>
 
