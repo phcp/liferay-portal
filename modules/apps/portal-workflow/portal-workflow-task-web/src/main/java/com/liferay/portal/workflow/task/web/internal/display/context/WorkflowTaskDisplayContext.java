@@ -714,12 +714,6 @@ public class WorkflowTaskDisplayContext {
 		return false;
 	}
 
-	public boolean isManagementBarDisabled() throws PortalException {
-		WorkflowTaskSearch workflowTaskSearch = getWorkflowTaskSearch();
-
-		return !workflowTaskSearch.hasResults();
-	}
-
 	public boolean isShowEditURL(WorkflowTask workflowTask) {
 		boolean showEditURL = false;
 
