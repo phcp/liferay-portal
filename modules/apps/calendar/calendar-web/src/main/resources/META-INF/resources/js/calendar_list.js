@@ -65,7 +65,9 @@ AUI.add(
 			'label'
 		);
 
-		var CSS_ICON_CARET_DOWN = 'icon-caret-down';
+		var CSS_ICON_CARET_DOWN = Liferay.Util.getLexiconIconTpl(
+			'caret-bottom'
+		);
 
 		var TPL_CALENDAR_LIST_ITEM = new A.Template(
 			'<tpl for="calendars">',
@@ -93,9 +95,7 @@ AUI.add(
 			'<div class="',
 			CSS_CALENDAR_LIST_ITEM_ARROW,
 			'">',
-			'<i class="',
 			CSS_ICON_CARET_DOWN,
-			'"></i>',
 			'</div>',
 			'</div>',
 			'</tpl>'

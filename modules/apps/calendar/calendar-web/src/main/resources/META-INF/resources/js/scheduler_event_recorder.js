@@ -297,7 +297,6 @@ AUI.add(
 							)
 						) {
 							editGroup.push({
-								icon: 'icon-hdd',
 								id: 'saveBtn',
 								label: Liferay.Language.get('save'),
 								on: {
@@ -318,7 +317,6 @@ AUI.add(
 							)
 						) {
 							editGroup.push({
-								icon: 'icon-edit',
 								id: 'editBtn',
 								label: Liferay.Language.get('edit'),
 								on: {
@@ -335,7 +333,6 @@ AUI.add(
 							permissions.VIEW_BOOKING_DETAILS
 						) {
 							editGroup.push({
-								icon: 'icon-eye-open',
 								id: 'viewBtn',
 								label: Liferay.Language.get('view-details'),
 								on: {
@@ -356,7 +353,6 @@ AUI.add(
 							)
 						) {
 							editGroup.push({
-								icon: 'icon-trash',
 								id: 'deleteBtn',
 								label: Liferay.Language.get('delete'),
 								on: {

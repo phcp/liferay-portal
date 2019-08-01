@@ -78,7 +78,6 @@ String backURL = PortalUtil.getCurrentURL(request);
 							);
 						}
 					},
-					icon: 'icon-plus',
 					id: 'add'
 				},
 				{
@@ -103,7 +102,6 @@ String backURL = PortalUtil.getCurrentURL(request);
 							);
 						}
 					},
-					icon: 'icon-calendar',
 					id: 'manage'
 				},
 				{
@@ -134,7 +132,6 @@ String backURL = PortalUtil.getCurrentURL(request);
 							}
 						);
 					},
-					icon: 'icon-lock',
 					id: 'permissions'
 				}
 			],
@@ -196,7 +193,6 @@ String backURL = PortalUtil.getCurrentURL(request);
 						}
 					);
 				},
-				icon: 'icon-plus',
 				id: 'addEvent'
 			},
 			{
@@ -212,7 +208,6 @@ String backURL = PortalUtil.getCurrentURL(request);
 
 					instance.set('visible', false);
 				},
-				icon: 'icon-remove',
 				id: 'hide'
 			},
 			{
@@ -274,7 +269,6 @@ String backURL = PortalUtil.getCurrentURL(request);
 						}
 					);
 				},
-				icon: 'icon-edit',
 				id: 'settings'
 			},
 			{
@@ -323,7 +317,6 @@ String backURL = PortalUtil.getCurrentURL(request);
 						}
 					);
 				},
-				icon: 'icon-lock',
 				id: 'permissions'
 			},
 			{
@@ -357,7 +350,6 @@ String backURL = PortalUtil.getCurrentURL(request);
 						);
 					}
 				},
-				icon: 'icon-remove',
 				id: 'delete'
 			},
 
@@ -386,7 +378,6 @@ String backURL = PortalUtil.getCurrentURL(request);
 
 						instance.set('visible', false);
 					},
-					icon: 'icon-rss',
 					id: 'subscribe'
 				},
 			</c:if>
@@ -532,9 +523,10 @@ String backURL = PortalUtil.getCurrentURL(request);
 	A.one('#<portlet:namespace />columnToggler').on(
 		'click',
 		function(event) {
+			var columnTogglerIconId = '<portlet:namespace />columnTogglerIcon';
 			var columnGrid = A.one('#<portlet:namespace />columnGrid');
 			var columnOptions = A.one('#<portlet:namespace />columnOptions');
-			var columnTogglerIcon = A.one('#<portlet:namespace />columnTogglerIcon');
+			var columnTogglerIcon = A.one('#' + columnTogglerIconId);
 
 			Liferay.Store('com.liferay.calendar.web_columnOptionsVisible', columnOptions.hasClass('hide'));
 
@@ -542,7 +534,17 @@ String backURL = PortalUtil.getCurrentURL(request);
 
 			columnOptions.toggleClass('hide');
 
-			columnTogglerIcon.toggleClass('icon-caret-left').toggleClass('icon-caret-right');
+			var newIcon = A.Node.create(
+				Liferay.Util.getLexiconIconTpl(
+					columnTogglerIcon._node.classList.contains('lexicon-icon-caret-left') ?
+					'caret-right' :
+					'caret-left'
+				)
+			);
+
+			newIcon.attr('id', columnTogglerIconId);
+
+			columnTogglerIcon.replace(newIcon);
 		}
 	);
 

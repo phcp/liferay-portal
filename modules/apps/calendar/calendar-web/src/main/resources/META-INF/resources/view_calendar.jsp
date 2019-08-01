@@ -146,7 +146,10 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 		<aui:col cssClass="calendar-portlet-column-grid" id="columnGrid" span="<%= (columnOptionsVisible && !displaySchedulerOnly) ? 9 : 12 %>">
 			<c:if test="<%= !displaySchedulerOnly %>">
 				<div class="calendar-portlet-column-toggler" id="<portlet:namespace />columnToggler">
-					<i class="<%= columnOptionsVisible ? "icon-caret-left" : "icon-caret-right" %>" id="<portlet:namespace />columnTogglerIcon"></i>
+					<clay:icon
+						id='<%= renderResponse.getNamespace() + "columnTogglerIcon" %>'
+						symbol="<%= columnOptionsVisible ? "caret-left" : "caret-right" %>"
+					/>
 				</div>
 			</c:if>
 
