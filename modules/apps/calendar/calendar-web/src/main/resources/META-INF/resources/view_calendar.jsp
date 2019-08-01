@@ -148,7 +148,7 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 				<div class="calendar-portlet-column-toggler" id="<portlet:namespace />columnToggler">
 					<clay:icon
 						id='<%= renderResponse.getNamespace() + "columnTogglerIcon" %>'
-						symbol="<%= columnOptionsVisible ? "caret-left" : "caret-right" %>"
+						symbol='<%= columnOptionsVisible ? "caret-left" : "caret-right" %>'
 					/>
 				</div>
 			</c:if>
