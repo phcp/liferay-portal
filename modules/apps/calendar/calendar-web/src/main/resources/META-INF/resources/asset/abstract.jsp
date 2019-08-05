@@ -23,7 +23,7 @@ String languageId = LanguageUtil.getLanguageId(request);
 <div class="calendar-asset-abstract">
 	<p>
 		<liferay-ui:icon
-			iconCssClass="user"
+			icon="user"
 			markupView="lexicon"
 			message=""
 		/>
@@ -42,7 +42,7 @@ String languageId = LanguageUtil.getLanguageId(request);
 			<br />
 
 			<liferay-ui:icon
-				iconCssClass="globe"
+				icon="globe"
 				markupView="lexicon"
 				message="resources"
 			/>
@@ -66,7 +66,7 @@ String languageId = LanguageUtil.getLanguageId(request);
 		<br />
 
 		<liferay-ui:icon
-			iconCssClass="calendar"
+			icon="calendar"
 			markupView="lexicon"
 			message="starts"
 		/>
@@ -80,7 +80,7 @@ String languageId = LanguageUtil.getLanguageId(request);
 		<br />
 
 		<liferay-ui:icon
-			iconCssClass="calendar"
+			icon="calendar"
 			markupView="lexicon"
 			message="ends"
 		/>
