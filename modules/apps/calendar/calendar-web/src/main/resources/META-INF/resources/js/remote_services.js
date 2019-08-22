@@ -428,15 +428,22 @@ AUI.add(
 						}, params.queryParameters)
 					);
 
-					A.io.request(actionURL.toString(), {
-						data: payload,
-						dataType: 'JSON',
-						on: {
-							success: function() {
-								params.callback(this.get('responseData'));
-							}
-						}
+					const data = new URLSearchParams();
+
+					Object.keys(payload).forEach(key => {
+						data.append(key, payload[key]);
 					});
+
+					Liferay.Util.fetch(actionURL.toString(), {
+						body: data,
+						method: 'POST'
+					})
+						.then(response => {
+							return response.json();
+						})
+						.then(data => {
+							params.callback(data);
+						});
 				},
 
 				_invokeResourceURL: function(params) {
@@ -460,15 +467,26 @@ AUI.add(
 						);
 					}
 
-					A.io.request(resourceURL.toString(), {
-						data: payload,
-						dataType: 'JSON',
-						on: {
-							success: function() {
-								params.callback(this.get('responseData'));
+					const data = new URLSearchParams();
+
+					if (payload) {
+						Object.keys(payload).forEach(key => {
+							data.append(key, payload[key]);
+						});
+					}
+
+					Liferay.Util.fetch(resourceURL.toString(), {
+						body: data,
+						method: 'POST'
+					})
+						.then(response => {
+							return response.text();
+						})
+						.then(data => {
+							if (data.length) {
+								params.callback(JSON.parse(data));
 							}
-						}
-					});
+						});
 				},
 
 				_invokeService: function(payload, callback) {
@@ -476,25 +494,27 @@ AUI.add(
 
 					callback = callback || {};
 
-					A.io.request(instance.get('invokerURL'), {
-						cache: false,
-						data: {
-							cmd: JSON.stringify(payload),
-							p_auth: Liferay.authToken
-						},
-						dataType: 'JSON',
-						on: {
-							failure: callback.failure,
-							start: callback.start,
-							success: function(event) {
-								if (callback.success) {
-									var data = this.get('responseData');
+					const data = new URLSearchParams();
+					data.append('cmd', JSON.stringify(payload));
+					data.append('payload', Liferay.authToken);
 
-									callback.success.apply(this, [data, event]);
-								}
+					Liferay.Util.fetch(instance.get('invokerURL'), {
+						body: data,
+						method: 'POST'
+					})
+						.then(response => {
+							return response.json();
+						})
+						.then(data => {
+							if (Liferay.Util.isFunction(callback.success)) {
+								callback.success.apply(this, [data]);
 							}
-						}
-					});
+						})
+						.catch(err => {
+							if (Liferay.Util.isFunction(callback.failure)) {
+								callback.failure(err);
+							}
+						});
 				}
 			},
 			{
@@ -517,7 +537,6 @@ AUI.add(
 		requires: [
 			'aui-base',
 			'aui-component',
-			'aui-io',
 			'liferay-calendar-message-util',
 			'liferay-calendar-util',
 			'liferay-portlet-base'

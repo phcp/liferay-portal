@@ -76,7 +76,6 @@
 						requires: [
 							'aui-base',
 							'aui-component',
-							'aui-io',
 							'liferay-calendar-util',
 							'liferay-portlet-base'
 						]
