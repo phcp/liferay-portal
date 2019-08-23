@@ -42,6 +42,16 @@ AUI.add(
 			'</button>' +
 			'</div>';
 
+		var TPL_SCHEDULER_ICON_NEXT =
+			'<button aria-label="{ariaLabel}"" role="button" type="button" class="scheduler-base-icon-next btn btn-default">' +
+			Liferay.Util.getLexiconIconTpl('angle-right') +
+			'</button>';
+
+		var TPL_SCHEDULER_ICON_PREV =
+			'<button aria-label="{ariaLabel}"" role="button" type="button" class="scheduler-base-icon-prev btn btn-default">' +
+			Liferay.Util.getLexiconIconTpl('angle-left') +
+			'</button>';
+
 		var WEEKLY = 'WEEKLY';
 
 		var Time = Liferay.Time;
@@ -96,6 +106,30 @@ AUI.add(
 				iconAddEventNode: {
 					valueFn: function() {
 						return A.Node.create(TPL_ICON_ADD_EVENT_NODE);
+					}
+				},
+
+				iconNextNode: {
+					valueFn: function() {
+						var instance = this;
+
+						return A.Node.create(
+							A.Lang.sub(TPL_SCHEDULER_ICON_NEXT, {
+								ariaLabel: instance.getAriaLabel('next')
+							})
+						);
+					}
+				},
+
+				iconPrevNode: {
+					valueFn: function() {
+						var instance = this;
+
+						return A.Node.create(
+							A.Lang.sub(TPL_SCHEDULER_ICON_PREV, {
+								ariaLabel: instance.getAriaLabel('previous')
+							})
+						);
 					}
 				},
 
