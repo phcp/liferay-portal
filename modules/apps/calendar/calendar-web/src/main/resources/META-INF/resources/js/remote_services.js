@@ -411,12 +411,6 @@ AUI.add(
 				_invokeActionURL: function(params) {
 					var instance = this;
 
-					var url = Liferay.PortletURL.createActionURL();
-
-					url.setName(params.actionName);
-					url.setParameters(params.queryParameters);
-					url.setPortletId(instance.ID);
-
 					var payload;
 
 					if (params.payload) {
@@ -426,7 +420,27 @@ AUI.add(
 						);
 					}
 
-					A.io.request(url.toString(), {
+					var actionParameters = {
+						'javax.portlet.action': params.actionName,
+						p_p_id: instance.ID
+					};
+
+					if (
+						params.queryParameters &&
+						Object.keys(params.queryParameters).length !== 0
+					) {
+						actionParameters = Object.assign(
+							actionParameters,
+							params.queryParameters
+						);
+					}
+
+					var actionURL = Liferay.Util.PortletURL.createActionURL(
+						'',
+						actionParameters
+					);
+
+					A.io.request(actionURL.toString(), {
 						data: payload,
 						dataType: 'JSON',
 						on: {
@@ -440,14 +454,26 @@ AUI.add(
 				_invokeResourceURL: function(params) {
 					var instance = this;
 
-					var url = Liferay.PortletURL.createResourceURL();
+					var resourceParameters = {
+						doAsUserId: Liferay.ThemeDisplay.getDoAsUserIdEncoded(),
+						p_p_id: instance.ID,
+						p_p_resource_id: params.resourceId
+					};
 
-					url.setDoAsUserId(
-						Liferay.ThemeDisplay.getDoAsUserIdEncoded()
+					if (
+						params.queryParameters &&
+						Object.keys(params.queryParameters).length !== 0
+					) {
+						resourceParameters = Object.assign(
+							resourceParameters,
+							params.queryParameters
+						);
+					}
+
+					var resourceURL = Liferay.Util.PortletURL.createResourceURL(
+						'',
+						resourceParameters
 					);
-					url.setParameters(params.queryParameters);
-					url.setPortletId(instance.ID);
-					url.setResourceId(params.resourceId);
 
 					var payload;
 
@@ -458,7 +484,7 @@ AUI.add(
 						);
 					}
 
-					A.io.request(url.toString(), {
+					A.io.request(resourceURL.toString(), {
 						data: payload,
 						dataType: 'JSON',
 						on: {
