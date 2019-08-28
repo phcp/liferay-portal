@@ -295,7 +295,6 @@ AUI.add(
 			'aui-toolbar',
 			'autocomplete',
 			'autocomplete-highlighters',
-			'liferay-portlet-url'
 		]
 	}
 );

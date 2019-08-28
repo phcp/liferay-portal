@@ -544,8 +544,7 @@ AUI.add(
 			'aui-io',
 			'liferay-calendar-message-util',
 			'liferay-calendar-util',
-			'liferay-portlet-base',
-			'liferay-portlet-url'
+			'liferay-portlet-base'
 		]
 	}
 );
