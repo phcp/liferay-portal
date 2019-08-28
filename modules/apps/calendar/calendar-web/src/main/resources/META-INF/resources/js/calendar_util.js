@@ -294,7 +294,7 @@ AUI.add(
 			'aui-scheduler',
 			'aui-toolbar',
 			'autocomplete',
-			'autocomplete-highlighters',
+			'autocomplete-highlighters'
 		]
 	}
 );

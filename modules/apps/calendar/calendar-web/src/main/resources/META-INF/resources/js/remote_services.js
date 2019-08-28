@@ -422,10 +422,13 @@ AUI.add(
 
 					var actionURL = Liferay.Util.PortletURL.createActionURL(
 						'',
-						Object.assign({
-							'javax.portlet.action': params.actionName,
-							p_p_id: instance.ID
-						}, params.queryParameters)
+						Object.assign(
+							{
+								'javax.portlet.action': params.actionName,
+								p_p_id: instance.ID
+							},
+							params.queryParameters
+						)
 					);
 
 					const data = new URLSearchParams();
@@ -451,11 +454,14 @@ AUI.add(
 
 					var resourceURL = Liferay.Util.PortletURL.createResourceURL(
 						'',
-						Object.assign({
-							doAsUserId: Liferay.ThemeDisplay.getDoAsUserIdEncoded(),
-							p_p_id: instance.ID,
-							p_p_resource_id: params.resourceId
-						}, params.queryParameters)
+						Object.assign(
+							{
+								doAsUserId: Liferay.ThemeDisplay.getDoAsUserIdEncoded(),
+								p_p_id: instance.ID,
+								p_p_resource_id: params.resourceId
+							},
+							params.queryParameters
+						)
 					);
 
 					var payload;
