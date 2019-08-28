@@ -420,24 +420,12 @@ AUI.add(
 						);
 					}
 
-					var actionParameters = {
-						'javax.portlet.action': params.actionName,
-						p_p_id: instance.ID
-					};
-
-					if (
-						params.queryParameters &&
-						Object.keys(params.queryParameters).length !== 0
-					) {
-						actionParameters = Object.assign(
-							actionParameters,
-							params.queryParameters
-						);
-					}
-
 					var actionURL = Liferay.Util.PortletURL.createActionURL(
 						'',
-						actionParameters
+						Object.assign({
+							'javax.portlet.action': params.actionName,
+							p_p_id: instance.ID
+						}, params.queryParameters)
 					);
 
 					A.io.request(actionURL.toString(), {
@@ -454,25 +442,13 @@ AUI.add(
 				_invokeResourceURL: function(params) {
 					var instance = this;
 
-					var resourceParameters = {
-						doAsUserId: Liferay.ThemeDisplay.getDoAsUserIdEncoded(),
-						p_p_id: instance.ID,
-						p_p_resource_id: params.resourceId
-					};
-
-					if (
-						params.queryParameters &&
-						Object.keys(params.queryParameters).length !== 0
-					) {
-						resourceParameters = Object.assign(
-							resourceParameters,
-							params.queryParameters
-						);
-					}
-
 					var resourceURL = Liferay.Util.PortletURL.createResourceURL(
 						'',
-						resourceParameters
+						Object.assign({
+							doAsUserId: Liferay.ThemeDisplay.getDoAsUserIdEncoded(),
+							p_p_id: instance.ID,
+							p_p_resource_id: params.resourceId
+						}, params.queryParameters)
 					);
 
 					var payload;
