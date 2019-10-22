@@ -4,6 +4,9 @@ components:
             description:
                 https://schema.org/AssigneeUser
             properties:
+                durationTaskAvg:
+                    format: int64
+                    type: integer
                 id:
                     description:
                         The user's ID.
@@ -421,6 +424,20 @@ paths:
                   schema:
                       format: int64
                       type: integer
+                - in: query
+                  name: completed
+                  schema:
+                      type: boolean
+                - in: query
+                  name: dateEnd
+                  schema:
+                      format: date-time
+                      type: string
+                - in: query
+                  name: dateStart
+                  schema:
+                      format: date-time
+                      type: string
                 - in: query
                   name: keywords
                   schema:
