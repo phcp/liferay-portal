@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.time.DateUtils;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -190,8 +191,8 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 
 		Page<AssigneeUser> page =
 			assigneeUserResource.getProcessAssigneeUsersPage(
-				_process.getId(), null, null, new String[] {"update"},
-				Pagination.of(1, 10), "taskCount:asc");
+				_process.getId(), false, null, null, null, null,
+				new String[] {"update"}, Pagination.of(1, 10), "taskCount:asc");
 
 		Assert.assertEquals(1, page.getTotalCount());
 
@@ -199,6 +200,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 			Arrays.asList(
 				new AssigneeUser() {
 					{
+						durationTaskAvg = 0L;
 						id = assigneeUser1.getId();
 						name = assigneeUser1.getName();
 						onTimeTaskCount = 0L;
@@ -209,8 +211,9 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 			(List<AssigneeUser>)page.getItems());
 
 		page = assigneeUserResource.getProcessAssigneeUsersPage(
-			_process.getId(), null, null, new String[] {"review"},
-			Pagination.of(1, 10), "overdueTaskCount:desc");
+			_process.getId(), false, null, null, null, null,
+			new String[] {"review"}, Pagination.of(1, 10),
+			"overdueTaskCount:desc");
 
 		Assert.assertEquals(2, page.getTotalCount());
 
@@ -218,6 +221,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 			Arrays.asList(
 				new AssigneeUser() {
 					{
+						durationTaskAvg = 0L;
 						id = assigneeUser1.getId();
 						name = assigneeUser1.getName();
 						onTimeTaskCount = 0L;
@@ -227,6 +231,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 				},
 				new AssigneeUser() {
 					{
+						durationTaskAvg = 0L;
 						id = assigneeUser2.getId();
 						name = assigneeUser2.getName();
 						onTimeTaskCount = 1L;
@@ -237,7 +242,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 			(List<AssigneeUser>)page.getItems());
 
 		page = assigneeUserResource.getProcessAssigneeUsersPage(
-			_process.getId(), null,
+			_process.getId(), false, null, null, null,
 			new Long[] {siteAdministrationRole.getRoleId()},
 			new String[] {"review"}, Pagination.of(1, 10),
 			"overdueTaskCount:desc");
@@ -248,6 +253,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 			Arrays.asList(
 				new AssigneeUser() {
 					{
+						durationTaskAvg = 0L;
 						id = assigneeUser2.getId();
 						name = assigneeUser2.getName();
 						onTimeTaskCount = 1L;
@@ -258,7 +264,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 			(List<AssigneeUser>)page.getItems());
 
 		page = assigneeUserResource.getProcessAssigneeUsersPage(
-			_process.getId(), assigneeUser2.getName(),
+			_process.getId(), false, null, null, assigneeUser2.getName(),
 			new Long[] {siteAdministrationRole.getRoleId()},
 			new String[] {"review"}, Pagination.of(1, 10),
 			"overdueTaskCount:desc");
@@ -269,6 +275,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 			Arrays.asList(
 				new AssigneeUser() {
 					{
+						durationTaskAvg = 0L;
 						id = assigneeUser2.getId();
 						name = assigneeUser2.getName();
 						onTimeTaskCount = 1L;
@@ -279,7 +286,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 			(List<AssigneeUser>)page.getItems());
 
 		page = assigneeUserResource.getProcessAssigneeUsersPage(
-			_process.getId(), assigneeUser1.getName(),
+			_process.getId(), false, null, null, assigneeUser1.getName(),
 			new Long[] {siteAdministrationRole.getRoleId()},
 			new String[] {"review"}, Pagination.of(1, 10),
 			"overdueTaskCount:desc");
@@ -306,13 +313,90 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 			});
 
 		page = assigneeUserResource.getProcessAssigneeUsersPage(
-			_process.getId(), null, null, null, Pagination.of(1, 10),
-			"overdueTaskCount:desc");
+			_process.getId(), false, null, null, null, null, null,
+			Pagination.of(1, 10), "overdueTaskCount:desc");
 
 		Assert.assertEquals(3, page.getTotalCount());
 
 		assertEquals(
 			Arrays.asList(assigneeUser1, assigneeUser2, assigneeUser3),
+			(List<AssigneeUser>)page.getItems());
+
+		testGetProcessAssigneeUsersPage_addAssigneeUser(
+			_process.getId(), assigneeUser1, () -> instance1, "COMPLETED",
+			new Task() {
+				{
+					durationAvg = 1000L;
+					instanceCount = 1L;
+					key = "review";
+					name = "review";
+					onTimeInstanceCount = 1L;
+					overdueInstanceCount = 0L;
+				}
+			},
+			new Task() {
+				{
+					durationAvg = 2000L;
+					instanceCount = 1L;
+					key = "update";
+					name = "update";
+					onTimeInstanceCount = 1L;
+					overdueInstanceCount = 0L;
+				}
+			});
+
+		testGetProcessAssigneeUsersPage_addAssigneeUser(
+			_process.getId(), assigneeUser2, () -> instance1, "COMPLETED",
+			new Task() {
+				{
+					durationAvg = 2000L;
+					instanceCount = 1L;
+					key = "review";
+					name = "review";
+					onTimeInstanceCount = 1L;
+					overdueInstanceCount = 0L;
+				}
+			},
+			new Task() {
+				{
+					durationAvg = 4000L;
+					instanceCount = 1L;
+					key = "update";
+					name = "update";
+					onTimeInstanceCount = 1L;
+					overdueInstanceCount = 0L;
+				}
+			});
+
+		page = assigneeUserResource.getProcessAssigneeUsersPage(
+			_process.getId(), true, RandomTestUtil.nextDate(),
+			DateUtils.addMinutes(RandomTestUtil.nextDate(), -2), null, null,
+			null, Pagination.of(1, 10), "durationTaskAvg:asc");
+
+		Assert.assertEquals(2, page.getTotalCount());
+
+		assertEquals(
+			Arrays.asList(
+				new AssigneeUser() {
+					{
+						durationTaskAvg = 1500L;
+						id = assigneeUser1.getId();
+						name = assigneeUser1.getName();
+						onTimeTaskCount = 2L;
+						overdueTaskCount = 0L;
+						taskCount = 2L;
+					}
+				},
+				new AssigneeUser() {
+					{
+						durationTaskAvg = 3000L;
+						id = assigneeUser2.getId();
+						name = assigneeUser2.getName();
+						onTimeTaskCount = 2L;
+						overdueTaskCount = 0L;
+						taskCount = 2L;
+					}
+				}),
 			(List<AssigneeUser>)page.getItems());
 	}
 
@@ -352,8 +436,14 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 	@Override
 	protected String[] getAdditionalAssertFieldNames() {
 		return new String[] {
-			"id", "name", "onTimeTaskCount", "overdueTaskCount", "taskCount"
+			"durationTaskAvg", "id", "name", "onTimeTaskCount",
+			"overdueTaskCount", "taskCount"
 		};
+	}
+
+	@Override
+	protected String[] getIgnoredEntityFieldNames() {
+		return new String[] {"durationTaskAvg"};
 	}
 
 	@Override
@@ -362,6 +452,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 
 		return new AssigneeUser() {
 			{
+				durationTaskAvg = 0L;
 				id = user.getUserId();
 				image = user.getPortraitURL(
 					new ThemeDisplay() {
@@ -388,7 +479,7 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 				testGroup.getCompanyId(), false, _process.getId()),
 			new Task() {
 				{
-					durationAvg = 0L;
+					durationAvg = assigneeUser.getDurationTaskAvg();
 					instanceCount = assigneeUser.getTaskCount();
 
 					String randomString = RandomTestUtil.randomString();
@@ -404,7 +495,8 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 
 	protected AssigneeUser testGetProcessAssigneeUsersPage_addAssigneeUser(
 			Long processId, AssigneeUser assigneeUser,
-			UnsafeSupplier<Instance, Exception> instanceSupplier, Task... tasks)
+			UnsafeSupplier<Instance, Exception> instanceSupplier, String status,
+			Task... tasks)
 		throws Exception {
 
 		for (Task task : tasks) {
@@ -412,10 +504,19 @@ public class AssigneeUserResourceTest extends BaseAssigneeUserResourceTestCase {
 
 			_workflowMetricsRESTTestHelper.addTask(
 				assigneeUser.getId(), testGroup.getCompanyId(),
-				instanceSupplier, processId, "RUNNING", task, "1.0");
+				instanceSupplier, processId, status, task, "1.0");
 		}
 
 		return assigneeUser;
+	}
+
+	protected AssigneeUser testGetProcessAssigneeUsersPage_addAssigneeUser(
+			Long processId, AssigneeUser assigneeUser,
+			UnsafeSupplier<Instance, Exception> instanceSupplier, Task... tasks)
+		throws Exception {
+
+		return testGetProcessAssigneeUsersPage_addAssigneeUser(
+			processId, assigneeUser, instanceSupplier, "RUNNING", tasks);
 	}
 
 	@Override
