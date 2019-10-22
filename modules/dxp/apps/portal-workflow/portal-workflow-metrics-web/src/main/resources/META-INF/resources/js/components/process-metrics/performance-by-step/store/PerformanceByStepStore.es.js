@@ -10,38 +10,49 @@
  * distribution rights of the Software.
  */
 
-import React, {createContext, useContext, useEffect, useState} from 'react';
+import React, {createContext, useContext, useState} from 'react';
 
 import {AppContext} from '../../../AppContext.es';
 
-const usePerformanceData = (page, pageSize, processId, search, sort) => {
+const usePerformanceData = () => {
 	const {client} = useContext(AppContext);
 	const [items, setItems] = useState([]);
 	const [totalCount, setTotalCount] = useState(0);
 
-	const fetchData = (page, pageSize, processId, search, sort) => {
+	const fetchData = (page, pageSize, processId, search, sort, timeRange) => {
 		const params = {
 			page,
 			pageSize,
 			sort: decodeURIComponent(sort)
 		};
 
+		const isValidDate = date => date && !isNaN(date);
+
 		if (typeof search === 'string' && search) {
 			params.key = decodeURIComponent(search);
 		}
 
-		client.get(`/processes/${processId}/tasks`, {params}).then(({data}) => {
-			setTotalCount(() => data.totalCount);
-			setItems(() => data.items);
-		});
+		if (
+			timeRange &&
+			isValidDate(timeRange.dateEnd) &&
+			isValidDate(timeRange.dateStart)
+		) {
+			const {dateEnd, dateStart} = timeRange;
+			params.dateEnd = dateEnd.toISOString();
+			params.dateStart = dateStart.toISOString();
+		}
+
+		return client
+			.get(`/processes/${processId}/tasks`, {params})
+			.then(({data}) => {
+				setTotalCount(() => data.totalCount);
+				setItems(() => data.items);
+				return data;
+			});
 	};
 
-	useEffect(() => {
-		if (page && pageSize && processId && sort)
-			fetchData(page, pageSize, processId, search, sort);
-	}, [page, pageSize, processId, search, sort]);
-
 	return {
+		fetchData,
 		items,
 		totalCount
 	};
@@ -55,11 +66,19 @@ const PerformanceDataProvider = ({
 	pageSize,
 	processId,
 	search,
-	sort
+	sort,
+	timeRange
 }) => {
 	return (
 		<PerformanceDataContext.Provider
-			value={usePerformanceData(page, pageSize, processId, search, sort)}
+			value={usePerformanceData(
+				page,
+				pageSize,
+				processId,
+				search,
+				sort,
+				timeRange
+			)}
 		>
 			{children}
 		</PerformanceDataContext.Provider>
