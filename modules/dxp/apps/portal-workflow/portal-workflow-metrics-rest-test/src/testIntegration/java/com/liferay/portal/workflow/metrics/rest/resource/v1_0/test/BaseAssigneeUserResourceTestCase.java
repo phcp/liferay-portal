@@ -199,7 +199,8 @@ public abstract class BaseAssigneeUserResourceTestCase {
 	public void testGetProcessAssigneeUsersPage() throws Exception {
 		Page<AssigneeUser> page =
 			assigneeUserResource.getProcessAssigneeUsersPage(
-				testGetProcessAssigneeUsersPage_getProcessId(),
+				testGetProcessAssigneeUsersPage_getProcessId(), null,
+				RandomTestUtil.nextDate(), RandomTestUtil.nextDate(),
 				RandomTestUtil.randomString(), null, null, Pagination.of(1, 2),
 				null);
 
@@ -215,8 +216,8 @@ public abstract class BaseAssigneeUserResourceTestCase {
 					irrelevantProcessId, randomIrrelevantAssigneeUser());
 
 			page = assigneeUserResource.getProcessAssigneeUsersPage(
-				irrelevantProcessId, null, null, null, Pagination.of(1, 2),
-				null);
+				irrelevantProcessId, null, null, null, null, null, null,
+				Pagination.of(1, 2), null);
 
 			Assert.assertEquals(1, page.getTotalCount());
 
@@ -235,7 +236,8 @@ public abstract class BaseAssigneeUserResourceTestCase {
 				processId, randomAssigneeUser());
 
 		page = assigneeUserResource.getProcessAssigneeUsersPage(
-			processId, null, null, null, Pagination.of(1, 2), null);
+			processId, null, null, null, null, null, null, Pagination.of(1, 2),
+			null);
 
 		Assert.assertEquals(2, page.getTotalCount());
 
@@ -265,7 +267,8 @@ public abstract class BaseAssigneeUserResourceTestCase {
 
 		Page<AssigneeUser> page1 =
 			assigneeUserResource.getProcessAssigneeUsersPage(
-				processId, null, null, null, Pagination.of(1, 2), null);
+				processId, null, null, null, null, null, null,
+				Pagination.of(1, 2), null);
 
 		List<AssigneeUser> assigneeUsers1 =
 			(List<AssigneeUser>)page1.getItems();
@@ -275,7 +278,8 @@ public abstract class BaseAssigneeUserResourceTestCase {
 
 		Page<AssigneeUser> page2 =
 			assigneeUserResource.getProcessAssigneeUsersPage(
-				processId, null, null, null, Pagination.of(2, 2), null);
+				processId, null, null, null, null, null, null,
+				Pagination.of(2, 2), null);
 
 		Assert.assertEquals(3, page2.getTotalCount());
 
@@ -287,7 +291,8 @@ public abstract class BaseAssigneeUserResourceTestCase {
 
 		Page<AssigneeUser> page3 =
 			assigneeUserResource.getProcessAssigneeUsersPage(
-				processId, null, null, null, Pagination.of(1, 3), null);
+				processId, null, null, null, null, null, null,
+				Pagination.of(1, 3), null);
 
 		assertEqualsIgnoringOrder(
 			Arrays.asList(assigneeUser1, assigneeUser2, assigneeUser3),
@@ -382,8 +387,8 @@ public abstract class BaseAssigneeUserResourceTestCase {
 		for (EntityField entityField : entityFields) {
 			Page<AssigneeUser> ascPage =
 				assigneeUserResource.getProcessAssigneeUsersPage(
-					processId, null, null, null, Pagination.of(1, 2),
-					entityField.getName() + ":asc");
+					processId, null, null, null, null, null, null,
+					Pagination.of(1, 2), entityField.getName() + ":asc");
 
 			assertEquals(
 				Arrays.asList(assigneeUser1, assigneeUser2),
@@ -391,8 +396,8 @@ public abstract class BaseAssigneeUserResourceTestCase {
 
 			Page<AssigneeUser> descPage =
 				assigneeUserResource.getProcessAssigneeUsersPage(
-					processId, null, null, null, Pagination.of(1, 2),
-					entityField.getName() + ":desc");
+					processId, null, null, null, null, null, null,
+					Pagination.of(1, 2), entityField.getName() + ":desc");
 
 			assertEquals(
 				Arrays.asList(assigneeUser2, assigneeUser1),
@@ -508,6 +513,14 @@ public abstract class BaseAssigneeUserResourceTestCase {
 		for (String additionalAssertFieldName :
 				getAdditionalAssertFieldNames()) {
 
+			if (Objects.equals("durationTaskAvg", additionalAssertFieldName)) {
+				if (assigneeUser.getDurationTaskAvg() == null) {
+					valid = false;
+				}
+
+				continue;
+			}
+
 			if (Objects.equals("image", additionalAssertFieldName)) {
 				if (assigneeUser.getImage() == null) {
 					valid = false;
@@ -603,6 +616,17 @@ public abstract class BaseAssigneeUserResourceTestCase {
 		for (String additionalAssertFieldName :
 				getAdditionalAssertFieldNames()) {
 
+			if (Objects.equals("durationTaskAvg", additionalAssertFieldName)) {
+				if (!Objects.deepEquals(
+						assigneeUser1.getDurationTaskAvg(),
+						assigneeUser2.getDurationTaskAvg())) {
+
+					return false;
+				}
+
+				continue;
+			}
+
 			if (Objects.equals("id", additionalAssertFieldName)) {
 				if (!Objects.deepEquals(
 						assigneeUser1.getId(), assigneeUser2.getId())) {
@@ -678,6 +702,17 @@ public abstract class BaseAssigneeUserResourceTestCase {
 		AssigneeUser assigneeUser, JSONObject jsonObject) {
 
 		for (String fieldName : getAdditionalAssertFieldNames()) {
+			if (Objects.equals("durationTaskAvg", fieldName)) {
+				if (!Objects.deepEquals(
+						assigneeUser.getDurationTaskAvg(),
+						jsonObject.getLong("durationTaskAvg"))) {
+
+					return false;
+				}
+
+				continue;
+			}
+
 			if (Objects.equals("id", fieldName)) {
 				if (!Objects.deepEquals(
 						assigneeUser.getId(), jsonObject.getLong("id"))) {
@@ -799,6 +834,11 @@ public abstract class BaseAssigneeUserResourceTestCase {
 		sb.append(operator);
 		sb.append(" ");
 
+		if (entityFieldName.equals("durationTaskAvg")) {
+			throw new IllegalArgumentException(
+				"Invalid entity field " + entityFieldName);
+		}
+
 		if (entityFieldName.equals("id")) {
 			throw new IllegalArgumentException(
 				"Invalid entity field " + entityFieldName);
@@ -859,6 +899,7 @@ public abstract class BaseAssigneeUserResourceTestCase {
 	protected AssigneeUser randomAssigneeUser() throws Exception {
 		return new AssigneeUser() {
 			{
+				durationTaskAvg = RandomTestUtil.randomLong();
 				id = RandomTestUtil.randomLong();
 				image = RandomTestUtil.randomString();
 				name = RandomTestUtil.randomString();

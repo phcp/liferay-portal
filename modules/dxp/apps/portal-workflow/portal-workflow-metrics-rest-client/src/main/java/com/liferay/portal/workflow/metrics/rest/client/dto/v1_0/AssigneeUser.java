@@ -28,6 +28,27 @@ import javax.annotation.Generated;
 @Generated("")
 public class AssigneeUser {
 
+	public Long getDurationTaskAvg() {
+		return durationTaskAvg;
+	}
+
+	public void setDurationTaskAvg(Long durationTaskAvg) {
+		this.durationTaskAvg = durationTaskAvg;
+	}
+
+	public void setDurationTaskAvg(
+		UnsafeSupplier<Long, Exception> durationTaskAvgUnsafeSupplier) {
+
+		try {
+			durationTaskAvg = durationTaskAvgUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Long durationTaskAvg;
+
 	public Long getId() {
 		return id;
 	}

@@ -55,6 +55,16 @@ public class AssigneeUserSerDes {
 
 		sb.append("{");
 
+		if (assigneeUser.getDurationTaskAvg() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"durationTaskAvg\": ");
+
+			sb.append(assigneeUser.getDurationTaskAvg());
+		}
+
 		if (assigneeUser.getId() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -142,6 +152,15 @@ public class AssigneeUserSerDes {
 
 		Map<String, String> map = new TreeMap<>();
 
+		if (assigneeUser.getDurationTaskAvg() == null) {
+			map.put("durationTaskAvg", null);
+		}
+		else {
+			map.put(
+				"durationTaskAvg",
+				String.valueOf(assigneeUser.getDurationTaskAvg()));
+		}
+
 		if (assigneeUser.getId() == null) {
 			map.put("id", null);
 		}
@@ -209,7 +228,13 @@ public class AssigneeUserSerDes {
 			AssigneeUser assigneeUser, String jsonParserFieldName,
 			Object jsonParserFieldValue) {
 
-			if (Objects.equals(jsonParserFieldName, "id")) {
+			if (Objects.equals(jsonParserFieldName, "durationTaskAvg")) {
+				if (jsonParserFieldValue != null) {
+					assigneeUser.setDurationTaskAvg(
+						Long.valueOf((String)jsonParserFieldValue));
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "id")) {
 				if (jsonParserFieldValue != null) {
 					assigneeUser.setId(
 						Long.valueOf((String)jsonParserFieldValue));

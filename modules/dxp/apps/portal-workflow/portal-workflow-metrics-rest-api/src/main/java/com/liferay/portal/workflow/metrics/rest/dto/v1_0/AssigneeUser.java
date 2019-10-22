@@ -44,6 +44,34 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "AssigneeUser")
 public class AssigneeUser {
 
+	@Schema
+	public Long getDurationTaskAvg() {
+		return durationTaskAvg;
+	}
+
+	public void setDurationTaskAvg(Long durationTaskAvg) {
+		this.durationTaskAvg = durationTaskAvg;
+	}
+
+	@JsonIgnore
+	public void setDurationTaskAvg(
+		UnsafeSupplier<Long, Exception> durationTaskAvgUnsafeSupplier) {
+
+		try {
+			durationTaskAvg = durationTaskAvgUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Long durationTaskAvg;
+
 	@Schema(description = "The user's ID.")
 	public Long getId() {
 		return id;
@@ -234,6 +262,16 @@ public class AssigneeUser {
 		StringBundler sb = new StringBundler();
 
 		sb.append("{");
+
+		if (durationTaskAvg != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"durationTaskAvg\": ");
+
+			sb.append(durationTaskAvg);
+		}
 
 		if (id != null) {
 			if (sb.length() > 1) {
