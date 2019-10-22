@@ -33,6 +33,8 @@ public class AssigneeUserEntityModel implements EntityModel {
 	public AssigneeUserEntityModel() {
 		_entityFieldsMap = Stream.of(
 			new IntegerEntityField(
+				"durationTaskAvg", locale -> "durationTaskAvg"),
+			new IntegerEntityField(
 				"onTimeTaskCount", locale -> "onTimeTaskCount"),
 			new IntegerEntityField(
 				"overdueTaskCount", locale -> "overdueTaskCount"),
