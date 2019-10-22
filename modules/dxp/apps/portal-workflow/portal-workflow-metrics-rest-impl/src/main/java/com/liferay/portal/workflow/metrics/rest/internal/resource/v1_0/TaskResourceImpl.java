@@ -17,10 +17,7 @@ package com.liferay.portal.workflow.metrics.rest.internal.resource.v1_0;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.Language;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.search.Sort;
-import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -51,8 +48,6 @@ import com.liferay.portal.workflow.metrics.rest.internal.odata.entity.v1_0.TaskE
 import com.liferay.portal.workflow.metrics.rest.internal.resource.helper.ResourceHelper;
 import com.liferay.portal.workflow.metrics.rest.resource.v1_0.TaskResource;
 import com.liferay.portal.workflow.metrics.sla.processor.WorkflowMetricsSLAStatus;
-
-import java.text.DateFormat;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -208,8 +203,9 @@ public class TaskResourceImpl
 			if ((dateEnd != null) && (dateStart != null)) {
 				booleanQuery.addMustQueryClauses(
 					_queries.rangeTerm(
-						"completionDate", true, true, _format(dateStart),
-						_format(dateEnd)));
+						"completionDate", true, true,
+						_resourceHelper.formatDate(dateStart),
+						_resourceHelper.formatDate(dateEnd)));
 			}
 
 			booleanQuery.addMustNotQueryClauses(
@@ -259,22 +255,6 @@ public class TaskResourceImpl
 		return booleanQuery.addMustQueryClauses(
 			_queries.term("companyId", contextCompany.getCompanyId()),
 			_queries.term("deleted", Boolean.FALSE));
-	}
-
-	private String _format(Date date) {
-		DateFormat dateFormat = DateFormatFactoryUtil.getSimpleDateFormat(
-			"yyyyMMddHHmmss");
-
-		try {
-			return dateFormat.format(date);
-		}
-		catch (Exception e) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(e, e);
-			}
-
-			return null;
-		}
 	}
 
 	private TermsAggregationResult _getSLATermsAggregationResult(
@@ -351,8 +331,9 @@ public class TaskResourceImpl
 		if (completed && (dateEnd != null) && (dateStart != null)) {
 			booleanQuery.addMustQueryClauses(
 				_queries.rangeTerm(
-					"completionDate", true, true, _format(dateStart),
-					_format(dateEnd)));
+					"completionDate", true, true,
+					_resourceHelper.formatDate(dateStart),
+					_resourceHelper.formatDate(dateEnd)));
 		}
 
 		FilterAggregation filterAggregation = _aggregations.filter(
@@ -642,9 +623,6 @@ public class TaskResourceImpl
 
 		return fieldSort;
 	}
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		TaskResourceImpl.class);
 
 	private static final EntityModel _entityModel = new TaskEntityModel();
 
