@@ -22,6 +22,7 @@ import InstanceListCard from './process-metrics/instance-list/InstanceListCard.e
 import PerformanceByStep from './process-metrics/performance-by-step/PerformanceByStep.es';
 import SLAForm from './sla/SLAForm.es';
 import SLAListCard from './sla/SLAListCard.es';
+import WorkloadByAssigneePage from './workload-by-assignee-page/WorkloadByAssigneePage.es';
 
 /**
  * @class
@@ -112,6 +113,11 @@ export default class AppComponent extends React.Component {
 							<Route
 								path="/performance/:processId/:pageSize/:page/:sort/:search?"
 								render={withParams(PerformanceByStep)}
+							/>
+
+							<Route
+								path="/assignees/:processId/:pageSize/:page/:sort/:search?"
+								render={withParams(WorkloadByAssigneePage)}
 							/>
 						</Switch>
 					</div>
