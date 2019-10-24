@@ -35,6 +35,7 @@ export default class EmptyState extends React.Component {
 		return (
 			<div
 				className={`${className} pb-5 pt-6 sheet taglib-empty-result-message`}
+				data-testid="emptyState"
 			>
 				{!hideAnimation && <div className={classNameType} />}
 
