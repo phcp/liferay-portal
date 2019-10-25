@@ -28,8 +28,7 @@ function PromisesResolver({children, promises}) {
 			.catch(error => {
 				setError(() => error);
 			});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [promises]);
 
 	return (
 		<PromisesResolverContext.Provider value={{error, loading}}>

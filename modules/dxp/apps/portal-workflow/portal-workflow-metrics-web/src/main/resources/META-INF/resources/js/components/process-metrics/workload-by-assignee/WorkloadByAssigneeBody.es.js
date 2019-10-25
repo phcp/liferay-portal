@@ -15,12 +15,13 @@ import Icon from '../../../shared/components/Icon.es';
 import {ErrorContext} from '../../../shared/components/request/Error.es';
 import {LoadingContext} from '../../../shared/components/request/Loading.es';
 import Request from '../../../shared/components/request/Request.es';
+import {ChildLink} from '../../../shared/components/router/routerWrapper.es';
 import {AppContext} from '../../AppContext.es';
 import {ProcessStepContext} from '../filter/store/ProcessStepStore.es';
 import WorkloadByAssigneeCard from './WorkloadByAssigneeCard.es';
 
 const Body = ({currentTab, processId, query}) => {
-	const {client} = useContext(AppContext);
+	const {client, defaultDelta} = useContext(AppContext);
 	const {getSelectedProcessSteps} = useContext(ProcessStepContext);
 	const {setError} = useContext(ErrorContext);
 	const {setLoading} = useContext(LoadingContext);
@@ -56,13 +57,16 @@ const Body = ({currentTab, processId, query}) => {
 					/>
 
 					<div className="mb-1 text-right">
-						<button className="border-0 btn btn-secondary btn-sm">
+						<ChildLink
+							className="border-0 btn btn-secondary btn-sm"
+							to={`/assignees/${processId}/${defaultDelta}/1/overdueTaskCount:desc`}
+						>
 							<span className="mr-2" data-testid="viewAllSteps">
 								{Liferay.Language.get('view-all-assignees')}
 							</span>
 
 							<Icon iconName="caret-right-l" />
-						</button>
+						</ChildLink>
 					</div>
 				</>
 			) : (

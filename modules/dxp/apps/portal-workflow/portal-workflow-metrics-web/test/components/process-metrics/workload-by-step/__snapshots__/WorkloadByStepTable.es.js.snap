@@ -56,10 +56,10 @@ exports[`Should display hyphen when the task has no count 1`] = `
               className="inline-item inline-item-after"
             >
               <svg
-                className="lexicon-icon lexicon-icon-order-arrow-down"
+                className="lexicon-icon lexicon-icon-order-arrow-up"
                 dangerouslySetInnerHTML={
                   Object {
-                    "__html": "<use xlink:href=\\"http://localhost:8080/o/admin-theme/images/lexicon/icons.svg#order-arrow-down\\" />",
+                    "__html": "<use xlink:href=\\"http://localhost:8080/o/admin-theme/images/lexicon/icons.svg#order-arrow-up\\" />",
                   }
                 }
                 data-testid="icon"
@@ -111,10 +111,10 @@ exports[`Should display hyphen when the task has no count 1`] = `
               className="inline-item inline-item-after"
             >
               <svg
-                className="lexicon-icon lexicon-icon-order-arrow-down"
+                className="lexicon-icon lexicon-icon-order-arrow-up"
                 dangerouslySetInnerHTML={
                   Object {
-                    "__html": "<use xlink:href=\\"http://localhost:8080/o/admin-theme/images/lexicon/icons.svg#order-arrow-down\\" />",
+                    "__html": "<use xlink:href=\\"http://localhost:8080/o/admin-theme/images/lexicon/icons.svg#order-arrow-up\\" />",
                   }
                 }
                 data-testid="icon"
@@ -143,10 +143,10 @@ exports[`Should display hyphen when the task has no count 1`] = `
               className="inline-item inline-item-after"
             >
               <svg
-                className="lexicon-icon lexicon-icon-order-arrow-down"
+                className="lexicon-icon lexicon-icon-order-arrow-up"
                 dangerouslySetInnerHTML={
                   Object {
-                    "__html": "<use xlink:href=\\"http://localhost:8080/o/admin-theme/images/lexicon/icons.svg#order-arrow-down\\" />",
+                    "__html": "<use xlink:href=\\"http://localhost:8080/o/admin-theme/images/lexicon/icons.svg#order-arrow-up\\" />",
                   }
                 }
                 data-testid="icon"
@@ -260,10 +260,10 @@ exports[`Should render component 1`] = `
               className="inline-item inline-item-after"
             >
               <svg
-                className="lexicon-icon lexicon-icon-order-arrow-down"
+                className="lexicon-icon lexicon-icon-order-arrow-up"
                 dangerouslySetInnerHTML={
                   Object {
-                    "__html": "<use xlink:href=\\"http://localhost:8080/o/admin-theme/images/lexicon/icons.svg#order-arrow-down\\" />",
+                    "__html": "<use xlink:href=\\"http://localhost:8080/o/admin-theme/images/lexicon/icons.svg#order-arrow-up\\" />",
                   }
                 }
                 data-testid="icon"
@@ -315,10 +315,10 @@ exports[`Should render component 1`] = `
               className="inline-item inline-item-after"
             >
               <svg
-                className="lexicon-icon lexicon-icon-order-arrow-down"
+                className="lexicon-icon lexicon-icon-order-arrow-up"
                 dangerouslySetInnerHTML={
                   Object {
-                    "__html": "<use xlink:href=\\"http://localhost:8080/o/admin-theme/images/lexicon/icons.svg#order-arrow-down\\" />",
+                    "__html": "<use xlink:href=\\"http://localhost:8080/o/admin-theme/images/lexicon/icons.svg#order-arrow-up\\" />",
                   }
                 }
                 data-testid="icon"
@@ -347,10 +347,10 @@ exports[`Should render component 1`] = `
               className="inline-item inline-item-after"
             >
               <svg
-                className="lexicon-icon lexicon-icon-order-arrow-down"
+                className="lexicon-icon lexicon-icon-order-arrow-up"
                 dangerouslySetInnerHTML={
                   Object {
-                    "__html": "<use xlink:href=\\"http://localhost:8080/o/admin-theme/images/lexicon/icons.svg#order-arrow-down\\" />",
+                    "__html": "<use xlink:href=\\"http://localhost:8080/o/admin-theme/images/lexicon/icons.svg#order-arrow-up\\" />",
                   }
                 }
                 data-testid="icon"

@@ -41,7 +41,7 @@ class ListHeadItem extends React.Component {
 		}`;
 
 		const sortIcon =
-			order === 'asc' ? 'order-arrow-down' : 'order-arrow-up';
+			order === 'asc' ? 'order-arrow-up' : 'order-arrow-down';
 
 		const pathname = pathToRegexp.compile(path)({
 			...params,
