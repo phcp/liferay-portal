@@ -10,12 +10,14 @@
  * distribution rights of the Software.
  */
 
-import React, {createContext, useContext, useEffect, useState} from 'react';
+import React, {createContext, useContext, useState} from 'react';
 
 import {AppContext} from '../../../AppContext.es';
+import {TimeRangeContext} from '../../filter/store/TimeRangeStore.es';
 
-const usePerformanceData = (page, pageSize, processId, search, sort) => {
+const usePerformanceData = (queryDateEnd, queryDateStart, timeRangeKeys) => {
 	const {client} = useContext(AppContext);
+	const {getSelectedTimeRange} = useContext(TimeRangeContext);
 	const [items, setItems] = useState([]);
 	const [totalCount, setTotalCount] = useState(0);
 
@@ -30,18 +32,35 @@ const usePerformanceData = (page, pageSize, processId, search, sort) => {
 			params.key = decodeURIComponent(search);
 		}
 
-		client.get(`/processes/${processId}/tasks`, {params}).then(({data}) => {
-			setTotalCount(() => data.totalCount);
-			setItems(() => data.items);
-		});
+		const isValidDate = date => date && !isNaN(date);
+
+		const timeRange = getSelectedTimeRange(
+			timeRangeKeys,
+			queryDateEnd,
+			queryDateStart
+		);
+
+		if (
+			timeRange &&
+			isValidDate(timeRange.dateEnd) &&
+			isValidDate(timeRange.dateStart)
+		) {
+			const {dateEnd, dateStart} = timeRange;
+			params.dateEnd = dateEnd.toISOString();
+			params.dateStart = dateStart.toISOString();
+		}
+
+		return client
+			.get(`/processes/${processId}/tasks`, {params})
+			.then(({data}) => {
+				setTotalCount(() => data.totalCount);
+				setItems(() => data.items);
+				return data;
+			});
 	};
 
-	useEffect(() => {
-		if (page && pageSize && processId && sort)
-			fetchData(page, pageSize, processId, search, sort);
-	}, [page, pageSize, processId, search, sort]);
-
 	return {
+		fetchData,
 		items,
 		totalCount
 	};
@@ -51,15 +70,17 @@ const PerformanceDataContext = createContext();
 
 const PerformanceDataProvider = ({
 	children,
-	page,
-	pageSize,
-	processId,
-	search,
-	sort
+	queryDateEnd,
+	queryDateStart,
+	timeRangeKeys
 }) => {
 	return (
 		<PerformanceDataContext.Provider
-			value={usePerformanceData(page, pageSize, processId, search, sort)}
+			value={usePerformanceData(
+				queryDateEnd,
+				queryDateStart,
+				timeRangeKeys
+			)}
 		>
 			{children}
 		</PerformanceDataContext.Provider>
