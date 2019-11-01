@@ -11,28 +11,29 @@
 
 import React from 'react';
 
+import ProcessStepFilter from '../filter/ProcessStepFilter.es';
 import {TimeRangeFilter} from '../filter/TimeRangeFilter.es';
-import {VelocityUnitFilter} from '../filter/VelocityUnitFilter.es';
 
-const VelocityFilters = () => {
+export default function Filter() {
 	return (
 		<div className="autofit-col m-0 management-bar management-bar-light navbar">
 			<ul className="navbar-nav">
-				<TimeRangeFilter
-					filterKey="velocityTimeRange"
+				<ProcessStepFilter
+					filterKey="assigneeProcessStep"
 					hideControl={true}
+					multiple={false}
 					position="right"
 					showFilterName={false}
 				/>
 
-				<VelocityUnitFilter
+				<TimeRangeFilter
 					className={'pl-3'}
+					filterKey="assigneeTimeRange"
 					hideControl={true}
 					position="right"
+					showFilterName={false}
 				/>
 			</ul>
 		</div>
 	);
-};
-
-export default VelocityFilters;
+}
