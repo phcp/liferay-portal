@@ -54,8 +54,8 @@ describe('The workload by assignee page table should', () => {
 
 		const onTimeTaskCounts = getAllByTestId('onTimeTaskCount');
 
-		expect(onTimeTaskCounts[0].innerHTML).toBe('10');
-		expect(onTimeTaskCounts[1].innerHTML).toBe('3');
+		expect(onTimeTaskCounts[0].children[0].innerHTML).toBe('10');
+		expect(onTimeTaskCounts[1].children[0].innerHTML).toBe('3');
 	});
 
 	test('Be rendered with "5" and "7" values as "Overdue" column', () => {
@@ -66,8 +66,8 @@ describe('The workload by assignee page table should', () => {
 
 		const overdueTaskCounts = getAllByTestId('overdueTaskCount');
 
-		expect(overdueTaskCounts[0].innerHTML).toBe('5');
-		expect(overdueTaskCounts[1].innerHTML).toBe('7');
+		expect(overdueTaskCounts[0].children[0].innerHTML).toBe('5');
+		expect(overdueTaskCounts[1].children[0].innerHTML).toBe('7');
 	});
 
 	test('Be rendered with "15" and "10" values as "Total Pending" column', () => {
@@ -78,7 +78,7 @@ describe('The workload by assignee page table should', () => {
 
 		const taskCounts = getAllByTestId('taskCount');
 
-		expect(taskCounts[0].innerHTML).toBe('15');
-		expect(taskCounts[1].innerHTML).toBe('10');
+		expect(taskCounts[0].children[0].innerHTML).toBe('15');
+		expect(taskCounts[1].children[0].innerHTML).toBe('10');
 	});
 });
