@@ -16,7 +16,6 @@ import {ProcessStepContext} from '../../../../src/main/resources/META-INF/resour
 import {TimeRangeContext} from '../../../../src/main/resources/META-INF/resources/js/components/process-metrics/filter/store/TimeRangeStore.es';
 import PerformanceByAssigneeCard from '../../../../src/main/resources/META-INF/resources/js/components/process-metrics/performance-by-assignee-card/PerformanceByAssigneeCard.es';
 import Request from '../../../../src/main/resources/META-INF/resources/js/shared/components/request/Request.es';
-import {formatDuration} from '../../../../src/main/resources/META-INF/resources/js/shared/util/duration.es';
 import {MockRouter} from '../../../mock/MockRouter.es';
 
 const clientMock = {
@@ -127,9 +126,9 @@ describe('The performance by assignee body component with data should', () => {
 	test('Be rendered with average completion time', async () => {
 		const durations = await getAllByTestId('durationTaskAvg');
 
-		expect(durations[0].innerHTML).toEqual(formatDuration(10800000));
-		expect(durations[1].innerHTML).toEqual(formatDuration(475200000));
-		expect(durations[2].innerHTML).toEqual(formatDuration(0));
+		expect(durations[0].innerHTML).toEqual('3h');
+		expect(durations[1].innerHTML).toEqual('5d 12h');
+		expect(durations[2].innerHTML).toEqual('0min');
 	});
 });
 
