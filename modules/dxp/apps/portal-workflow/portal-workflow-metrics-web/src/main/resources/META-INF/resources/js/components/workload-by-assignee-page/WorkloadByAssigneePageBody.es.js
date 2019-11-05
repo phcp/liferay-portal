@@ -49,7 +49,10 @@ const Body = ({page, pageSize, processId, sort}) => {
 			<PromisesResolver.Resolved>
 				{data.totalCount ? (
 					<>
-						<WorkloadByAssigneePage.Table items={data.items} />
+						<WorkloadByAssigneePage.Table
+							items={data.items}
+							processId={processId}
+						/>
 
 						<PaginationBar
 							page={page}

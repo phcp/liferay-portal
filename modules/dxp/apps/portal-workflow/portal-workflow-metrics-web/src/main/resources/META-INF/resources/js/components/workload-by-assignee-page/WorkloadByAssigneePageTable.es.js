@@ -9,46 +9,94 @@
  * distribution rights of the Software.
  */
 
-import React from 'react';
+import React, {useContext} from 'react';
 
 import ListHeadItem from '../../shared/components/list/ListHeadItem.es';
+import {ChildLink} from '../../shared/components/router/routerWrapper.es';
 import UserAvatar from '../../shared/components/user-avatar/UserAvatar.es';
+import {AppContext} from '../AppContext.es';
+import {filterConstants} from '../instance-list-page/store/InstanceListPageStore.es';
 import WorkloadByAssigneePage from './WorkloadByAssigneePage.es';
 
-const Item = ({image, name, onTimeTaskCount, overdueTaskCount, taskCount}) => {
+const Item = ({
+	id,
+	image,
+	name,
+	onTimeTaskCount,
+	overdueTaskCount,
+	processId,
+	taskCount
+}) => {
+	const {defaultDelta} = useContext(AppContext);
+	const instancesListPath = `/instances/${processId}/${defaultDelta}/1`;
+
+	const getFiltersQuery = slaStatusConstants => {
+		const filterParams = {
+			[filterConstants.assignees]: [id],
+			[filterConstants.processStatus]: ['Pending'],
+			[filterConstants.slaStatus]: [slaStatusConstants]
+		};
+
+		return filterParams;
+	};
+
 	return (
 		<tr>
 			<td className="lfr-title-column table-cell-expand table-title">
 				<UserAvatar className="mr-3" image={image} />
 
-				<span data-testid="assigneeName">{name}</span>
+				<ChildLink
+					className="workload-by-step-link"
+					query={{filters: getFiltersQuery()}}
+					to={instancesListPath}
+				>
+					<span data-testid="assigneeName">{name}</span>
+				</ChildLink>
 			</td>
 
 			<td
 				className="table-cell-minw-75 text-right"
 				data-testid="overdueTaskCount"
 			>
-				{overdueTaskCount}
+				<ChildLink
+					className="workload-by-step-link"
+					query={{filters: getFiltersQuery('Overdue')}}
+					to={instancesListPath}
+				>
+					{overdueTaskCount}
+				</ChildLink>
 			</td>
 
 			<td
 				className="table-cell-minw-75 text-right"
 				data-testid="onTimeTaskCount"
 			>
-				{onTimeTaskCount}
+				<ChildLink
+					className="workload-by-step-link"
+					query={{filters: getFiltersQuery('OnTime')}}
+					to={instancesListPath}
+				>
+					{onTimeTaskCount}
+				</ChildLink>
 			</td>
 
 			<td
 				className="table-cell-minw-75 text-right"
 				data-testid="taskCount"
 			>
-				{taskCount}
+				<ChildLink
+					className="workload-by-step-link"
+					query={{filters: getFiltersQuery()}}
+					to={instancesListPath}
+				>
+					{taskCount}
+				</ChildLink>
 			</td>
 		</tr>
 	);
 };
 
-const Table = ({items}) => {
+const Table = ({items, processId}) => {
 	return (
 		<div className="table-responsive workflow-process-dashboard">
 			<table className="table table-heading-nowrap table-hover table-list">
@@ -90,7 +138,11 @@ const Table = ({items}) => {
 
 				<tbody>
 					{items.map((item, index) => (
-						<WorkloadByAssigneePage.Item {...item} key={index} />
+						<WorkloadByAssigneePage.Item
+							{...item}
+							key={index}
+							processId={processId}
+						/>
 					))}
 				</tbody>
 			</table>
