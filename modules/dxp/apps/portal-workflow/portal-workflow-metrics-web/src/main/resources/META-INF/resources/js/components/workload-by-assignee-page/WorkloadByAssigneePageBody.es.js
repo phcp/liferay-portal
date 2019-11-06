@@ -9,41 +9,20 @@
  * distribution rights of the Software.
  */
 
-import React, {useContext, useMemo, useState} from 'react';
+import React from 'react';
 
 import EmptyState from '../../shared/components/list/EmptyState.es';
 import ReloadButton from '../../shared/components/list/ReloadButton.es';
 import LoadingState from '../../shared/components/loading/LoadingState.es';
 import PaginationBar from '../../shared/components/pagination/PaginationBar.es';
 import PromisesResolver from '../../shared/components/request/PromisesResolver.es';
-import {AppContext} from '../AppContext.es';
 import WorkloadByAssigneePage from './WorkloadByAssigneePage.es';
 
-const Body = ({page, pageSize, processId, sort}) => {
-	const {client} = useContext(AppContext);
-	const [data, setData] = useState({});
-
-	const fetchData = () =>
-		client
-			.get(
-				`/processes/${processId}/assignee-users?page=${page}&pageSize=${pageSize}&sort=${sort}`
-			)
-			.then(({data}) => {
-				setData(data);
-			});
-
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const promises = useMemo(() => [fetchData()], [
-		page,
-		pageSize,
-		processId,
-		sort
-	]);
-
+const Body = ({data, page, pageSize}) => {
 	return (
-		<PromisesResolver promises={promises}>
+		<>
 			<PromisesResolver.Pending>
-				<LoadingView />
+				<WorkloadByAssigneePage.Loading />
 			</PromisesResolver.Pending>
 
 			<PromisesResolver.Resolved>
@@ -59,14 +38,14 @@ const Body = ({page, pageSize, processId, sort}) => {
 						/>
 					</>
 				) : (
-					<EmptyView />
+					<WorkloadByAssigneePage.Empty />
 				)}
 			</PromisesResolver.Resolved>
 
 			<PromisesResolver.Rejected>
-				<ErrorView />
+				<WorkloadByAssigneePage.Error />
 			</PromisesResolver.Rejected>
-		</PromisesResolver>
+		</>
 	);
 };
 

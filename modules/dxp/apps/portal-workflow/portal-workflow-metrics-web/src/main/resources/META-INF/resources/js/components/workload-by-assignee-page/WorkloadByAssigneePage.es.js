@@ -9,12 +9,17 @@
  * distribution rights of the Software.
  */
 
-import React, {useContext, useEffect, useMemo} from 'react';
+import React from 'react';
 
-import {getFiltersParam} from '../../shared/components/filter/util/filterUtil.es';
-import Request from '../../shared/components/request/Request.es';
-import {AppContext} from '../AppContext.es';
-import {ProcessStepProvider} from '../process-metrics/filter/store/ProcessStepStore.es';
+import FilterResultsBar from '../../shared/components/filter/FilterResultsBar.es';
+import {getFilterResults} from '../../shared/components/filter/util/filterUtil.es';
+import PromisesResolver from '../../shared/components/request/PromisesResolver.es';
+import {useFilterItemKeys} from '../../shared/hooks/useFilterItemKeys.es';
+import {useFiltersReducer} from '../../shared/hooks/useFiltersReducer.es';
+import {useProcessTitle} from '../../shared/hooks/useProcessTitle.es';
+import {useResource} from '../../shared/hooks/useResource.es';
+import ProcessStepFilter from '../process-metrics/filter/ProcessStepFilterHooks.es';
+import RoleFilter from '../process-metrics/filter/RoleFilterHooks.es';
 import {
 	Body,
 	EmptyView,
@@ -23,45 +28,94 @@ import {
 } from './WorkloadByAssigneePageBody.es';
 import {Item, Table} from './WorkloadByAssigneePageTable.es';
 
-const WorkloadByAssigneePage = ({page, pageSize, processId, query, sort}) => {
-	const {assigneeTaskKeys = []} = useMemo(() => getFiltersParam(query), [
-		query
-	]);
-	const {client, setTitle} = useContext(AppContext);
+const filterKeys = {
+	processSteps: 'taskKeys',
+	roles: 'roleIds'
+};
 
-	useEffect(() => {
-		client.get(`/processes/${processId}/title`).then(({data}) => {
-			setTitle(
-				`${data}: ${Liferay.Language.get('workload-by-assignee')}`
-			);
-			return data;
-		});
+const filterTitles = {
+	processSteps: Liferay.Language.get('process-step'),
+	roles: Liferay.Language.get('roles')
+};
 
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+const WorkloadByAssigneePage = ({page, pageSize, processId, sort}) => {
+	useProcessTitle(processId, Liferay.Language.get('workload-by-assignee'));
+
+	const [filterValues, dispatch] = useFiltersReducer(filterKeys);
+	const {roleIds, taskKeys} = useFilterItemKeys(filterKeys, filterValues);
+
+	const {data, promises} = useResource(
+		`/processes/${processId}/assignee-users`,
+		{
+			page,
+			pageSize,
+			roleIds,
+			sort: decodeURIComponent(sort),
+			taskKeys
+		}
+	);
 
 	return (
-		<Request>
-			<ProcessStepProvider
+		<PromisesResolver promises={promises}>
+			<WorkloadByAssigneePage.Filters
+				dispatch={dispatch}
+				filterValues={filterValues}
 				processId={processId}
-				processStepKeys={assigneeTaskKeys}
-			>
-				<div className="container-fluid-1280 mt-4">
-					<WorkloadByAssigneePage.Body
-						page={page}
-						pageSize={pageSize}
-						processId={processId}
-						sort={sort}
-					/>
+				totalCount={data.totalCount}
+			/>
+
+			<div className="container-fluid-1280 mt-4">
+				<WorkloadByAssigneePage.Body
+					data={data}
+					processId={processId}
+				/>
+			</div>
+		</PromisesResolver>
+	);
+};
+
+const Filters = ({dispatch, filterValues, processId, totalCount}) => {
+	const filterResults = getFilterResults(
+		filterKeys,
+		filterTitles,
+		filterValues
+	);
+
+	return (
+		<>
+			<nav className="management-bar management-bar-light navbar navbar-expand-md">
+				<div className="container-fluid container-fluid-max-xl">
+					<ul className="navbar-nav">
+						<li className="nav-item">
+							<strong className="ml-0 mr-0 navbar-text">
+								{Liferay.Language.get('filter-by')}
+							</strong>
+						</li>
+
+						<RoleFilter
+							dispatch={dispatch}
+							filterKey={filterKeys.roles}
+							processId={processId}
+						/>
+
+						<ProcessStepFilter
+							dispatch={dispatch}
+							filterKey={filterKeys.processSteps}
+							processId={processId}
+						/>
+					</ul>
 				</div>
-			</ProcessStepProvider>
-		</Request>
+			</nav>
+
+			<FilterResultsBar filters={filterResults} totalCount={totalCount} />
+		</>
 	);
 };
 
 WorkloadByAssigneePage.Body = Body;
 WorkloadByAssigneePage.Empty = EmptyView;
 WorkloadByAssigneePage.Error = ErrorView;
+WorkloadByAssigneePage.Filters = Filters;
 WorkloadByAssigneePage.Item = Item;
 WorkloadByAssigneePage.Loading = LoadingView;
 WorkloadByAssigneePage.Table = Table;
