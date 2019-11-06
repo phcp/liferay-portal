@@ -16,6 +16,8 @@ import {ChildLink} from '../../shared/components/router/routerWrapper.es';
 import UserAvatar from '../../shared/components/user-avatar/UserAvatar.es';
 import {AppContext} from '../AppContext.es';
 import {filterConstants} from '../instance-list-page/store/InstanceListPageStore.es';
+import {processStatusConstants} from '../process-metrics/filter/store/ProcessStatusStore.es';
+import {slaStatusConstants} from '../process-metrics/filter/store/SLAStatusStore.es';
 import WorkloadByAssigneePage from './WorkloadByAssigneePage.es';
 
 const Item = ({
@@ -30,11 +32,11 @@ const Item = ({
 	const {defaultDelta} = useContext(AppContext);
 	const instancesListPath = `/instances/${processId}/${defaultDelta}/1`;
 
-	const getFiltersQuery = slaStatusConstants => {
+	const getFiltersQuery = slaStatus => {
 		const filterParams = {
 			[filterConstants.assignees]: [id],
-			[filterConstants.processStatus]: ['Pending'],
-			[filterConstants.slaStatus]: [slaStatusConstants]
+			[filterConstants.processStatus]: [processStatusConstants.pending],
+			[filterConstants.slaStatus]: [slaStatus]
 		};
 
 		return filterParams;
@@ -60,7 +62,9 @@ const Item = ({
 			>
 				<ChildLink
 					className="workload-by-step-link"
-					query={{filters: getFiltersQuery('Overdue')}}
+					query={{
+						filters: getFiltersQuery(slaStatusConstants.overdue)
+					}}
 					to={instancesListPath}
 				>
 					{overdueTaskCount}
@@ -73,7 +77,9 @@ const Item = ({
 			>
 				<ChildLink
 					className="workload-by-step-link"
-					query={{filters: getFiltersQuery('OnTime')}}
+					query={{
+						filters: getFiltersQuery(slaStatusConstants.onTime)
+					}}
 					to={instancesListPath}
 				>
 					{onTimeTaskCount}
