@@ -16,7 +16,7 @@ import {
 	parse,
 	stringify
 } from '../../../../shared/components/router/queryString.es';
-import {useRouter} from '../../../../shared/components/router/useRouter.es';
+import {useRouter} from '../../../../shared/hooks/useRouter.es';
 import moment from '../../../../shared/util/moment.es';
 import {
 	formatDateEnLocale,

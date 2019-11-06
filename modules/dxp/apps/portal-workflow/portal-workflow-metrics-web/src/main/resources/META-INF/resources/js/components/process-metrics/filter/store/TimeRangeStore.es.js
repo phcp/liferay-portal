@@ -15,9 +15,9 @@ import React, {createContext, useContext, useEffect, useState} from 'react';
 import {getFiltersParam} from '../../../../shared/components/filter/util/filterUtil.es';
 import {ErrorContext} from '../../../../shared/components/request/Error.es';
 import {LoadingContext} from '../../../../shared/components/request/Loading.es';
-import {useRouter} from '../../../../shared/components/router/useRouter.es';
+import {usePrevious} from '../../../../shared/hooks/usePrevious.es';
+import {useRouter} from '../../../../shared/hooks/useRouter.es';
 import {compareArrays} from '../../../../shared/util/array.es';
-import {usePrevious} from '../../../../shared/util/hooks.es';
 import {AppContext} from '../../../AppContext.es';
 import {
 	buildFallbackTimeRange,

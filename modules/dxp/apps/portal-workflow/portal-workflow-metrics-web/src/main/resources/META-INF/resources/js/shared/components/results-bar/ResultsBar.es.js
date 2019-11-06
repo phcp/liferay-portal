@@ -13,8 +13,8 @@ import pathToRegexp from 'path-to-regexp';
 import React from 'react';
 import {Link} from 'react-router-dom';
 
+import {useRouter} from '../../hooks/useRouter.es';
 import {sub} from '../../util/lang.es';
-import {useRouter} from '../router/useRouter.es';
 
 const ResultsBar = ({children}) => {
 	return (

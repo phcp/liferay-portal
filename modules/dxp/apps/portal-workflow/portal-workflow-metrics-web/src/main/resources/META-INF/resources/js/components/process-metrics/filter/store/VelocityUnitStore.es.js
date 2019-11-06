@@ -14,8 +14,8 @@ import moment from 'moment';
 import React, {createContext, useContext, useEffect, useState} from 'react';
 
 import {buildFallbackItems} from '../../../../shared/components/filter/util/filterEvents.es';
+import {usePrevious} from '../../../../shared/hooks/usePrevious.es';
 import {compareArrays} from '../../../../shared/util/array.es';
-import {usePrevious} from '../../../../shared/util/hooks.es';
 import {TimeRangeContext} from './TimeRangeStore.es';
 
 const velocityUnitConstants = {
