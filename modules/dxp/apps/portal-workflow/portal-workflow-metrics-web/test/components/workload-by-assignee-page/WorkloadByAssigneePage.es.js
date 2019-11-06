@@ -13,7 +13,6 @@ import {cleanup, render, waitForElement} from '@testing-library/react';
 import React from 'react';
 
 import WorkloadByAssigneePage from '../../../src/main/resources/META-INF/resources/js/components/workload-by-assignee-page/WorkloadByAssigneePage.es';
-import Request from '../../../src/main/resources/META-INF/resources/js/shared/components/request/Request.es';
 import {MockRouter} from '../../mock/MockRouter.es';
 
 const items = [
@@ -37,9 +36,7 @@ const clientMock = {
 };
 
 const MockContext = ({children}) => (
-	<MockRouter client={clientMock}>
-		<Request>{children}</Request>
-	</MockRouter>
+	<MockRouter client={clientMock}>{children}</MockRouter>
 );
 
 describe('The workload by assignee page body should', () => {

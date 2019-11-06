@@ -9,11 +9,11 @@
  * distribution rights of the Software.
  */
 
-import {cleanup, render, waitForElement} from '@testing-library/react';
+import {cleanup, render} from '@testing-library/react';
 import React from 'react';
 
 import WorkloadByAssigneePage from '../../../src/main/resources/META-INF/resources/js/components/workload-by-assignee-page/WorkloadByAssigneePage.es';
-import Request from '../../../src/main/resources/META-INF/resources/js/shared/components/request/Request.es';
+import PromisesResolver from '../../../src/main/resources/META-INF/resources/js/shared/components/request/PromisesResolver.es';
 import {MockRouter} from '../../mock/MockRouter.es';
 
 const items = [
@@ -32,13 +32,11 @@ const items = [
 	}
 ];
 
-const clientMock = {
-	get: jest.fn().mockResolvedValue({data: {items, totalCount: 2}})
-};
-
-const MockContext = ({children}) => (
-	<MockRouter client={clientMock}>
-		<Request>{children}</Request>
+const wrapper = ({children}) => (
+	<MockRouter>
+		<PromisesResolver promises={[Promise.resolve()]}>
+			{children}
+		</PromisesResolver>
 	</MockRouter>
 );
 
@@ -49,23 +47,19 @@ describe('The workload by assignee page body should', () => {
 
 	beforeEach(() => {
 		const renderResult = render(
-			<MockContext>
-				<WorkloadByAssigneePage.Body
-					page="1"
-					pageSize="5"
-					processId="12345"
-					sort="overdueTaskCount:desc"
-				/>
-			</MockContext>
+			<WorkloadByAssigneePage.Body
+				data={{items, totalCount: items.length}}
+				page="1"
+				pageSize="5"
+			/>,
+			{wrapper}
 		);
 
 		getAllByTestId = renderResult.getAllByTestId;
 	});
 
-	test('Be rendered with "User 1" and "User 2" names', async () => {
-		const assigneeNames = await waitForElement(() =>
-			getAllByTestId('assigneeName')
-		);
+	test('Be rendered with "User 1" and "User 2" names', () => {
+		const assigneeNames = getAllByTestId('assigneeName');
 
 		expect(assigneeNames[0].innerHTML).toBe('User 1');
 		expect(assigneeNames[1].innerHTML).toBe('User 2');
