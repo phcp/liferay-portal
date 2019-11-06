@@ -10,6 +10,7 @@
  */
 
 import axios from 'axios';
+import qs from 'qs';
 
 /**
  * @module fetch
@@ -29,5 +30,8 @@ axios.defaults.headers.common[
 axios.defaults.params = {
 	['p_auth']: Liferay.authToken
 };
+
+axios.defaults.paramsSerializer = params =>
+	qs.stringify(params, {arrayFormat: 'repeat'});
 
 export default restClient;
