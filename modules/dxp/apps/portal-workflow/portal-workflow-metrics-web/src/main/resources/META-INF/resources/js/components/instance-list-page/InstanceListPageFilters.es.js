@@ -12,6 +12,7 @@
 import React, {useContext} from 'react';
 
 import FilterResultsBar from '../../shared/components/filter/FilterResultsBar.es';
+import {asFilterObject} from '../../shared/components/filter/util/filterUtil.es';
 import AssigneeFilter from '../process-metrics/filter/AssigneeFilter.es';
 import ProcessStatusFilter from '../process-metrics/filter/ProcessStatusFilter.es';
 import ProcessStepFilter from '../process-metrics/filter/ProcessStepFilter.es';
@@ -36,13 +37,6 @@ const InstanceListPageFilters = ({totalCount}) => {
 	const completedStatusSelected = isCompletedStatusSelected();
 
 	const getFilters = () => {
-		const asFilterObject = (items, key, name, pinned = false) => ({
-			items,
-			key,
-			name,
-			pinned
-		});
-
 		const filters = [
 			asFilterObject(
 				slaStatuses,

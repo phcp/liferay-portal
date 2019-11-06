@@ -13,11 +13,18 @@ import pathToRegexp from 'path-to-regexp';
 
 import {parse, stringify} from '../../router/queryString.es';
 
-export function getFiltersParam(queryString) {
+const asFilterObject = (items, key, name, pinned = false) => ({
+	items,
+	key,
+	name,
+	pinned
+});
+
+const getFiltersParam = queryString => {
 	const queryParams = parse(queryString);
 
 	return queryParams.filters || {};
-}
+};
 
 export function getFilterValues(filterKey, filtersParam) {
 	let filterValues = filtersParam[filterKey] || [];
@@ -29,7 +36,7 @@ export function getFilterValues(filterKey, filtersParam) {
 	return filterValues;
 }
 
-export function getSelectedItemsQuery(items, key, queryString) {
+const getSelectedItemsQuery = (items, key, queryString) => {
 	const queryParams = parse(queryString);
 
 	const filtersParam = queryParams.filters || {};
@@ -40,37 +47,9 @@ export function getSelectedItemsQuery(items, key, queryString) {
 	};
 
 	return stringify(queryParams);
-}
+};
 
-export function getRequestUrl(queryString, requestUrl, excludedValues = []) {
-	const filtersParam = getFiltersParam(queryString);
-
-	const requestFilter = Object.keys(filtersParam).reduce(
-		(queryParams, filterKey) => {
-			const filterValues = getFilterValues(filterKey, filtersParam);
-
-			const filterQuery = filterValues
-				.filter(filterValue => !excludedValues.includes(filterValue))
-				.map(filterValue => `${filterKey}=${filterValue}`)
-				.join('&');
-
-			return `${queryParams}&${filterQuery}`;
-		},
-		''
-	);
-
-	return requestUrl + requestFilter;
-}
-
-export function isSelected(filterKey, itemKey, queryString) {
-	const filtersParam = getFiltersParam(queryString);
-
-	const filterValues = getFilterValues(filterKey, filtersParam);
-
-	return filterValues.includes(itemKey);
-}
-
-export function pushToHistory(filterQuery, routerProps) {
+const pushToHistory = (filterQuery, routerProps) => {
 	const {
 		history,
 		location: {search},
@@ -85,17 +64,24 @@ export function pushToHistory(filterQuery, routerProps) {
 			search: filterQuery
 		});
 	}
-}
+};
 
-export function removeFilters(queryString) {
+const reduceFilters = (filterItems, paramKey) => {
+	return filterItems.reduce(
+		(acc, cur) => `&${paramKey}=${cur.key}${acc}`,
+		''
+	);
+};
+
+const removeFilters = queryString => {
 	const queryParams = parse(queryString);
 
 	queryParams.filters = null;
 
 	return stringify(queryParams);
-}
+};
 
-export function removeItem(filterKey, itemToRemove, queryString) {
+const removeItem = (filterKey, itemToRemove, queryString) => {
 	const queryParams = parse(queryString);
 
 	const filtersParam = queryParams.filters || {};
@@ -109,21 +95,14 @@ export function removeItem(filterKey, itemToRemove, queryString) {
 	queryParams.filters = filtersParam;
 
 	return stringify(queryParams);
-}
+};
 
-export function verifySelectedItems(filter, filtersParam) {
-	const filterValues = getFilterValues(filter.key, filtersParam);
-
-	filter.items.forEach(item => {
-		item.active = filterValues.includes(item.key);
-	});
-
-	return filter;
-}
-
-export function reduceFilters(filterItems, paramKey) {
-	return filterItems.reduce(
-		(acc, cur) => `&${paramKey}=${cur.key}${acc}`,
-		''
-	);
-}
+export {
+	getFiltersParam,
+	getFilterResults,
+	getSelectedItemsQuery,
+	pushToHistory,
+	reduceFilters,
+	removeFilters,
+	removeItem
+};
