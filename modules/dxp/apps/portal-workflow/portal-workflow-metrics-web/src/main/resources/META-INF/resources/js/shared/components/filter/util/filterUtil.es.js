@@ -26,6 +26,24 @@ const getFiltersParam = queryString => {
 	return queryParams.filters || {};
 };
 
+const getFilterResults = (filterKeys, filterTitles, filterValues) => {
+	const filterResults = [];
+
+	Object.keys(filterKeys).forEach(objectKey => {
+		if (filterValues[objectKey]) {
+			filterResults.push(
+				asFilterObject(
+					filterValues[objectKey],
+					filterKeys[objectKey],
+					filterTitles[objectKey]
+				)
+			);
+		}
+	});
+
+	return filterResults;
+};
+
 export function getFilterValues(filterKey, filtersParam) {
 	let filterValues = filtersParam[filterKey] || [];
 
@@ -98,6 +116,7 @@ const removeItem = (filterKey, itemToRemove, queryString) => {
 };
 
 export {
+	asFilterObject,
 	getFiltersParam,
 	getFilterResults,
 	getSelectedItemsQuery,
