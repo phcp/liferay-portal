@@ -173,15 +173,9 @@ exports[`Should render component 1`] = `
             </span>
           </a>
         </td>
-        <td>
-          -
-        </td>
-        <td>
-          -
-        </td>
-        <td>
-          -
-        </td>
+        <td />
+        <td />
+        <td />
       </tr>
     </tbody>
   </table>

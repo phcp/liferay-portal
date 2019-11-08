@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Should render component 1`] = `
-<div>
+Array [
   <nav
     className="management-bar management-bar-light navbar navbar-expand-md"
   >
@@ -56,26 +56,25 @@ exports[`Should render component 1`] = `
         </form>
       </div>
     </div>
-  </nav>
+  </nav>,
   <div
     className="container-fluid-1280"
   >
-    <div>
-      <div
-        className="border-1 pb-6 pt-6 sheet"
-      >
-        <span
-          aria-hidden="true"
-          className="loading-animation"
-        />
-      </div>
+    <div
+      className="border-1 pb-6 pt-6 sheet"
+      data-testid="loadingView"
+    >
+      <span
+        aria-hidden="true"
+        className="loading-animation"
+      />
     </div>
-  </div>
-</div>
+  </div>,
+]
 `;
 
 exports[`Should render component with 4 records 1`] = `
-<div>
+Array [
   <nav
     className="management-bar management-bar-light navbar navbar-expand-md"
   >
@@ -130,26 +129,25 @@ exports[`Should render component with 4 records 1`] = `
         </form>
       </div>
     </div>
-  </nav>
+  </nav>,
   <div
     className="container-fluid-1280"
   >
-    <div>
-      <div
-        className="border-1 pb-6 pt-6 sheet"
-      >
-        <span
-          aria-hidden="true"
-          className="loading-animation"
-        />
-      </div>
+    <div
+      className="border-1 pb-6 pt-6 sheet"
+      data-testid="loadingView"
+    >
+      <span
+        aria-hidden="true"
+        className="loading-animation"
+      />
     </div>
-  </div>
-</div>
+  </div>,
+]
 `;
 
 exports[`Should render component with 10 records 1`] = `
-<div>
+Array [
   <nav
     className="management-bar management-bar-light navbar navbar-expand-md"
   >
@@ -204,20 +202,19 @@ exports[`Should render component with 10 records 1`] = `
         </form>
       </div>
     </div>
-  </nav>
+  </nav>,
   <div
     className="container-fluid-1280"
   >
-    <div>
-      <div
-        className="border-1 pb-6 pt-6 sheet"
-      >
-        <span
-          aria-hidden="true"
-          className="loading-animation"
-        />
-      </div>
+    <div
+      className="border-1 pb-6 pt-6 sheet"
+      data-testid="loadingView"
+    >
+      <span
+        aria-hidden="true"
+        className="loading-animation"
+      />
     </div>
-  </div>
-</div>
+  </div>,
+]
 `;
