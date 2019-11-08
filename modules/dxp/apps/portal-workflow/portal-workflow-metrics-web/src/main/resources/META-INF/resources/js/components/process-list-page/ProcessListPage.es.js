@@ -9,129 +9,97 @@
  * distribution rights of the Software.
  */
 
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 
-import ListView from '../../shared/components/list/ListView.es';
-import PaginationBar from '../../shared/components/pagination/PaginationBar.es';
 import Search from '../../shared/components/pagination/Search.es';
+import PromisesResolver from '../../shared/components/request/PromisesResolver.es';
+import ResultsBar from '../../shared/components/results-bar/ResultsBar.es';
+import {useResource} from '../../shared/hooks/useResource.es';
 import {AppContext} from '../AppContext.es';
 import {
-	REQUEST_ORIGIN_TYPE_FETCH,
-	REQUEST_ORIGIN_TYPE_SEARCH
-} from './Constants.es';
-import ProcessListPageTable from './ProcessListPageTable.es';
-import ResultsBar from './ResultsBar.es';
+	Body,
+	EmptyView,
+	ErrorView,
+	LoadingView
+} from './ProcessListPageBody.es';
+import {Item} from './ProcessListPageItem.es';
+import {Table} from './ProcessListPageTable.es';
 
-/**
- * @class
- * @memberof process-list
- */
-class ProcessListPage extends React.Component {
-	constructor(props) {
-		super(props);
+const ProcessListPage = ({page, pageSize, search, sort}) => {
+	const {setTitle} = useContext(AppContext);
 
-		this.requestOriginType = null;
-		this.state = {
-			items: [],
-			totalCount: 0
-		};
+	useEffect(() => {
+		setTitle(Liferay.Language.get('metrics'));
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	const params = {
+		page,
+		pageSize,
+		sort: decodeURIComponent(sort)
+	};
+
+	if (typeof search === 'string' && search) {
+		params.title = decodeURIComponent(search);
 	}
 
-	componentWillMount() {
-		this.context.setTitle(Liferay.Language.get('metrics'));
-	}
+	const {data, promises} = useResource(`/processes`, {...params});
 
-	componentWillReceiveProps(nextProps) {
-		this.requestData(nextProps).then(({items, totalCount}) =>
-			this.setState({
-				items,
-				totalCount
-			})
-		);
-	}
+	return (
+		<PromisesResolver promises={promises}>
+			<ProcessListPage.Filters
+				page={page}
+				pageSize={pageSize}
+				search={search}
+				sort={sort}
+				totalCount={data.totalCount}
+			/>
 
-	/**
-	 * @desc request data
-	 */
-	requestData({page, pageSize, search, sort}) {
-		const {client} = this.context;
+			<div className="container-fluid-1280">
+				<ProcessListPage.Body data={data} search={search} />
+			</div>
+		</PromisesResolver>
+	);
+};
 
-		const searching = typeof search === 'string' && search ? true : false;
-
-		const params = {
-			page,
-			pageSize,
-			sort: decodeURIComponent(sort)
-		};
-
-		if (searching) {
-			params.title = decodeURIComponent(search);
-		}
-
-		return client.get('/processes', {params}).then(({data}) => {
-			if (data && data.totalCount === 0) {
-				this.requestOriginType = searching
-					? REQUEST_ORIGIN_TYPE_SEARCH
-					: REQUEST_ORIGIN_TYPE_FETCH;
-			}
-
-			return data;
-		});
-	}
-
-	render() {
-		const {requestOriginType} = this;
-		const {items = [], totalCount} = this.state;
-		const {page, pageSize} = this.props;
-
-		const emptyTitleText = Liferay.Language.get('no-current-metrics');
-		const fetching =
-			requestOriginType === REQUEST_ORIGIN_TYPE_FETCH && totalCount === 0;
-		const loading = !requestOriginType && totalCount === 0;
-		const searching =
-			requestOriginType === REQUEST_ORIGIN_TYPE_SEARCH &&
-			totalCount === 0;
-
-		const emptyMessageText = searching
-			? Liferay.Language.get('no-results-were-found')
-			: Liferay.Language.get(
-					'once-there-are-active-processes-metrics-will-appear-here'
-			  );
-
-		return (
-			<div>
-				<nav className="management-bar management-bar-light navbar navbar-expand-md">
-					<div className="container-fluid container-fluid-max-xl">
-						<div className="navbar-form navbar-form-autofit">
-							<Search disabled={fetching} />
-						</div>
+const Filters = ({page, pageSize, search, sort, totalCount}) => {
+	return (
+		<>
+			<nav className="management-bar management-bar-light navbar navbar-expand-md">
+				<div className="container-fluid container-fluid-max-xl">
+					<div className="navbar-form navbar-form-autofit">
+						<Search disabled={!search && totalCount === 0} />
 					</div>
-				</nav>
+				</div>
+			</nav>
 
-				{this.props.search && <ResultsBar totalCount={totalCount} />}
-
-				<div className="container-fluid-1280">
-					<ListView
-						emptyMessageText={emptyMessageText}
-						emptyTitleText={emptyTitleText}
-						fetching={fetching}
-						loading={loading}
-						searching={searching}
-					>
-						<ProcessListPageTable items={items} />
-
-						<PaginationBar
-							page={page}
-							pageCount={items.length}
-							pageSize={pageSize}
+			{search && (
+				<ResultsBar>
+					<>
+						<ResultsBar.TotalCount
+							search={search}
 							totalCount={totalCount}
 						/>
-					</ListView>
-				</div>
-			</div>
-		);
-	}
-}
 
-ProcessListPage.contextType = AppContext;
+						<ResultsBar.Clear
+							page={page}
+							pageSize={pageSize}
+							sort={sort}
+						/>
+					</>
+				</ResultsBar>
+			)}
+		</>
+	);
+};
+
+ProcessListPage.Body = Body;
+ProcessListPage.Empty = EmptyView;
+ProcessListPage.Error = ErrorView;
+ProcessListPage.Filters = Filters;
+ProcessListPage.Item = Item;
+ProcessListPage.Loading = LoadingView;
+ProcessListPage.Table = Table;
+
 export default ProcessListPage;
