@@ -18,7 +18,7 @@ import {AppContext} from '../AppContext.es';
  * @class
  * @memberof process-list
  */
-class ProcessListItem extends React.Component {
+class ProcessListPageItem extends React.Component {
 	render() {
 		const {
 			id,
@@ -46,5 +46,5 @@ class ProcessListItem extends React.Component {
 	}
 }
 
-ProcessListItem.contextType = AppContext;
-export default ProcessListItem;
+ProcessListPageItem.contextType = AppContext;
+export default ProcessListPageItem;
