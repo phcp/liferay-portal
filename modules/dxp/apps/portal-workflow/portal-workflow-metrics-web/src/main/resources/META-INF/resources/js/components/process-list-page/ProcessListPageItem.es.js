@@ -12,39 +12,28 @@
 import React from 'react';
 
 import {ChildLink} from '../../shared/components/router/routerWrapper.es';
-import {AppContext} from '../AppContext.es';
 
-/**
- * @class
- * @memberof process-list
- */
-class ProcessListPageItem extends React.Component {
-	render() {
-		const {
-			id,
-			instanceCount = '-',
-			onTimeInstanceCount = '-',
-			overdueInstanceCount = '-',
-			title
-		} = this.props;
+const Item = ({
+	id,
+	instanceCount,
+	onTimeInstanceCount,
+	overdueInstanceCount,
+	title
+}) => {
+	return (
+		<tr>
+			<td className="lfr-title-column table-cell-expand table-cell-minw-200 table-title">
+				<ChildLink to={`/metrics/${id}`}>
+					<span>{title}</span>
+				</ChildLink>
+			</td>
 
-		return (
-			<tr>
-				<td className="lfr-title-column table-cell-expand table-cell-minw-200 table-title">
-					<ChildLink to={`/metrics/${id}`}>
-						<span>{title}</span>
-					</ChildLink>
-				</td>
+			<td>{overdueInstanceCount}</td>
 
-				<td>{overdueInstanceCount}</td>
+			<td>{onTimeInstanceCount}</td>
 
-				<td>{onTimeInstanceCount}</td>
-
-				<td>{instanceCount}</td>
-			</tr>
-		);
-	}
-}
-
-ProcessListPageItem.contextType = AppContext;
-export default ProcessListPageItem;
+			<td>{instanceCount}</td>
+		</tr>
+	);
+};
+export {Item};

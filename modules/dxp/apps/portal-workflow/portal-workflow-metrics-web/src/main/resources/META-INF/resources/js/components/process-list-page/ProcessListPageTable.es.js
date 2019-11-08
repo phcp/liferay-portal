@@ -12,74 +12,69 @@
 import React from 'react';
 
 import ListHeadItem from '../../shared/components/list/ListHeadItem.es';
-import ProcessListPageItem from './ProcessListPageItem.es';
+import ProcessListPage from './ProcessListPage.es';
 
-/**
- * @class
- * @memberof process-list
- */
-export default class ProcessListPageTable extends React.Component {
-	render() {
-		const {items} = this.props;
-		const onTimeTitle = Liferay.Language.get('on-time');
-		const overdueTitle = Liferay.Language.get('overdue');
-		const processNameTitle = Liferay.Language.get('process-name');
-		const totalPendingTitle = Liferay.Language.get('total-pending');
+const Table = ({items}) => {
+	const onTimeTitle = Liferay.Language.get('on-time');
+	const overdueTitle = Liferay.Language.get('overdue');
+	const processNameTitle = Liferay.Language.get('process-name');
+	const totalPendingTitle = Liferay.Language.get('total-pending');
 
-		return (
-			<div className="table-responsive">
-				<table className="show-quick-actions-on-hover table table-autofit table-heading-nowrap table-hover table-list">
-					<thead>
-						<tr>
-							<th
-								className="table-cell-expand table-head-title"
-								style={{width: '70%'}}
-							>
-								<ListHeadItem
-									name="title"
-									title={processNameTitle}
-								/>
-							</th>
+	return (
+		<div className="table-responsive">
+			<table className="show-quick-actions-on-hover table table-autofit table-heading-nowrap table-hover table-list">
+				<thead>
+					<tr>
+						<th
+							className="table-cell-expand table-head-title"
+							style={{width: '70%'}}
+						>
+							<ListHeadItem
+								name="title"
+								title={processNameTitle}
+							/>
+						</th>
 
-							<th
-								className="table-cell-expand table-head-title"
-								style={{width: '15%'}}
-							>
-								<ListHeadItem
-									name="overdueInstanceCount"
-									title={overdueTitle}
-								/>
-							</th>
+						<th
+							className="table-cell-expand table-head-title"
+							style={{width: '15%'}}
+						>
+							<ListHeadItem
+								name="overdueInstanceCount"
+								title={overdueTitle}
+							/>
+						</th>
 
-							<th
-								className="table-cell-expand table-head-title"
-								style={{width: '15%'}}
-							>
-								<ListHeadItem
-									name="onTimeInstanceCount"
-									title={onTimeTitle}
-								/>
-							</th>
+						<th
+							className="table-cell-expand table-head-title"
+							style={{width: '15%'}}
+						>
+							<ListHeadItem
+								name="onTimeInstanceCount"
+								title={onTimeTitle}
+							/>
+						</th>
 
-							<th
-								className="table-cell-expand table-head-title"
-								style={{width: '15%'}}
-							>
-								<ListHeadItem
-									name="instanceCount"
-									title={totalPendingTitle}
-								/>
-							</th>
-						</tr>
-					</thead>
+						<th
+							className="table-cell-expand table-head-title"
+							style={{width: '15%'}}
+						>
+							<ListHeadItem
+								name="instanceCount"
+								title={totalPendingTitle}
+							/>
+						</th>
+					</tr>
+				</thead>
 
-					<tbody>
-						{items.map((process, index) => (
-							<ProcessListPageItem {...process} key={index} />
-						))}
-					</tbody>
-				</table>
-			</div>
-		);
-	}
-}
+				<tbody>
+					{items.map((process, index) => (
+						<ProcessListPage.Item {...process} key={index} />
+					))}
+				</tbody>
+			</table>
+		</div>
+	);
+};
+
+export {Table};
