@@ -12,28 +12,16 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import ProcessListPage from '../../../src/main/resources/META-INF/resources/js/components/process-list-page/ProcessListPage.es';
-import PromisesResolver from '../../../src/main/resources/META-INF/resources/js/shared/components/request/PromisesResolver.es';
-import {MockRouter} from '../../mock/MockRouter.es';
+import ProcessListCard from '../../../src/main/resources/META-INF/resources/js/components/process-list/ProcessListCard.es';
+import {MockRouter as Router} from '../../mock/MockRouter.es';
 import fetch from '../../mock/fetch.es';
 
-const MockContext = ({children, clientMock}) => (
-	<MockRouter client={clientMock}>{children}</MockRouter>
-);
-
 test('Should render component', () => {
-	const clientMock = {
-		get: jest.fn().mockResolvedValue({data: {items: [], totalCount: 0}})
-	};
-
+	const data = {items: [], totalCount: 0};
 	const component = renderer.create(
-		<MockContext clientMock={clientMock}>
-			<ProcessListPage
-				page="1"
-				pageSize="20"
-				sort="overdueInstanceCount:desc"
-			/>
-		</MockContext>
+		<Router client={fetch(data)}>
+			<ProcessListCard />
+		</Router>
 	);
 	const tree = component.toJSON();
 
@@ -86,21 +74,11 @@ test('Should render component with 10 records', () => {
 		],
 		totalCount: 10
 	};
-
-	const clientMock = {
-		get: jest.fn().mockResolvedValue({data: {data}})
-	};
-
 	const component = renderer.create(
-		<MockContext clientMock={clientMock}>
-			<ProcessListPage
-				page="1"
-				pageSize="20"
-				sort="overdueInstanceCount:desc"
-			/>
-		</MockContext>
+		<Router client={fetch(data)}>
+			<ProcessListCard />
+		</Router>
 	);
-
 	const tree = component.toJSON();
 
 	expect(tree).toMatchSnapshot();
@@ -128,22 +106,82 @@ test('Should render component with 4 records', () => {
 		],
 		totalCount: 4
 	};
-
-	const clientMock = {
-		get: jest.fn().mockResolvedValue({data: {data}})
-	};
-
 	const component = renderer.create(
-		<MockContext clientMock={clientMock}>
-			<ProcessListPage
-				page="1"
-				pageSize="20"
-				sort="overdueInstanceCount:desc"
-			/>
-		</MockContext>
+		<Router client={fetch(data)}>
+			<ProcessListCard />
+		</Router>
 	);
-
 	const tree = component.toJSON();
 
 	expect(tree).toMatchSnapshot();
+});
+
+test('Should change page size', () => {
+	const data = {items: [], totalCount: 0};
+	const component = mount(
+		<Router client={fetch(data)}>
+			<ProcessListCard />
+		</Router>
+	);
+	const instance = component.find(ProcessListCard).instance();
+
+	instance
+		.requestData({
+			page: 1,
+			pageSize: 20,
+			sort: encodeURIComponent('title:asc')
+		})
+		.then(() => expect(component.state('pageSize')).toBe(20));
+});
+
+test('Should change page', () => {
+	const data = {items: [], totalCount: 0};
+	const component = mount(
+		<Router client={fetch(data)}>
+			<ProcessListCard />
+		</Router>
+	);
+	const instance = component.find(ProcessListCard).instance();
+
+	instance
+		.requestData({
+			page: 10,
+			pageSize: 20,
+			sort: encodeURIComponent('title:asc')
+		})
+		.then(() => expect(component.state('start')).toBe(2));
+});
+
+test('Should search', () => {
+	const data = {items: [], totalCount: 0};
+	const component = mount(
+		<Router client={fetch(data)}>
+			<ProcessListCard />
+		</Router>
+	);
+	const instance = component.find(ProcessListCard).instance();
+
+	return instance
+		.requestData({
+			page: 1,
+			pageSize: 20,
+			search: 'test',
+			sort: encodeURIComponent('title:asc')
+		})
+		.then(() => {
+			expect(instance.state['totalCount']).toBe(0);
+		});
+});
+
+test('Should change state', () => {
+	const data = {items: [], totalCount: 0};
+	const component = mount(
+		<Router client={fetch(data)}>
+			<ProcessListCard />
+		</Router>
+	);
+	const instance = component.find(ProcessListCard).instance();
+
+	instance.setState(data);
+	expect(instance.state['totalCount']).toBe(0);
 });
