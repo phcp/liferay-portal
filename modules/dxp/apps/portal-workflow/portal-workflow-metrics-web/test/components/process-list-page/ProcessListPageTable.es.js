@@ -12,7 +12,7 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import ProcessListTable from '../../../src/main/resources/META-INF/resources/js/components/process-list/ProcessListTable.es';
+import ProcessListPage from '../../../src/main/resources/META-INF/resources/js/components/process-list-page/ProcessListPage.es';
 import {MockRouter as Router} from '../../mock/MockRouter.es';
 
 test('Should render component', () => {
@@ -26,7 +26,7 @@ test('Should render component', () => {
 
 	const component = renderer.create(
 		<Router>
-			<ProcessListTable items={data} />
+			<ProcessListPage.Table items={data} />
 		</Router>
 	);
 
