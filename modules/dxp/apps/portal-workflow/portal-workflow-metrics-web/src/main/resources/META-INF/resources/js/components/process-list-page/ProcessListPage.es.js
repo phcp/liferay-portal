@@ -19,14 +19,14 @@ import {
 	REQUEST_ORIGIN_TYPE_FETCH,
 	REQUEST_ORIGIN_TYPE_SEARCH
 } from './Constants.es';
-import ProcessListTable from './ProcessListTable.es';
+import ProcessListPageTable from './ProcessListPageTable.es';
 import ResultsBar from './ResultsBar.es';
 
 /**
  * @class
  * @memberof process-list
  */
-class ProcessListCard extends React.Component {
+class ProcessListPage extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -118,7 +118,7 @@ class ProcessListCard extends React.Component {
 						loading={loading}
 						searching={searching}
 					>
-						<ProcessListTable items={items} />
+						<ProcessListPageTable items={items} />
 
 						<PaginationBar
 							page={page}
@@ -133,5 +133,5 @@ class ProcessListCard extends React.Component {
 	}
 }
 
-ProcessListCard.contextType = AppContext;
-export default ProcessListCard;
+ProcessListPage.contextType = AppContext;
+export default ProcessListPage;

@@ -18,7 +18,7 @@ import fetch from '../shared/rest/fetch.es';
 import {AppContext} from './AppContext.es';
 import InstanceListPage from './instance-list-page/InstanceListPage.es';
 import PerformanceByStepPage from './performance-by-step-page/PerformanceByStepPage.es';
-import ProcessListCard from './process-list/ProcessListCard.es';
+import ProcessListPage from './process-list-page/ProcessListPage.es';
 import ProcessMetrics from './process-metrics/ProcessMetrics.es';
 import SLAForm from './sla/SLAForm.es';
 import SLAListCard from './sla/SLAListCard.es';
@@ -79,7 +79,7 @@ export default class AppComponent extends React.Component {
 
 							<Route
 								path="/processes/:pageSize/:page/:sort/:search?"
-								render={withParams(ProcessListCard)}
+								render={withParams(ProcessListPage)}
 							/>
 
 							<Route

@@ -12,13 +12,13 @@
 import React from 'react';
 
 import ListHeadItem from '../../shared/components/list/ListHeadItem.es';
-import ProcessListItem from './ProcessListItem.es';
+import ProcessListPageItem from './ProcessListPageItem.es';
 
 /**
  * @class
  * @memberof process-list
  */
-export default class ProcessListTable extends React.Component {
+export default class ProcessListPageTable extends React.Component {
 	render() {
 		const {items} = this.props;
 		const onTimeTitle = Liferay.Language.get('on-time');
@@ -75,7 +75,7 @@ export default class ProcessListTable extends React.Component {
 
 					<tbody>
 						{items.map((process, index) => (
-							<ProcessListItem {...process} key={index} />
+							<ProcessListPageItem {...process} key={index} />
 						))}
 					</tbody>
 				</table>
