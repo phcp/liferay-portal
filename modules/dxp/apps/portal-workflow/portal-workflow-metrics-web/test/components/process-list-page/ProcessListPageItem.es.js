@@ -12,23 +12,18 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import ResultsBar from '../../../src/main/resources/META-INF/resources/js/components/process-list/ResultsBar.es';
+import ProcessListPage from '../../../src/main/resources/META-INF/resources/js/components/process-list-page/ProcessListPage.es';
 import {MockRouter as Router} from '../../mock/MockRouter.es';
 
-test('Should render component with one item', () => {
+test('Should render component with one list item', () => {
 	const component = renderer.create(
 		<Router>
-			<ResultsBar
-				match={{
-					params: {
-						page: 1,
-						pageSize: 5,
-						search: 'test',
-						sort: encodeURIComponent('title:asc')
-					},
-					path: '/processes/:pageSize/:page/:sort/:search?'
-				}}
-				totalCount={1}
+			<ProcessListPage.Item
+				id={36401}
+				instanceCount={10}
+				onTimeInstanceCount={5}
+				overdueInstanceCount={5}
+				title="Process test"
 			/>
 		</Router>
 	);
@@ -38,20 +33,15 @@ test('Should render component with one item', () => {
 	expect(tree).toMatchSnapshot();
 });
 
-test('Should render component with one list item', () => {
+test('Should render component with 1 instance count', () => {
 	const component = renderer.create(
 		<Router>
-			<ResultsBar
-				match={{
-					params: {
-						page: 1,
-						pageSize: 5,
-						search: 'test',
-						sort: encodeURIComponent('title:asc')
-					},
-					path: '/processes/:pageSize/:page/:sort/:search?'
-				}}
-				totalCount={5}
+			<ProcessListPage.Item
+				id={36401}
+				instanceCount={1}
+				onTimeInstanceCount={5}
+				overdueInstanceCount={5}
+				title="Process test"
 			/>
 		</Router>
 	);
