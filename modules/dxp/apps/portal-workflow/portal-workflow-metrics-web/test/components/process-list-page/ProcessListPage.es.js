@@ -13,9 +13,7 @@ import React from 'react';
 import renderer from 'react-test-renderer';
 
 import ProcessListPage from '../../../src/main/resources/META-INF/resources/js/components/process-list-page/ProcessListPage.es';
-import PromisesResolver from '../../../src/main/resources/META-INF/resources/js/shared/components/request/PromisesResolver.es';
 import {MockRouter} from '../../mock/MockRouter.es';
-import fetch from '../../mock/fetch.es';
 
 const MockContext = ({children, clientMock}) => (
 	<MockRouter client={clientMock}>{children}</MockRouter>
