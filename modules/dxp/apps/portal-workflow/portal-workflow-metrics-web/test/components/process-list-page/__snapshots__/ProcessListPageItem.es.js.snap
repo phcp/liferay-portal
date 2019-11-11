@@ -14,13 +14,19 @@ exports[`Should render component with 1 instance count 1`] = `
       </span>
     </a>
   </td>
-  <td>
+  <td
+    className="text-right"
+  >
     5
   </td>
-  <td>
+  <td
+    className="text-right"
+  >
     5
   </td>
-  <td>
+  <td
+    className="text-right"
+  >
     1
   </td>
 </tr>
@@ -40,13 +46,19 @@ exports[`Should render component with one list item 1`] = `
       </span>
     </a>
   </td>
-  <td>
+  <td
+    className="text-right"
+  >
     5
   </td>
-  <td>
+  <td
+    className="text-right"
+  >
     5
   </td>
-  <td>
+  <td
+    className="text-right"
+  >
     10
   </td>
 </tr>

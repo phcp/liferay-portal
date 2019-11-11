@@ -47,10 +47,10 @@ exports[`Should render component 1`] = `
           </a>
         </th>
         <th
-          className="table-cell-expand table-head-title"
+          className="table-head-title"
           style={
             Object {
-              "width": "15%",
+              "width": "10%",
             }
           }
         >
@@ -84,10 +84,10 @@ exports[`Should render component 1`] = `
           </a>
         </th>
         <th
-          className="table-cell-expand table-head-title"
+          className="table-head-title"
           style={
             Object {
-              "width": "15%",
+              "width": "10%",
             }
           }
         >
@@ -121,10 +121,10 @@ exports[`Should render component 1`] = `
           </a>
         </th>
         <th
-          className="table-cell-expand table-head-title"
+          className="table-head-title"
           style={
             Object {
-              "width": "15%",
+              "width": "10%",
             }
           }
         >
@@ -173,9 +173,15 @@ exports[`Should render component 1`] = `
             </span>
           </a>
         </td>
-        <td />
-        <td />
-        <td />
+        <td
+          className="text-right"
+        />
+        <td
+          className="text-right"
+        />
+        <td
+          className="text-right"
+        />
       </tr>
     </tbody>
   </table>

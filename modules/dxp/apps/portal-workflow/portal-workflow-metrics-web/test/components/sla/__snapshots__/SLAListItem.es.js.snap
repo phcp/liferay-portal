@@ -27,7 +27,9 @@ exports[`Should render component 1`] = `
   <td>
     May 06
   </td>
-  <td>
+  <td
+    className="actions"
+  >
     <div
       className="dropdown dropdown-action"
     >
@@ -306,7 +308,9 @@ exports[`Should render component 2`] = `
           <td>
             May 06
           </td>
-          <td>
+          <td
+            className="actions"
+          >
             <div
               className="dropdown dropdown-action"
             >
@@ -743,7 +747,9 @@ exports[`Should render component blocked 1`] = `
           <td>
             May 06
           </td>
-          <td>
+          <td
+            className="actions"
+          >
             <div
               className="dropdown dropdown-action"
             >
