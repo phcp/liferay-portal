@@ -1,0 +1,12 @@
+.table-list {
+	td:last-child:not(.actions),
+	th:last-child,
+	td + td,
+	th + th {
+		padding-right: 3rem;
+	}
+
+	th.table-head-title .title {
+		line-height: 24px;
+	}
+}

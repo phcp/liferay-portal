@@ -28,11 +28,11 @@ const Item = ({
 				</ChildLink>
 			</td>
 
-			<td>{overdueInstanceCount}</td>
+			<td className="text-right">{overdueInstanceCount}</td>
 
-			<td>{onTimeInstanceCount}</td>
+			<td className="text-right">{onTimeInstanceCount}</td>
 
-			<td>{instanceCount}</td>
+			<td className="text-right">{instanceCount}</td>
 		</tr>
 	);
 };

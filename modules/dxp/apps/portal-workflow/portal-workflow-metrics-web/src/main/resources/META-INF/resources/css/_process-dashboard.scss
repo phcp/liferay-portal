@@ -103,19 +103,6 @@ $c: '.workflow-process-dashboard';
 		}
 	}
 
-	.table-list {
-		td:last-child,
-		th:last-child,
-		td + td,
-		th + th {
-			padding-right: 3rem;
-		}
-
-		th.table-head-title .title {
-			line-height: 24px;
-		}
-	}
-
 	.table-scrollable {
 		max-height: 22.5rem;
 	}

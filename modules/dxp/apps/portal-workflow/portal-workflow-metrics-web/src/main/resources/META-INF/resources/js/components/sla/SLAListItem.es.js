@@ -72,7 +72,7 @@ class SLAListItem extends React.Component {
 						.format(Liferay.Language.get('mmm-dd'))}
 				</td>
 
-				<td>
+				<td className="actions">
 					<div className="dropdown dropdown-action">
 						<a
 							aria-expanded="false"

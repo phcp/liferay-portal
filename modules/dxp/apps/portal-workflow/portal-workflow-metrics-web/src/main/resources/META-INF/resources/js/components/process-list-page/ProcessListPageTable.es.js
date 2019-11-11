@@ -35,30 +35,21 @@ const Table = ({items}) => {
 							/>
 						</th>
 
-						<th
-							className="table-cell-expand table-head-title"
-							style={{width: '15%'}}
-						>
+						<th className="table-head-title" style={{width: '10%'}}>
 							<ListHeadItem
 								name="overdueInstanceCount"
 								title={overdueTitle}
 							/>
 						</th>
 
-						<th
-							className="table-cell-expand table-head-title"
-							style={{width: '15%'}}
-						>
+						<th className="table-head-title" style={{width: '10%'}}>
 							<ListHeadItem
 								name="onTimeInstanceCount"
 								title={onTimeTitle}
 							/>
 						</th>
 
-						<th
-							className="table-cell-expand table-head-title"
-							style={{width: '15%'}}
-						>
+						<th className="table-head-title" style={{width: '10%'}}>
 							<ListHeadItem
 								name="instanceCount"
 								title={totalPendingTitle}
