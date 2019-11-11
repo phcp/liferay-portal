@@ -9,13 +9,13 @@
  * distribution rights of the Software.
  */
 
-import React, {useContext, useEffect} from 'react';
+import React from 'react';
 
 import Search from '../../shared/components/pagination/Search.es';
 import PromisesResolver from '../../shared/components/request/PromisesResolver.es';
 import ResultsBar from '../../shared/components/results-bar/ResultsBar.es';
+import {usePageTitle} from '../../shared/hooks/usePageTitle.es';
 import {useResource} from '../../shared/hooks/useResource.es';
-import {AppContext} from '../AppContext.es';
 import {
 	Body,
 	EmptyView,
@@ -26,25 +26,14 @@ import {Item} from './ProcessListPageItem.es';
 import {Table} from './ProcessListPageTable.es';
 
 const ProcessListPage = ({page, pageSize, search, sort}) => {
-	const {setTitle} = useContext(AppContext);
+	usePageTitle(Liferay.Language.get('metrics'));
 
-	useEffect(() => {
-		setTitle(Liferay.Language.get('metrics'));
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	const params = {
+	const {data, promises} = useResource('/processes', {
 		page,
 		pageSize,
-		sort: decodeURIComponent(sort)
-	};
-
-	if (typeof search === 'string' && search) {
-		params.title = decodeURIComponent(search);
-	}
-
-	const {data, promises} = useResource(`/processes`, {...params});
+		sort: decodeURIComponent(sort),
+		title: search ? decodeURIComponent(search) : null
+	});
 
 	return (
 		<PromisesResolver promises={promises}>
@@ -76,18 +65,16 @@ const Filters = ({page, pageSize, search, sort, totalCount}) => {
 
 			{search && (
 				<ResultsBar>
-					<>
-						<ResultsBar.TotalCount
-							search={search}
-							totalCount={totalCount}
-						/>
+					<ResultsBar.TotalCount
+						search={search}
+						totalCount={totalCount}
+					/>
 
-						<ResultsBar.Clear
-							page={page}
-							pageSize={pageSize}
-							sort={sort}
-						/>
-					</>
+					<ResultsBar.Clear
+						page={page}
+						pageSize={pageSize}
+						sort={sort}
+					/>
 				</ResultsBar>
 			)}
 		</>
