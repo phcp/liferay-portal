@@ -11,18 +11,18 @@
 
 import React from 'react';
 
-import Filter from '../../../shared/components/filter/Filter.es';
-import {useFilterName} from '../../../shared/components/filter/hooks/useFilterName.es';
-import {useFilterResource} from '../../../shared/components/filter/hooks/useFilterResource.es';
+import Filter from '../../shared/components/filter/Filter.es';
+import {useFilterName} from '../../shared/components/filter/hooks/useFilterName.es';
+import {useFilterResource} from '../../shared/components/filter/hooks/useFilterResource.es';
 
-const ProcessStepFilter = ({
+const RoleFilter = ({
+	className,
 	dispatch,
-	filterKey = 'taskKeys',
+	filterKey = 'roleIds',
 	options: {
 		hideControl = false,
 		multiple = true,
 		position = 'left',
-		withAllSteps = false,
 		withSelectionTitle = false
 	} = {},
 	processId
@@ -30,19 +30,19 @@ const ProcessStepFilter = ({
 	const {items, selectedItems} = useFilterResource(
 		dispatch,
 		filterKey,
-		`/processes/${processId}/tasks?page=0&pageSize=0`,
-		items => (withAllSteps ? [allStepsItem, ...items] : items)
+		`/processes/${processId}/roles`
 	);
 
 	const filterName = useFilterName(
 		multiple,
 		selectedItems,
-		Liferay.Language.get('process-step'),
+		Liferay.Language.get('role'),
 		withSelectionTitle
 	);
 
 	return (
 		<Filter
+			elementClasses={className}
 			filterKey={filterKey}
 			hideControl={hideControl}
 			items={items}
@@ -53,10 +53,4 @@ const ProcessStepFilter = ({
 	);
 };
 
-const allStepsItem = {
-	dividerAfter: true,
-	key: 'allSteps',
-	name: Liferay.Language.get('all-steps')
-};
-
-export default ProcessStepFilter;
+export default RoleFilter;

@@ -9,45 +9,30 @@
  * distribution rights of the Software.
  */
 
-import {useCallback, useContext, useMemo} from 'react';
+import {useEffect} from 'react';
 
-import {AppContext} from '../../../../components/AppContext.es';
 import {useRouterParams} from '../../../hooks/useRouterParams.es';
-import {handleFilterItems, mergeItemsArray} from '../util/filterUtil.es';
+import {handleFilterItems} from '../util/filterUtil.es';
 import {useFilterState} from './useFilterState.es';
 
-const useFilterResource = (dispatch, filterKey, requestUrl, staticItems) => {
-	const {client} = useContext(AppContext);
+const useFilterStatic = (dispatch, filterKey, staticItems) => {
 	const {filters} = useRouterParams();
 	const {items, selectedItems, setItems} = useFilterState(
 		dispatch,
 		filterKey
 	);
 
-	const fetchData = useCallback(
-		() =>
-			client.get(requestUrl).then(({data = {}}) => {
-				const mergedItems = mergeItemsArray(staticItems, data.items);
+	useEffect(() => {
+		const mappedItems = handleFilterItems(staticItems, filters[filterKey]);
 
-				const mappedItems = handleFilterItems(
-					mergedItems,
-					filters[filterKey]
-				);
-
-				setItems(mappedItems);
-			}),
+		setItems(mappedItems);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[requestUrl, staticItems]
-	);
-
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const promises = useMemo(() => [fetchData()], [fetchData]);
+	}, [staticItems]);
 
 	return {
 		items,
-		promises,
 		selectedItems
 	};
 };
 
-export {useFilterResource};
+export {useFilterStatic};

@@ -67,6 +67,24 @@ const getSelectedItemsQuery = (items, key, queryString) => {
 	return stringify(queryParams);
 };
 
+const handleFilterItems = (items, selectedKeys) =>
+	items.map((item, index) => {
+		const key = item.key || String(item.id);
+
+		return {
+			...item,
+			active: selectedKeys && selectedKeys.includes(key),
+			dividerAfter: item.dividerAfter && !!items[index + 1],
+			key
+		};
+	});
+
+const mergeItemsArray = (items1, items2) => {
+	const mergedItems = items1 || [];
+
+	return items2 ? mergedItems.concat(items2) : mergedItems;
+};
+
 const pushToHistory = (filterQuery, routerProps) => {
 	const {
 		history,
@@ -120,6 +138,8 @@ export {
 	getFiltersParam,
 	getFilterResults,
 	getSelectedItemsQuery,
+	handleFilterItems,
+	mergeItemsArray,
 	pushToHistory,
 	reduceFilters,
 	removeFilters,

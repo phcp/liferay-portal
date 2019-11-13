@@ -18,8 +18,8 @@ import {useFilterItemKeys} from '../../shared/hooks/useFilterItemKeys.es';
 import {useFiltersReducer} from '../../shared/hooks/useFiltersReducer.es';
 import {useProcessTitle} from '../../shared/hooks/useProcessTitle.es';
 import {useResource} from '../../shared/hooks/useResource.es';
-import ProcessStepFilter from '../process-metrics/filter/ProcessStepFilterHooks.es';
-import RoleFilter from '../process-metrics/filter/RoleFilterHooks.es';
+import ProcessStepFilter from '../filter/ProcessStepFilterHooks.es';
+import RoleFilter from '../filter/RoleFilterHooks.es';
 import {
 	Body,
 	EmptyView,
